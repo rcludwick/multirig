@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MultiRig Settings</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">MultiRig</div>
+    <nav>
+      <a href="/">Dashboard</a>
+      <button id="darkToggle" title="Toggle dark mode">🌓</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Configuration</h2>
+    <form id="cfgForm" class="form-grid">
+      <fieldset id="rigAFields">
+        <legend>Rig A</legend>
+        <label>Name <input type="text" name="a.name" value="{{ config.rig_a.name }}"></label>
+        <label>Connection
+          <select name="a.connection_type" data-switch="a" data-current="{{ config.rig_a.connection_type }}">
+            <option value="rigctld">rigctld (TCP)</option>
+            <option value="hamlib">hamlib (direct rigctl)</option>
+          </select>
+        </label>
+        <div class="conn rigctld" data-section="a rigctld">
+          <label>Host <input type="text" name="a.host" value="{{ config.rig_a.host }}"></label>
+          <label>Port <input type="number" name="a.port" value="{{ config.rig_a.port }}"></label>
+        </div>
+        <div class="conn hamlib" data-section="a hamlib">
+          <label>Model ID (-m) <input type="number" name="a.model_id" value="{{ config.rig_a.model_id or '' }}" placeholder="e.g., 3073"></label>
+          <label>Device (-r) <input type="text" name="a.device" value="{{ config.rig_a.device or '' }}" placeholder="/dev/ttyUSB0 or /dev/cu.usbserial"></label>
+          <label>Baud (-s) <input type="number" name="a.baud" value="{{ config.rig_a.baud or '' }}" placeholder="38400"></label>
+          <label>Serial opts <input type="text" name="a.serial_opts" value="{{ config.rig_a.serial_opts or '' }}" placeholder="e.g., N8 RTSCTS"></label>
+          <label>Extra args <input type="text" name="a.extra_args" value="{{ config.rig_a.extra_args or '' }}" placeholder="additional rigctl flags"></label>
+        </div>
+      </fieldset>
+      <fieldset id="rigBFields">
+        <legend>Rig B</legend>
+        <label>Name <input type="text" name="b.name" value="{{ config.rig_b.name }}"></label>
+        <label>Connection
+          <select name="b.connection_type" data-switch="b" data-current="{{ config.rig_b.connection_type }}">
+            <option value="rigctld">rigctld (TCP)</option>
+            <option value="hamlib">hamlib (direct rigctl)</option>
+          </select>
+        </label>
+        <div class="conn rigctld" data-section="b rigctld">
+          <label>Host <input type="text" name="b.host" value="{{ config.rig_b.host }}"></label>
+          <label>Port <input type="number" name="b.port" value="{{ config.rig_b.port }}"></label>
+        </div>
+        <div class="conn hamlib" data-section="b hamlib">
+          <label>Model ID (-m) <input type="number" name="b.model_id" value="{{ config.rig_b.model_id or '' }}" placeholder="e.g., 3073"></label>
+          <label>Device (-r) <input type="text" name="b.device" value="{{ config.rig_b.device or '' }}" placeholder="/dev/ttyUSB1"></label>
+          <label>Baud (-s) <input type="number" name="b.baud" value="{{ config.rig_b.baud or '' }}" placeholder="38400"></label>
+          <label>Serial opts <input type="text" name="b.serial_opts" value="{{ config.rig_b.serial_opts or '' }}" placeholder="e.g., N8 RTSCTS"></label>
+          <label>Extra args <input type="text" name="b.extra_args" value="{{ config.rig_b.extra_args or '' }}" placeholder="additional rigctl flags"></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Sync</legend>
+        <label>Poll interval (ms) <input type="number" min="100" step="50" name="poll" value="{{ config.poll_interval_ms }}"></label>
+      </fieldset>
+      <div class="actions">
+        <button type="submit">Save</button>
+        <span id="saveResult"></span>
+      </div>
+    </form>
+
+    <section class="help">
+      <h3>Hamlib Quick Start</h3>
+      <ul>
+        <li>Install hamlib and start a rigctld instance for each rig you want to control.</li>
+        <li>Example (QCX+ over USB serial):<br>
+          <code>rigctld -m 3073 -r /dev/ttyUSB0 -s 38400 -t 4532</code>
+        </li>
+        <li>Example (second rig on another port):<br>
+          <code>rigctld -m 3073 -r /dev/ttyUSB1 -s 38400 -t 4533</code>
+        </li>
+        <li>XIEGU XPA125B: control may be via CAT pass-through from the rig; for direct control use hamlib ampctl on its port and consider future integration.</li>
+        <li>WSJT-X can connect to Rig A's rigctld; this app mirrors frequency/mode to Rig B.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    // Dark mode
+    (function(){
+      const btn = document.getElementById('darkToggle');
+      if(btn){ btn.onclick = ()=>{
+        const t = document.documentElement.dataset.theme === 'dark' ? '' : 'dark';
+        document.documentElement.dataset.theme = t;
+        localStorage.setItem('theme', t);
+      };}
+      const t = localStorage.getItem('theme'); if(t) document.documentElement.dataset.theme = t;
+    })();
+
+    const form = document.getElementById('cfgForm');
+    function updateSections() {
+      for (const sel of document.querySelectorAll('select[data-switch]')) {
+        // Initialize from data-current on first run
+        if (sel.dataset._init !== '1' && sel.dataset.current) {
+          sel.value = sel.dataset.current;
+          sel.dataset._init = '1';
+        }
+        const which = sel.getAttribute('data-switch');
+        const val = sel.value;
+        document.querySelectorAll(`[data-section="${which} rigctld"]`).forEach(el=>{
+          el.style.display = val === 'rigctld' ? '' : 'none';
+        });
+        document.querySelectorAll(`[data-section="${which} hamlib"]`).forEach(el=>{
+          el.style.display = val === 'hamlib' ? '' : 'none';
+        });
+      }
+    }
+    updateSections();
+    document.querySelectorAll('select[data-switch]').forEach(s=>s.addEventListener('change', updateSections));
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const data = new FormData(form);
+      const rig_a = {
+        name: data.get('a.name'),
+        connection_type: data.get('a.connection_type') || 'rigctld',
+        host: data.get('a.host') || '127.0.0.1',
+        port: Number(data.get('a.port') || 4532),
+        model_id: data.get('a.model_id') ? Number(data.get('a.model_id')) : null,
+        device: data.get('a.device') || null,
+        baud: data.get('a.baud') ? Number(data.get('a.baud')) : null,
+        serial_opts: data.get('a.serial_opts') || null,
+        extra_args: data.get('a.extra_args') || null
+      };
+      const rig_b = {
+        name: data.get('b.name'),
+        connection_type: data.get('b.connection_type') || 'rigctld',
+        host: data.get('b.host') || '127.0.0.1',
+        port: Number(data.get('b.port') || 4533),
+        model_id: data.get('b.model_id') ? Number(data.get('b.model_id')) : null,
+        device: data.get('b.device') || null,
+        baud: data.get('b.baud') ? Number(data.get('b.baud')) : null,
+        serial_opts: data.get('b.serial_opts') || null,
+        extra_args: data.get('b.extra_args') || null
+      };
+      const cfg = { rig_a, rig_b, poll_interval_ms: Number(data.get('poll')) };
+      const res = await fetch('/api/config', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify(cfg) });
+      const json = await res.json();
+      document.getElementById('saveResult').textContent = json.status === 'ok' ? 'Saved' : 'Failed';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MultiRig Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="icon" href="data:,">
+  <script defer src="/static/app.js"></script>
+  <script>
+    window.MULTIRIG_CONFIG = { wsPath: "/ws" };
+  </script>
+  <style>
+    /* Simple inline font fallbacks for a technical feel */
+    @font-face { font-family: "Segment7"; src: local("Digital-7"), local("Segment7"); font-display: swap; }
+  </style>
+  </head>
+<body>
+  <header class="topbar">
+    <div class="brand">MultiRig</div>
+    <nav>
+      <a href="/settings">Settings</a>
+      <button id="darkToggle" title="Toggle dark mode">🌓</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="status-grid">
+      <div class="rig-card" id="rigA">
+        <div class="rig-title">Rig A</div>
+        <div class="rig-conn" data-bind="a.connected">●</div>
+        <div class="freq" data-bind="a.frequency_hz">—</div>
+        <div class="mode" data-bind="a.mode">—</div>
+        <div class="error" data-bind="a.error"></div>
+        <div class="controls">
+          <input type="number" step="1" min="0" placeholder="Freq (Hz)" data-input="a.frequency_hz">
+          <input type="text" placeholder="Mode (e.g., USB, LSB, DIGU)" data-input="a.mode">
+          <input type="number" step="1" placeholder="Passband (Hz)" data-input="a.passband">
+          <button data-action="setA">Set</button>
+        </div>
+      </div>
+      <div class="rig-card" id="rigB">
+        <div class="rig-title">Rig B</div>
+        <div class="rig-conn" data-bind="b.connected">●</div>
+        <div class="freq" data-bind="b.frequency_hz">—</div>
+        <div class="mode" data-bind="b.mode">—</div>
+        <div class="error" data-bind="b.error"></div>
+        <div class="controls">
+          <input type="number" step="1" min="0" placeholder="Freq (Hz)" data-input="b.frequency_hz">
+          <input type="text" placeholder="Mode" data-input="b.mode">
+          <input type="number" step="1" placeholder="Passband (Hz)" data-input="b.passband">
+          <button data-action="setB">Set</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sync">
+      <label class="switch">
+        <input type="checkbox" id="syncToggle">
+        <span class="slider"></span>
+      </label>
+      <span>Sync Rig B to Rig A</span>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>WSJT-X + hamlib helper • macOS / Linux / Raspberry Pi</span>
+  </footer>
+</body>
+</html>
