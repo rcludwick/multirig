@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+import os
+import re
+import socket
+import subprocess
 from pathlib import Path
 from typing import Optional, List
 
@@ -12,6 +16,7 @@ from fastapi.templating import Jinja2Templates
 from .config import AppConfig, load_config, save_config
 from .rig import RigClient
 from .service import SyncService
+from .rigctl_tcp import RigctlTcpServer, RigctlServerConfig
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -40,13 +45,54 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
         source_index=app.state.config.sync_source_index,
     )
 
+    def _rigctl_bind_host() -> str:
+        return os.getenv("MULTIRIG_RIGCTL_HOST", app.state.config.rigctl_listen_host)
+
+    def _rigctl_bind_port() -> int:
+        port_s = os.getenv("MULTIRIG_RIGCTL_PORT")
+        if port_s is not None:
+            try:
+                return int(port_s)
+            except Exception:
+                return app.state.config.rigctl_listen_port
+        return app.state.config.rigctl_listen_port
+
+    app.state.rigctl_server = RigctlTcpServer(
+        get_rigs=lambda: app.state.rigs,
+        get_source_index=lambda: app.state.sync_service.source_index,
+        config=RigctlServerConfig(host=_rigctl_bind_host(), port=_rigctl_bind_port()),
+    )
+
+    async def _restart_rigctl_server() -> None:
+        try:
+            await app.state.rigctl_server.stop()
+        except Exception:
+            pass
+        app.state.rigctl_server = RigctlTcpServer(
+            get_rigs=lambda: app.state.rigs,
+            get_source_index=lambda: app.state.sync_service.source_index,
+            config=RigctlServerConfig(host=_rigctl_bind_host(), port=_rigctl_bind_port()),
+        )
+        try:
+            await app.state.rigctl_server.start()
+        except Exception:
+            pass
+
     @app.on_event("startup")
     async def _startup() -> None:
         await app.state.sync_service.start()
+        try:
+            await app.state.rigctl_server.start()
+        except Exception:
+            pass
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:
         await app.state.sync_service.stop()
+        try:
+            await app.state.rigctl_server.stop()
+        except Exception:
+            pass
         # Close rig backends
         for rig in getattr(app.state, "rigs", []):
             try:
@@ -85,7 +131,37 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
         app.state.sync_service.interval_ms = cfg.poll_interval_ms
         app.state.sync_service.enabled = cfg.sync_enabled
         app.state.sync_service.source_index = cfg.sync_source_index
+        await _restart_rigctl_server()
         return {"status": "ok"}
+
+    @app.get("/api/bind_addrs")
+    async def get_bind_addrs():
+        addrs = {"127.0.0.1", "0.0.0.0"}
+        try:
+            host = socket.gethostname()
+            for fam, _, _, _, sockaddr in socket.getaddrinfo(host, None):
+                if fam == socket.AF_INET:
+                    ip = sockaddr[0]
+                    if ip:
+                        addrs.add(ip)
+        except Exception:
+            pass
+        try:
+            _, _, ips = socket.gethostbyname_ex(socket.gethostname())
+            for ip in ips:
+                if ip:
+                    addrs.add(ip)
+        except Exception:
+            pass
+        try:
+            out = subprocess.check_output(["ifconfig"], text=True, stderr=subprocess.DEVNULL)
+            for m in re.finditer(r"\binet\s+(\d+\.\d+\.\d+\.\d+)", out):
+                ip = m.group(1)
+                if ip:
+                    addrs.add(ip)
+        except Exception:
+            pass
+        return sorted(addrs)
 
     @app.get("/api/status")
     async def get_status():
@@ -146,6 +222,80 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
         if mode is not None:
             results["mode_ok"] = await rig.set_mode(str(mode), passband)
         return {"status": "ok", **results}
+
+    @app.post("/api/test-rig")
+    async def test_rig_connection(rig_config: dict):
+        """Test a rig configuration without saving it."""
+        from .config import RigConfig
+        try:
+            # Validate and create RigConfig from payload
+            cfg = RigConfig.model_validate(rig_config)
+            # Create a temporary RigClient to test the connection
+            test_rig = RigClient(cfg)
+            try:
+                # Try to get basic info from the rig
+                status = await test_rig.safe_status()
+                await test_rig.close()
+
+                if status.get("error"):
+                    return {
+                        "status": "error",
+                        "message": f"Connection failed: {status['error']}",
+                        "details": status
+                    }
+
+                # Check if we got valid data
+                if status.get("frequency_hz") is not None:
+                    return {
+                        "status": "success",
+                        "message": f"Connected successfully! Frequency: {status['frequency_hz']} Hz, Mode: {status.get('mode', 'unknown')}",
+                        "details": status
+                    }
+                else:
+                    return {
+                        "status": "warning",
+                        "message": "Connected but could not read rig status. Check your model ID and settings.",
+                        "details": status
+                    }
+            except Exception as e:
+                await test_rig.close()
+                return {
+                    "status": "error",
+                    "message": f"Connection test failed: {str(e)}",
+                    "details": {"error": str(e)}
+                }
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Invalid configuration: {str(e)}",
+                "details": {"error": str(e)}
+            }
+
+    @app.get("/api/serial-ports")
+    async def list_serial_ports():
+        """List available serial ports on the system."""
+        try:
+            import serial.tools.list_ports
+            ports = []
+            for port in serial.tools.list_ports.comports():
+                ports.append({
+                    "device": port.device,
+                    "description": port.description,
+                    "hwid": port.hwid,
+                })
+            return {"status": "ok", "ports": ports}
+        except ImportError:
+            return {
+                "status": "error",
+                "message": "pyserial not installed. Install with: pip install pyserial",
+                "ports": []
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": str(e),
+                "ports": []
+            }
 
     # WebSocket for streaming status updates
     @app.websocket("/ws")

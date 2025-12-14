@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
-from typing import Optional, Tuple, Dict, Any
+from typing import Optional, Tuple, Dict, Any, List
 import contextlib
 import shlex
 import asyncio.subprocess as asp
@@ -32,6 +32,18 @@ class RigBackend:
     async def set_mode(self, mode: str, passband: Optional[int] = None) -> bool:
         raise NotImplementedError
 
+    async def set_vfo(self, vfo: str) -> bool:
+        raise NotImplementedError
+
+    async def get_vfo(self) -> Optional[str]:
+        raise NotImplementedError
+
+    async def set_ptt(self, ptt: int) -> bool:
+        raise NotImplementedError
+
+    async def get_ptt(self) -> Optional[int]:
+        raise NotImplementedError
+
     async def status(self) -> RigStatus:
         raise NotImplementedError
 
@@ -45,7 +57,7 @@ class RigctldBackend(RigBackend):
         self.port = port
         self._lock = asyncio.Lock()
 
-    async def _send(self, cmd: str, timeout: float = 1.5) -> str:
+    async def _send_erp(self, cmd: str, timeout: float = 1.5) -> Tuple[int, List[str]]:
         reader: asyncio.StreamReader
         writer: asyncio.StreamWriter
         try:
@@ -56,46 +68,109 @@ class RigctldBackend(RigBackend):
             raise ConnectionError(f"rigctld connect failed {self.host}:{self.port}: {e}")
 
         try:
-            writer.write((cmd + "\n").encode())
+            writer.write(("+" + cmd + "\n").encode())
             await writer.drain()
-            data = await asyncio.wait_for(reader.readline(), timeout=timeout)
-            return data.decode().strip()
+            lines: List[str] = []
+            while True:
+                data = await asyncio.wait_for(reader.readline(), timeout=timeout)
+                if not data:
+                    break
+                s = data.decode(errors="ignore").strip("\r\n")
+                if s.startswith("RPRT "):
+                    try:
+                        code = int(s.split()[1])
+                    except Exception:
+                        code = -1
+                    return code, lines
+                lines.append(s)
+            return -1, lines
         finally:
             writer.close()
             with contextlib.suppress(Exception):
                 await writer.wait_closed()
 
+    @staticmethod
+    def _kv(lines: List[str]) -> Dict[str, str]:
+        out: Dict[str, str] = {}
+        for ln in lines:
+            if ":" not in ln:
+                continue
+            k, v = ln.split(":", 1)
+            out[k.strip()] = v.strip()
+        return out
+
     async def get_frequency(self) -> Optional[int]:
         async with self._lock:
-            resp = await self._send("f")
+            code, lines = await self._send_erp("f")
+        if code != 0:
+            return None
+        kv = self._kv(lines)
+        val = kv.get("Frequency")
+        if val is None:
+            return None
         try:
-            return int(float(resp))
+            return int(float(val))
         except Exception:
             return None
 
     async def set_frequency(self, hz: int) -> bool:
         async with self._lock:
-            resp = await self._send(f"F {hz}")
-        return resp == "RPRT 0" or resp == ""
+            code, _ = await self._send_erp(f"F {hz}")
+        return code == 0
 
     async def get_mode(self) -> Tuple[Optional[str], Optional[int]]:
         async with self._lock:
-            resp = await self._send("m")
-        parts = resp.split()
-        if not parts:
+            code, lines = await self._send_erp("m")
+        if code != 0:
             return None, None
-        mode = parts[0]
-        try:
-            pb = int(parts[1]) if len(parts) > 1 else None
-        except Exception:
-            pb = None
+        kv = self._kv(lines)
+        mode = kv.get("Mode")
+        pb_s = kv.get("Passband")
+        pb: Optional[int] = None
+        if pb_s is not None:
+            try:
+                pb = int(float(pb_s))
+            except Exception:
+                pb = None
         return mode, pb
 
     async def set_mode(self, mode: str, passband: Optional[int] = None) -> bool:
-        cmd = f"M {mode} {passband if passband is not None else ''}".strip()
+        cmd = f"M {mode} {passband if passband is not None else 0}".strip()
         async with self._lock:
-            resp = await self._send(cmd)
-        return resp == "RPRT 0" or resp == ""
+            code, _ = await self._send_erp(cmd)
+        return code == 0
+
+    async def set_vfo(self, vfo: str) -> bool:
+        async with self._lock:
+            code, _ = await self._send_erp(f"V {vfo}")
+        return code == 0
+
+    async def get_vfo(self) -> Optional[str]:
+        async with self._lock:
+            code, lines = await self._send_erp("v")
+        if code != 0:
+            return None
+        kv = self._kv(lines)
+        return kv.get("VFO")
+
+    async def set_ptt(self, ptt: int) -> bool:
+        async with self._lock:
+            code, _ = await self._send_erp(f"T {ptt}")
+        return code == 0
+
+    async def get_ptt(self) -> Optional[int]:
+        async with self._lock:
+            code, lines = await self._send_erp("t")
+        if code != 0:
+            return None
+        kv = self._kv(lines)
+        val = kv.get("PTT")
+        if val is None:
+            return None
+        try:
+            return int(float(val))
+        except Exception:
+            return None
 
     async def status(self) -> RigStatus:
         try:
@@ -143,6 +218,27 @@ class RigctlProcessBackend(RigBackend):
         )
         return self._proc
 
+    async def _send_n(self, cmd: str, n: int, timeout: float = 1.8) -> List[str]:
+        proc = await self._ensure_proc()
+        assert proc.stdin and proc.stdout
+
+        async def _do_send(p: asp.Process) -> List[str]:
+            assert p.stdin and p.stdout
+            p.stdin.write((cmd + "\n").encode())
+            await p.stdin.drain()
+            out: List[str] = []
+            for _ in range(max(1, n)):
+                data = await asyncio.wait_for(p.stdout.readline(), timeout=timeout)
+                out.append(data.decode(errors="ignore").strip())
+            return out
+
+        try:
+            return await _do_send(proc)
+        except Exception:
+            await self.close()
+            proc = await self._ensure_proc()
+            return await _do_send(proc)
+
     async def _send(self, cmd: str, timeout: float = 1.8) -> str:
         proc = await self._ensure_proc()
         assert proc.stdin and proc.stdout
@@ -176,22 +272,66 @@ class RigctlProcessBackend(RigBackend):
 
     async def get_mode(self) -> Tuple[Optional[str], Optional[int]]:
         async with self._lock:
-            resp = await self._send("m")
-        parts = resp.split()
-        if not parts:
+            lines = await self._send_n("m", 2)
+        if not lines:
             return None, None
+        first = (lines[0] or "").strip()
+        if not first or first.startswith("RPRT "):
+            return None, None
+        parts = first.split()
+        if len(parts) >= 2:
+            mode = parts[0]
+            try:
+                pb = int(float(parts[1]))
+            except Exception:
+                pb = None
+            return mode, pb
+
         mode = parts[0]
-        try:
-            pb = int(parts[1]) if len(parts) > 1 else None
-        except Exception:
-            pb = None
+        pb: Optional[int] = None
+        if len(lines) >= 2:
+            second = (lines[1] or "").strip()
+            if second and not second.startswith("RPRT "):
+                try:
+                    pb = int(float(second))
+                except Exception:
+                    pb = None
         return mode, pb
 
     async def set_mode(self, mode: str, passband: Optional[int] = None) -> bool:
-        cmd = f"M {mode} {passband if passband is not None else ''}".strip()
+        cmd = f"M {mode} {passband if passband is not None else 0}".strip()
         async with self._lock:
             resp = await self._send(cmd)
         return resp == "RPRT 0" or resp == ""
+
+    async def set_vfo(self, vfo: str) -> bool:
+        async with self._lock:
+            resp = await self._send(f"V {vfo}")
+        return resp == "RPRT 0" or resp == ""
+
+    async def get_vfo(self) -> Optional[str]:
+        async with self._lock:
+            resp = await self._send("v")
+        v = resp.strip()
+        if not v or v.startswith("RPRT "):
+            return None
+        return v
+
+    async def set_ptt(self, ptt: int) -> bool:
+        async with self._lock:
+            resp = await self._send(f"T {ptt}")
+        return resp == "RPRT 0" or resp == ""
+
+    async def get_ptt(self) -> Optional[int]:
+        async with self._lock:
+            resp = await self._send("t")
+        v = resp.strip()
+        if not v or v.startswith("RPRT "):
+            return None
+        try:
+            return int(float(v))
+        except Exception:
+            return None
 
     async def status(self) -> RigStatus:
         try:
@@ -249,6 +389,18 @@ class RigClient:
 
     async def set_mode(self, mode: str, passband: Optional[int] = None) -> bool:
         return await self._backend.set_mode(mode, passband)
+
+    async def set_vfo(self, vfo: str) -> bool:
+        return await self._backend.set_vfo(vfo)
+
+    async def get_vfo(self) -> Optional[str]:
+        return await self._backend.get_vfo()
+
+    async def set_ptt(self, ptt: int) -> bool:
+        return await self._backend.set_ptt(ptt)
+
+    async def get_ptt(self) -> Optional[int]:
+        return await self._backend.get_ptt()
 
     async def status(self) -> RigStatus:
         return await self._backend.status()

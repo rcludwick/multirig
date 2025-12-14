@@ -7,6 +7,14 @@
   --danger: #ff6b6b;
   --card: #121721;
   --border: #243046;
+
+  --radius: 14px;
+  --shadow: 0 12px 30px rgba(0,0,0,0.18);
+
+  --surface: rgba(255,255,255,0.06);
+  --surface-2: rgba(255,255,255,0.10);
+
+  --focus: rgba(10, 132, 255, 0.45);
 }
 
 [data-theme="dark"]:root { /* same as default; explicit for clarity */ }
@@ -17,6 +25,8 @@ html, body {
   color: var(--text);
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
     "Apple Color Emoji","Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .topbar {
@@ -81,5 +91,234 @@ input[type="text"], input[type="number"] { background: #0c1016; border: 1px soli
 .actions { display: flex; gap: 12px; align-items: center; }
 .actions button { background: var(--bg-alt); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
 .actions button:hover { border-color: var(--accent); color: var(--accent); }
+
+.settings-page .container { max-width: 900px; }
+.settings-page h2 { font-size: 20px; font-weight: 650; margin: 18px 0 12px; letter-spacing: 0.2px; }
+.settings-page .form-grid { gap: 14px; }
+
+.settings-page fieldset {
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius);
+  padding: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
+  box-shadow: var(--shadow);
+}
+
+.settings-page legend {
+  padding: 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.70);
+}
+
+.settings-page label {
+  grid-template-columns: 180px 1fr;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.settings-page select,
+.settings-page input[type="text"],
+.settings-page input[type="number"] {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.settings-page select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.7) 50%),
+    linear-gradient(135deg, rgba(255,255,255,0.7) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 12px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 34px;
+}
+
+.settings-page input:focus,
+.settings-page select:focus,
+.settings-page button:focus {
+  box-shadow: 0 0 0 4px var(--focus);
+}
+
+.settings-page .actions {
+  justify-content: flex-start;
+  margin-top: 12px;
+}
+
+.settings-page .actions button,
+.settings-page button[data-action="show-ports"],
+.settings-page button[data-action="test"],
+.settings-page button[type="submit"],
+.settings-page #addRig {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.settings-page .actions button:hover,
+.settings-page button[data-action="show-ports"]:hover,
+.settings-page button[data-action="test"]:hover,
+.settings-page button[type="submit"]:hover,
+.settings-page #addRig:hover {
+  border-color: rgba(10, 132, 255, 0.65);
+}
+
+.settings-page button[data-action="remove"] {
+  border-color: rgba(255,255,255,0.14);
+}
+
+.settings-page .help {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+}
+
+.settings-page .help h3 { margin: 0 0 10px; font-size: 14px; color: rgba(255,255,255,0.78); }
+.settings-page .help ul { margin: 0; padding-left: 18px; color: rgba(255,255,255,0.80); }
+.settings-page .help li { margin: 8px 0; }
+.settings-page .help code { background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.10); }
+
+.settings-page .ports-list {
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.20);
+  font-size: 13px;
+}
+
+.settings-page .ports-title { font-weight: 650; margin-bottom: 8px; color: rgba(255,255,255,0.85); }
+.settings-page .ports-items { margin: 0; padding-left: 0; list-style: none; }
+.settings-page .ports-items li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.06); }
+.settings-page .ports-items li:first-child { border-top: none; }
+.settings-page .port-link { background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 6px 10px; color: rgba(255,255,255,0.90); cursor: pointer; }
+.settings-page .port-link:hover { border-color: rgba(10, 132, 255, 0.65); }
+.settings-page .port-desc { color: rgba(255,255,255,0.70); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.settings-page .ports-hint { margin-top: 8px; color: rgba(255,255,255,0.60); }
+
+.settings-page .device-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.settings-page .device-row input[type="text"] { flex: 1 1 auto; }
+
+.settings-page .device-row button[data-action="show-ports"] {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.settings-page .test-result {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.20);
+}
+
+.settings-page .test-result.loading {
+  color: rgba(255,255,255,0.78);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.settings-page .test-result.success {
+  color: rgba(180, 255, 210, 0.95);
+  border-color: rgba(60, 200, 120, 0.35);
+  background: rgba(60, 200, 120, 0.10);
+}
+
+.settings-page .test-result.warning {
+  color: rgba(255, 234, 180, 0.95);
+  border-color: rgba(255, 196, 0, 0.30);
+  background: rgba(255, 196, 0, 0.10);
+}
+
+.settings-page .test-result.error {
+  color: rgba(255, 190, 190, 0.95);
+  border-color: rgba(255, 90, 90, 0.35);
+  background: rgba(255, 90, 90, 0.10);
+}
+
+.settings-page .caps-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 10px;
+}
+
+.settings-page .modes-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -2px 0 10px;
+}
+
+.settings-page .mode-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(0,0,0,0.16);
+  color: rgba(255,255,255,0.72);
+}
+
+.settings-page .mode-badge.mode-unknown {
+  background: rgba(10, 132, 255, 0.10);
+  border-color: rgba(10, 132, 255, 0.22);
+  color: rgba(255,255,255,0.70);
+}
+
+.settings-page .cap-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(0,0,0,0.20);
+  color: rgba(255,255,255,0.72);
+}
+
+.settings-page .cap-badge.cap-on {
+  background: rgba(60, 200, 120, 0.10);
+  border-color: rgba(60, 200, 120, 0.35);
+  color: rgba(180, 255, 210, 0.95);
+}
+
+.settings-page .cap-badge.cap-off {
+  background: rgba(255, 90, 90, 0.08);
+  border-color: rgba(255, 90, 90, 0.22);
+  color: rgba(255,255,255,0.60);
+}
+
+.settings-page .cap-badge.cap-unknown {
+  background: rgba(10, 132, 255, 0.10);
+  border-color: rgba(10, 132, 255, 0.22);
+  color: rgba(255,255,255,0.70);
+}
+
+@media (max-width: 720px) {
+  .settings-page label { grid-template-columns: 1fr; }
+}
 
 .footer { opacity: 0.7; text-align: center; padding: 24px; font-size: 12px; }

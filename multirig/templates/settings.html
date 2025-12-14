@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/static/style.css">
   <link rel="icon" href="data:,">
 </head>
-<body>
+<body class="settings-page">
   <header class="topbar">
     <div class="brand">MultiRig</div>
     <nav>
@@ -19,6 +19,15 @@
   <main class="container">
     <h2>Configuration</h2>
     <form id="cfgForm" class="form-grid">
+      <fieldset>
+        <legend>Rigctl TCP Listener</legend>
+        <label>Bind host
+          <select name="rigctl_host" id="rigctlHost"></select>
+        </label>
+        <label>Port
+          <input type="number" min="1" max="65535" step="1" name="rigctl_port" id="rigctlPort" value="{{ config.rigctl_listen_port if config.rigctl_listen_port is not none else 4534 }}">
+        </label>
+      </fieldset>
       <fieldset>
         <legend>Rigs</legend>
         <div id="rigList"></div>
@@ -37,17 +46,17 @@
     </form>
 
     <section class="help">
-      <h3>Hamlib Quick Start</h3>
+      <h3>Configuration Help</h3>
       <ul>
-        <li>Install hamlib and start a rigctld instance for each rig you want to control.</li>
-        <li>Example (QCX+ over USB serial):<br>
+        <li><strong>Hamlib (Direct):</strong> MultiRig talks directly to your rig via serial/USB. Select your rig model from the dropdown, enter the device path, and set the baud rate.</li>
+        <li><strong>Finding your serial port:</strong> Click the "📋 Show Ports" button to see all available serial ports on your system. Click a port path to use it.</li>
+        <li><strong>Testing your connection:</strong> Click "Test Connection" to verify your rig settings work before saving. This helps identify the correct serial port and settings.</li>
+        <li><strong>rigctld (TCP):</strong> If you already have rigctld running, you can connect to it instead. Useful if another app needs exclusive access to the rig.</li>
+        <li><strong>Example rigctld command:</strong><br>
           <code>rigctld -m 3073 -r /dev/ttyUSB0 -s 38400 -t 4532</code>
         </li>
-        <li>Example (second rig on another port):<br>
-          <code>rigctld -m 3073 -r /dev/ttyUSB1 -s 38400 -t 4533</code>
-        </li>
-        <li>XIEGU XPA125B: control may be via CAT pass-through from the rig; for direct control use hamlib ampctl on its port and consider future integration.</li>
-        <li>WSJT-X can connect to Rig A's rigctld; this app mirrors frequency/mode to Rig B.</li>
+        <li>Use <code>make generate-rig-list</code> to regenerate the rig models list if you update Hamlib.</li>
+        <li>WSJT-X can connect to one rig; this app mirrors frequency/mode to your other rig(s).</li>
       </ul>
     </section>
   </main>
@@ -68,45 +77,365 @@
     const rigList = document.getElementById('rigList');
     const addRigBtn = document.getElementById('addRig');
 
+    const rigctlHostSelect = document.getElementById('rigctlHost');
+    const rigctlPortInput = document.getElementById('rigctlPort');
+
     let rigs = [];
+    let rigModels = []; // Will be loaded from JSON
+
+    function getModelById(modelId) {
+      const id = Number(modelId);
+      if (!Number.isFinite(id)) return null;
+      return rigModels.find(m => Number(m.id) === id) || null;
+    }
+
+    function formatRw(getOk, setOk) {
+      if (getOk && setOk) return 'RW';
+      if (getOk) return 'R';
+      if (setOk) return 'W';
+      return '';
+    }
+
+    function renderCapsBadges(el, modelId) {
+      if (!el) return;
+      if (modelId === null || modelId === undefined || String(modelId).trim() === '') {
+        el.innerHTML = '<span class="cap-badge cap-unknown" title="Capabilities are not available until a model is selected.">Caps unknown</span>';
+        return;
+      }
+      const model = getModelById(modelId);
+      const caps = model && model.caps ? model.caps : null;
+      if (!caps) {
+        el.innerHTML = '<span class="cap-badge cap-unknown" title="No capability data is available for this model.">Caps unknown</span>';
+        return;
+      }
+      const descByLabel = {
+        'Freq': 'Frequency control',
+        'Mode': 'Mode control',
+        'VFO': 'VFO control',
+        'PTT': 'Transmit (PTT) control',
+      };
+      const items = [
+        { label: 'Freq', g: 'freq_get', s: 'freq_set' },
+        { label: 'Mode', g: 'mode_get', s: 'mode_set' },
+        { label: 'VFO', g: 'vfo_get', s: 'vfo_set' },
+        { label: 'PTT', g: 'ptt_get', s: 'ptt_set' },
+      ];
+      el.innerHTML = '';
+      items.forEach(it => {
+        const getOk = !!caps[it.g];
+        const setOk = !!caps[it.s];
+        const any = getOk || setOk;
+        const badge = document.createElement('span');
+        badge.className = 'cap-badge ' + (any ? 'cap-on' : 'cap-off');
+        const rw = formatRw(getOk, setOk);
+        badge.textContent = it.label + (rw ? ` ${rw}` : '');
+        const rwText = (getOk && setOk)
+          ? 'RW = can read and set'
+          : (getOk ? 'R = can read' : (setOk ? 'W = can set' : 'Not supported'));
+        badge.title = `${descByLabel[it.label] || it.label}. ${rwText}. (get=${getOk ? 'Y' : 'N'}, set=${setOk ? 'Y' : 'N'})`;
+        el.appendChild(badge);
+      });
+    }
+
+    function renderModesBadges(el, modelId) {
+      if (!el) return;
+      if (modelId === null || modelId === undefined || String(modelId).trim() === '') {
+        el.innerHTML = '';
+        return;
+      }
+      const model = getModelById(modelId);
+      const modes = model && Array.isArray(model.modes) ? model.modes : null;
+      if (!modes || modes.length === 0) {
+        el.innerHTML = '<span class="mode-badge mode-unknown" title="No supported mode list is available for this model.">Modes unknown</span>';
+        return;
+      }
+
+      const modeMeanings = {
+        'AM': 'Amplitude Modulation',
+        'AM-D': 'Amplitude Modulation (Digital)',
+        'AMN': 'Amplitude Modulation (Narrow)',
+        'CW': 'Morse Code (CW)',
+        'CWR': 'Morse Code (CW) Reverse',
+        'USB': 'Upper Side Band',
+        'LSB': 'Lower Side Band',
+        'DSB': 'Double Side Band',
+        'FM': 'Frequency Modulation',
+        'FMN': 'Frequency Modulation (Narrow)',
+        'WFM': 'Wide Frequency Modulation',
+        'RTTY': 'Radioteletype (RTTY)',
+        'RTTYR': 'Radioteletype (RTTY) Reverse',
+        'PKTLSB': 'Packet (LSB)',
+        'PKTUSB': 'Packet (USB)',
+        'PKT': 'Packet',
+        'FAX': 'Facsimile',
+        'SAM': 'Synchronous AM',
+        'SAL': 'Synchronous AM (Lower side)',
+        'SAH': 'Synchronous AM (Upper side)',
+        'ECSSUSB': 'ECSS (USB)',
+        'ECSSLSB': 'ECSS (LSB)',
+        'D-STAR': 'D-STAR Digital Voice',
+        'P25': 'APCO Project 25',
+        'NXDN-VN': 'NXDN Voice Narrow',
+        'NXDN-N': 'NXDN Narrow',
+        'DPMR': 'dPMR',
+        'DCR': 'Digital (DCR)',
+        'PSK': 'Phase Shift Keying (PSK)',
+        'PSKR': 'Phase Shift Keying (PSK) Reverse',
+      };
+
+      el.innerHTML = '';
+      modes.forEach((m) => {
+        const badge = document.createElement('span');
+        badge.className = 'mode-badge';
+        badge.textContent = m;
+        const meaning = modeMeanings[m];
+        badge.title = meaning ? `${m}: ${meaning}` : `Mode: ${m}`;
+        el.appendChild(badge);
+      });
+    }
+
+    async function loadBindAddrs() {
+      try {
+        const res = await fetch('/api/bind_addrs');
+        const addrs = await res.json();
+        rigctlHostSelect.innerHTML = '';
+        const preferred = ['127.0.0.1', '0.0.0.0'];
+        const seen = new Set();
+        preferred.concat(addrs || []).forEach(ip => {
+          if (!ip || seen.has(ip)) return;
+          seen.add(ip);
+          const opt = document.createElement('option');
+          opt.value = ip;
+          opt.textContent = ip;
+          rigctlHostSelect.appendChild(opt);
+        });
+      } catch (e) {
+        rigctlHostSelect.innerHTML = '';
+        ['127.0.0.1', '0.0.0.0'].forEach(ip => {
+          const opt = document.createElement('option');
+          opt.value = ip;
+          opt.textContent = ip;
+          rigctlHostSelect.appendChild(opt);
+        });
+      }
+    }
+
+    // Load rig models from JSON
+    async function loadRigModels() {
+      try {
+        const res = await fetch('/static/rig_models.json?ts=' + Date.now(), { cache: 'no-store' });
+        rigModels = await res.json();
+      } catch (e) {
+        console.error('Failed to load rig models:', e);
+      }
+    }
+
+    function createModelSelect(currentModelId) {
+      const select = document.createElement('select');
+      select.setAttribute('data-key', 'model_id');
+
+      // Add empty option
+      const emptyOpt = document.createElement('option');
+      emptyOpt.value = '';
+      emptyOpt.textContent = 'Select a rig model...';
+      select.appendChild(emptyOpt);
+
+      // Add all models
+      rigModels.forEach(model => {
+        const opt = document.createElement('option');
+        opt.value = model.id;
+        opt.textContent = model.label;
+        if (Number(model.id) === Number(currentModelId)) {
+          opt.selected = true;
+        }
+        select.appendChild(opt);
+      });
+
+      return select;
+    }
+
+    async function testRigConnection(fieldset) {
+      const resultDiv = fieldset.querySelector('.test-result');
+      const testBtn = fieldset.querySelector('[data-action="test"]');
+
+      // Disable test button and show loading
+      testBtn.disabled = true;
+      testBtn.textContent = 'Testing...';
+      resultDiv.style.display = 'block';
+      resultDiv.classList.remove('loading', 'success', 'warning', 'error');
+      resultDiv.classList.add('loading');
+      resultDiv.textContent = 'Testing connection...';
+
+      // Collect configuration from the fieldset
+      const get = (sel) => fieldset.querySelector(sel);
+      const val = (sel) => (get(sel)?.value ?? '').trim();
+      const asNum = (sel) => {
+        const v = val(sel); return v === '' ? null : Number(v);
+      };
+
+      const connectionType = val('select[data-key="connection_type"]') || 'hamlib';
+      const rigConfig = {
+        name: val('input[data-key="name"]') || 'Test Rig',
+        connection_type: connectionType,
+        host: val('input[data-key="host"]') || '127.0.0.1',
+        port: Number(val('input[data-key="port"]') || 4532),
+        model_id: asNum('select[data-key="model_id"]'),
+        device: val('input[data-key="device"]') || null,
+        baud: asNum('input[data-key="baud"]'),
+        serial_opts: val('input[data-key="serial_opts"]') || null,
+        extra_args: val('input[data-key="extra_args"]') || null,
+      };
+
+      try {
+        const res = await fetch('/api/test-rig', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(rigConfig)
+        });
+        const result = await res.json();
+
+        // Display result
+        if (result.status === 'success') {
+          resultDiv.classList.remove('loading', 'warning', 'error');
+          resultDiv.classList.add('success');
+          resultDiv.textContent = result.message;
+        } else if (result.status === 'warning') {
+          resultDiv.classList.remove('loading', 'success', 'error');
+          resultDiv.classList.add('warning');
+          resultDiv.textContent = result.message;
+        } else {
+          resultDiv.classList.remove('loading', 'success', 'warning');
+          resultDiv.classList.add('error');
+          resultDiv.textContent = result.message;
+        }
+      } catch (error) {
+        resultDiv.classList.remove('loading', 'success', 'warning');
+        resultDiv.classList.add('error');
+        resultDiv.textContent = `Test failed: ${error.message}`;
+      } finally {
+        testBtn.disabled = false;
+        testBtn.textContent = 'Test Connection';
+      }
+    }
+
+    async function showSerialPorts(fieldset) {
+      const portsDiv = fieldset.querySelector('.ports-list');
+      const deviceInput = fieldset.querySelector('input[data-key="device"]');
+      const showPortsBtn = fieldset.querySelector('[data-action="show-ports"]');
+
+      showPortsBtn.disabled = true;
+      showPortsBtn.textContent = 'Loading...';
+      portsDiv.style.display = 'block';
+      portsDiv.innerHTML = 'Scanning for serial ports...';
+
+      try {
+        const res = await fetch('/api/serial-ports');
+        const result = await res.json();
+
+        if (result.status === 'ok' && result.ports.length > 0) {
+          let html = '<div class="ports-title">Available Serial Ports</div><ul class="ports-items">';
+          result.ports.forEach(port => {
+            html += `<li><button type="button" class="port-link" data-device="${port.device}"><code>${port.device}</code></button><span class="port-desc">${port.description}</span></li>`;
+          });
+          html += '</ul><div class="ports-hint">Click a port path to use it</div>';
+          portsDiv.innerHTML = html;
+
+          portsDiv.querySelectorAll('.port-link').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const dev = btn.getAttribute('data-device') || '';
+              if (deviceInput) deviceInput.value = dev;
+            });
+          });
+        } else if (result.status === 'ok') {
+          portsDiv.innerHTML = 'No serial ports found. Make sure your rig is connected.';
+        } else {
+          portsDiv.innerHTML = `Error: ${result.message}`;
+        }
+      } catch (error) {
+        portsDiv.innerHTML = `Error fetching ports: ${error.message}`;
+      } finally {
+        showPortsBtn.disabled = false;
+        showPortsBtn.textContent = '📋 Show Ports';
+      }
+    }
 
     function render() {
       rigList.innerHTML = '';
-      rigs.forEach((rig, idx) => {
+      rigs.forEach((rig, idx)=>{
         const fs = document.createElement('fieldset');
         fs.innerHTML = `
-          <legend>${rig.name || `Rig ${idx+1}`}</legend>
-          <label>Name <input type="text" data-key="name" value="${rig.name || ''}"></label>
-          <label>Connection
-            <select data-key="connection_type">
-              <option value="rigctld">rigctld (TCP)</option>
-              <option value="hamlib">hamlib (direct rigctl)</option>
-            </select>
-          </label>
-          <div class="conn rigctld">
-            <label>Host <input type="text" data-key="host" value="${rig.host || '127.0.0.1'}"></label>
-            <label>Port <input type="number" data-key="port" value="${rig.port ?? 4532}"></label>
+          <legend>Rig ${idx+1}</legend>
+          <label>Name <input type="text" data-key="name" value="${rig.name ?? ''}" placeholder="Rig"></label>
+          <label>Connection <select data-key="connection_type">
+            <option value="hamlib">Hamlib (Direct)</option>
+            <option value="rigctld">rigctld (TCP)</option>
+          </select></label>
+          <div class="rig-meta">
+            <label>Model (-m)
+              <span class="model-select-container"></span>
+            </label>
+            <div class="caps-badges" data-role="caps"></div>
+            <div class="modes-badges" data-role="modes"></div>
           </div>
           <div class="conn hamlib">
-            <label>Model ID (-m) <input type="number" data-key="model_id" value="${rig.model_id ?? ''}" placeholder="e.g., 3073"></label>
-            <label>Device (-r) <input type="text" data-key="device" value="${rig.device ?? ''}" placeholder="/dev/ttyUSB0 or /dev/cu.usbserial"></label>
-            <label>Baud (-s) <input type="number" data-key="baud" value="${rig.baud ?? ''}" placeholder="38400"></label>
+            <label>Device (-r)
+              <span class="device-row">
+                <input type="text" data-key="device" value="${rig.device ?? ''}" placeholder="/dev/tty.usbserial...">
+                <button type="button" class="ports-btn" data-action="show-ports">📋 Show Ports</button>
+              </span>
+            </label>
+            <div class="ports-list" style="display: none;"></div>
+            <label>Baud (-s) <input type="number" data-key="baud" value="${rig.baud ?? 38400}" placeholder="38400"></label>
             <label>Serial opts <input type="text" data-key="serial_opts" value="${rig.serial_opts ?? ''}" placeholder="e.g., N8 RTSCTS"></label>
             <label>Extra args <input type="text" data-key="extra_args" value="${rig.extra_args ?? ''}" placeholder="additional rigctl flags"></label>
           </div>
+          <div class="conn rigctld">
+            <label>Host <input type="text" data-key="host" value="${rig.host ?? '127.0.0.1'}" placeholder="127.0.0.1"></label>
+            <label>Port <input type="number" data-key="port" value="${rig.port ?? 4532}" placeholder="4532"></label>
+          </div>
           <div class="actions">
+            <button type="button" data-action="test">Test Connection</button>
             <button type="button" data-action="remove">Remove</button>
           </div>
+          <div class="test-result" style="display: none;"></div>
         `;
+
+        // Insert model select
+        const modelSelect = createModelSelect(rig.model_id);
+        fs.querySelector('.model-select-container').appendChild(modelSelect);
+
+        const capsEl = fs.querySelector('[data-role="caps"]');
+        const modesEl = fs.querySelector('[data-role="modes"]');
+        const updateCaps = () => {
+          renderCapsBadges(capsEl, modelSelect.value);
+          renderModesBadges(modesEl, modelSelect.value);
+        };
+        modelSelect.addEventListener('change', updateCaps);
+
         // Initialize selects and visibility
         const sel = fs.querySelector('select[data-key="connection_type"]');
-        sel.value = rig.connection_type || 'rigctld';
+        sel.value = rig.connection_type || 'hamlib';
         const updateVis = () => {
           fs.querySelector('.conn.rigctld').style.display = sel.value === 'rigctld' ? '' : 'none';
           fs.querySelector('.conn.hamlib').style.display = sel.value === 'hamlib' ? '' : 'none';
+          updateCaps();
         };
         sel.addEventListener('change', updateVis);
         updateVis();
+
+        // Wire test button
+        fs.querySelector('[data-action="test"]').addEventListener('click', async () => {
+          await testRigConnection(fs);
+        });
+
+        // Wire show ports button
+        const showPortsBtn = fs.querySelector('[data-action="show-ports"]');
+        if (showPortsBtn) {
+          showPortsBtn.addEventListener('click', async () => {
+            await showSerialPorts(fs);
+          });
+        }
+
         // Wire remove
         fs.querySelector('[data-action="remove"]').addEventListener('click', () => {
           rigs.splice(idx, 1);
@@ -117,15 +446,21 @@
     }
 
     async function loadConfig() {
+      // Load rig models first
+      await loadRigModels();
+      await loadBindAddrs();
+
       try {
         const res = await fetch('/api/config');
         const cfg = await res.json();
         rigs = Array.isArray(cfg.rigs) && cfg.rigs.length ? cfg.rigs : [];
         // Set poll interval
         form.querySelector('input[name="poll"]').value = cfg.poll_interval_ms ?? 750;
+        rigctlHostSelect.value = cfg.rigctl_listen_host ?? '127.0.0.1';
+        rigctlPortInput.value = cfg.rigctl_listen_port ?? 4534;
         if (!rigs.length) {
           rigs = [
-            { name: 'Rig 1', connection_type: 'rigctld', host: '127.0.0.1', port: 4532 },
+            { name: 'Rig 1', connection_type: 'hamlib', model_id: null, device: '', baud: 38400 },
           ];
         }
         render();
@@ -134,7 +469,7 @@
 
     addRigBtn.addEventListener('click', () => {
       const nextIndex = rigs.length + 1;
-      rigs.push({ name: `Rig ${nextIndex}`, connection_type: 'rigctld', host: '127.0.0.1', port: 4532 });
+      rigs.push({ name: `Rig ${nextIndex}`, connection_type: 'hamlib', model_id: null, device: '', baud: 38400 });
       render();
     });
 
@@ -148,13 +483,13 @@
         const asNum = (sel) => {
           const v = val(sel); return v === '' ? null : Number(v);
         };
-        const ct = val('select[data-key="connection_type"]') || 'rigctld';
+        const ct = val('select[data-key="connection_type"]') || 'hamlib';
         return {
           name: val('input[data-key="name"]') || 'Rig',
           connection_type: ct,
           host: val('input[data-key="host"]') || '127.0.0.1',
           port: Number(val('input[data-key="port"]') || (4532)),
-          model_id: asNum('input[data-key="model_id"]'),
+          model_id: asNum('select[data-key="model_id"]'),
           device: val('input[data-key="device"]') || null,
           baud: asNum('input[data-key="baud"]'),
           serial_opts: val('input[data-key="serial_opts"]') || null,
@@ -162,7 +497,14 @@
         };
       });
       const poll = Number(form.querySelector('input[name="poll"]').value || 750);
-      const body = { rigs: newRigs, poll_interval_ms: poll, sync_enabled: true, sync_source_index: 0 };
+      const body = {
+        rigs: newRigs,
+        rigctl_listen_host: (rigctlHostSelect.value || '127.0.0.1').trim(),
+        rigctl_listen_port: Number(rigctlPortInput.value || 4534),
+        poll_interval_ms: poll,
+        sync_enabled: true,
+        sync_source_index: 0
+      };
       const res = await fetch('/api/config', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify(body) });
       const json = await res.json();
       document.getElementById('saveResult').textContent = json.status === 'ok' ? 'Saved' : 'Failed';

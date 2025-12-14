@@ -11,7 +11,7 @@ class RigConfig(BaseModel):
     name: str = Field(default="Rig", description="Friendly name")
     # How to talk to the rig: 'rigctld' over TCP (default, backward compatible) or 'hamlib' via local rigctl
     connection_type: Literal["rigctld", "hamlib"] = Field(
-        default="rigctld", description="Connection backend"
+        default="hamlib", description="Connection backend"
     )
 
     # rigctld (TCP) settings
@@ -36,6 +36,8 @@ class AppConfig(BaseModel):
             RigConfig(name="Rig 2", port=4533),
         ]
     )
+    rigctl_listen_host: str = Field(default="127.0.0.1", description="Rigctl TCP listener bind host")
+    rigctl_listen_port: int = Field(default=4534, description="Rigctl TCP listener port")
     poll_interval_ms: int = 750
     sync_enabled: bool = True
     sync_source_index: int = 0
@@ -56,6 +58,8 @@ def _migrate_config(data: Dict[str, Any]) -> Dict[str, Any]:
     # Carry over poll interval if present
     migrated: Dict[str, Any] = {
         "rigs": rigs,
+        "rigctl_listen_host": data.get("rigctl_listen_host", "127.0.0.1"),
+        "rigctl_listen_port": data.get("rigctl_listen_port", 4534),
         "poll_interval_ms": data.get("poll_interval_ms", 750),
         "sync_enabled": data.get("sync_enabled", True),
         "sync_source_index": data.get("sync_source_index", 0),
