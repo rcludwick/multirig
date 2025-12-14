@@ -1,21 +1,22 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Optional
+from typing import Optional, List, Tuple
 
 from .rig import RigClient
 
 
 class SyncService:
-    def __init__(self, rig_a: RigClient, rig_b: RigClient, interval_ms: int = 750):
-        self.a = rig_a
-        self.b = rig_b
+    """Broadcast changes from a source rig to all other rigs."""
+
+    def __init__(self, rigs: List[RigClient], interval_ms: int = 750, *, enabled: bool = True, source_index: int = 0):
+        self.rigs: List[RigClient] = rigs
         self.interval_ms = interval_ms
         self._task: Optional[asyncio.Task] = None
-        self.enabled: bool = True
-        self._last_freq: Optional[int] = None
-        self._last_mode: Optional[str] = None
-        self._last_pb: Optional[int] = None
+        self.enabled: bool = enabled
+        self.source_index: int = source_index
+        # cache of last (freq, mode, pb) to debounce
+        self._last: Tuple[Optional[int], Optional[str], Optional[int]] = (None, None, None)
 
     async def start(self):
         if self._task is None:
@@ -38,35 +39,40 @@ class SyncService:
                 if not self.enabled:
                     continue
 
-                status_a = await self.a.status()
-                if not status_a.connected or status_a.frequency_hz is None:
+                # validate source index
+                if not self.rigs:
+                    continue
+                src_idx = max(0, min(self.source_index, len(self.rigs) - 1))
+                src = self.rigs[src_idx]
+
+                status_src = await src.status()
+                if not status_src.connected or status_src.frequency_hz is None:
                     continue
 
-                freq = status_a.frequency_hz
-                mode = status_a.mode
-                pb = status_a.passband
+                freq = status_src.frequency_hz
+                mode = status_src.mode
+                pb = status_src.passband
 
-                changed = (
-                    freq != self._last_freq or mode != self._last_mode or pb != self._last_pb
-                )
+                changed = (freq, mode, pb) != self._last
                 if not changed:
                     continue
 
-                # Apply to B
-                if freq is not None:
-                    try:
-                        await self.b.set_frequency(freq)
-                    except Exception:
-                        pass
-                if mode is not None:
-                    try:
-                        await self.b.set_mode(mode, pb)
-                    except Exception:
-                        pass
+                # Apply to all targets except source
+                for i, rig in enumerate(self.rigs):
+                    if i == src_idx:
+                        continue
+                    if freq is not None:
+                        try:
+                            await rig.set_frequency(freq)
+                        except Exception:
+                            pass
+                    if mode is not None:
+                        try:
+                            await rig.set_mode(mode, pb)
+                        except Exception:
+                            pass
 
-                self._last_freq = freq
-                self._last_mode = mode
-                self._last_pb = pb
+                self._last = (freq, mode, pb)
             except asyncio.CancelledError:
                 raise
             except Exception:

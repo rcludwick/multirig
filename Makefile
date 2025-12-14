@@ -15,6 +15,7 @@ JOBS          ?= $(shell sysctl -n hw.ncpu 2>/dev/null || nproc 2>/dev/null || e
 UV_PY         := $(VENV_DIR)/bin/python
 PREFIX_ABS    := $(abspath $(PREFIX))
 VENV_ABS      := $(abspath $(VENV_DIR))
+UV_PY_ABS     := $(abspath $(UV_PY))
 PKGCFG_PATH   := $(PREFIX_ABS)/lib/pkgconfig
 
 .PHONY: help all venv hamlib-bootstrap hamlib-configure hamlib-build hamlib-install \
@@ -51,6 +52,10 @@ check-prereqs:
 	  echo "          Install it: macOS → brew install swig; Debian/Ubuntu → sudo apt-get install swig"; \
 	  ok=0; \
 	fi; \
+	if ! command -v uv >/dev/null 2>&1; then \
+		echo "[Missing] uv not found."; \
+		echo "          Install it: pip3 install --user uv"; \
+	fi; \
 	if [ $$ok -eq 0 ]; then exit 1; fi; \
 	echo "[OK] Prerequisites present"
 
@@ -58,8 +63,8 @@ check-prereqs:
 venv:
 	@if [ ! -d "$(VENV_DIR)" ]; then \
 		$(UV) venv "$(VENV_DIR)"; \
-		$(UV) pip install pip; \
 	fi
+	@"$(UV)" pip install pip
 	@"$(UV_PY)" -m pip -q install --upgrade pip setuptools wheel >/dev/null
 
 # Ensure the chosen PREFIX is a directory (Hamlib configure/install require an absolute dir)
@@ -86,7 +91,10 @@ hamlib-bootstrap:
 # Configure (out-of-tree). Ensure autotools bootstrap has been run first.
 hamlib-configure: hamlib-bootstrap ensure-prefix-dir | $(BUILD_DIR)
 	@cd "$(BUILD_DIR)" && \
-		PKG_CONFIG_PATH="$(PKGCFG_PATH)" ../configure --prefix="$(PREFIX_ABS)"
+		PKG_CONFIG_PATH="$(PKGCFG_PATH)" \
+		PYTHON="$(UV_PY_ABS)" \
+		LDFLAGS="-Wl,-rpath,$(PREFIX_ABS)/lib" \
+		../configure --prefix="$(PREFIX_ABS)" --with-python-binding --with-python-sys-prefix
 
 $(BUILD_DIR):
 	@mkdir -p "$(BUILD_DIR)"
@@ -105,11 +113,9 @@ hamlib-install: hamlib-build ensure-prefix-dir
 # - Exposes PKG_CONFIG_PATH so the build can locate the just-installed libhamlib
 # - The Python bindings live under ext/hamlib/bindings/python (standard Hamlib layout)
 python-bindings-install: check-prereqs venv hamlib-install
-	@cd "$(HAMLIB_DIR)/bindings/python" && \
-		PKG_CONFIG_PATH="$(PKGCFG_PATH)" $(UV) pip install --python "$(UV_PY)" -U .
-	@echo "[OK] Hamlib Python bindings installed into $(VENV_DIR)"
-	@"$(UV_PY)" -c "import sys, Hamlib; print('[OK] Verified: Python can import Hamlib (version:', getattr(Hamlib, '__version__', 'n/a'), ')')" \
-		|| (echo "[WARN] Hamlib import failed" 1>&2; exit 1)
+	@echo "[Info] Verifying Hamlib Python bindings (installed via configure --with-python-binding)"
+	@"$(UV_PY)" -c "import sys; import Hamlib; print('[OK] Verified: Python can import Hamlib (version:', getattr(Hamlib,'__version__','n/a'), ')')" \
+		|| (echo "[ERROR] Hamlib import failed" 1>&2; exit 1)
 
 # Fully contain Hamlib inside the virtualenv and avoid LD/DYLD env vars.
 # This target will:

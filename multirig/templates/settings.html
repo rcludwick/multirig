@@ -19,46 +19,11 @@
   <main class="container">
     <h2>Configuration</h2>
     <form id="cfgForm" class="form-grid">
-      <fieldset id="rigAFields">
-        <legend>Rig A</legend>
-        <label>Name <input type="text" name="a.name" value="{{ config.rig_a.name }}"></label>
-        <label>Connection
-          <select name="a.connection_type" data-switch="a" data-current="{{ config.rig_a.connection_type }}">
-            <option value="rigctld">rigctld (TCP)</option>
-            <option value="hamlib">hamlib (direct rigctl)</option>
-          </select>
-        </label>
-        <div class="conn rigctld" data-section="a rigctld">
-          <label>Host <input type="text" name="a.host" value="{{ config.rig_a.host }}"></label>
-          <label>Port <input type="number" name="a.port" value="{{ config.rig_a.port }}"></label>
-        </div>
-        <div class="conn hamlib" data-section="a hamlib">
-          <label>Model ID (-m) <input type="number" name="a.model_id" value="{{ config.rig_a.model_id or '' }}" placeholder="e.g., 3073"></label>
-          <label>Device (-r) <input type="text" name="a.device" value="{{ config.rig_a.device or '' }}" placeholder="/dev/ttyUSB0 or /dev/cu.usbserial"></label>
-          <label>Baud (-s) <input type="number" name="a.baud" value="{{ config.rig_a.baud or '' }}" placeholder="38400"></label>
-          <label>Serial opts <input type="text" name="a.serial_opts" value="{{ config.rig_a.serial_opts or '' }}" placeholder="e.g., N8 RTSCTS"></label>
-          <label>Extra args <input type="text" name="a.extra_args" value="{{ config.rig_a.extra_args or '' }}" placeholder="additional rigctl flags"></label>
-        </div>
-      </fieldset>
-      <fieldset id="rigBFields">
-        <legend>Rig B</legend>
-        <label>Name <input type="text" name="b.name" value="{{ config.rig_b.name }}"></label>
-        <label>Connection
-          <select name="b.connection_type" data-switch="b" data-current="{{ config.rig_b.connection_type }}">
-            <option value="rigctld">rigctld (TCP)</option>
-            <option value="hamlib">hamlib (direct rigctl)</option>
-          </select>
-        </label>
-        <div class="conn rigctld" data-section="b rigctld">
-          <label>Host <input type="text" name="b.host" value="{{ config.rig_b.host }}"></label>
-          <label>Port <input type="number" name="b.port" value="{{ config.rig_b.port }}"></label>
-        </div>
-        <div class="conn hamlib" data-section="b hamlib">
-          <label>Model ID (-m) <input type="number" name="b.model_id" value="{{ config.rig_b.model_id or '' }}" placeholder="e.g., 3073"></label>
-          <label>Device (-r) <input type="text" name="b.device" value="{{ config.rig_b.device or '' }}" placeholder="/dev/ttyUSB1"></label>
-          <label>Baud (-s) <input type="number" name="b.baud" value="{{ config.rig_b.baud or '' }}" placeholder="38400"></label>
-          <label>Serial opts <input type="text" name="b.serial_opts" value="{{ config.rig_b.serial_opts or '' }}" placeholder="e.g., N8 RTSCTS"></label>
-          <label>Extra args <input type="text" name="b.extra_args" value="{{ config.rig_b.extra_args or '' }}" placeholder="additional rigctl flags"></label>
+      <fieldset>
+        <legend>Rigs</legend>
+        <div id="rigList"></div>
+        <div class="actions">
+          <button type="button" id="addRig">Add Rig</button>
         </div>
       </fieldset>
       <fieldset>
@@ -100,55 +65,110 @@
     })();
 
     const form = document.getElementById('cfgForm');
-    function updateSections() {
-      for (const sel of document.querySelectorAll('select[data-switch]')) {
-        // Initialize from data-current on first run
-        if (sel.dataset._init !== '1' && sel.dataset.current) {
-          sel.value = sel.dataset.current;
-          sel.dataset._init = '1';
-        }
-        const which = sel.getAttribute('data-switch');
-        const val = sel.value;
-        document.querySelectorAll(`[data-section="${which} rigctld"]`).forEach(el=>{
-          el.style.display = val === 'rigctld' ? '' : 'none';
+    const rigList = document.getElementById('rigList');
+    const addRigBtn = document.getElementById('addRig');
+
+    let rigs = [];
+
+    function render() {
+      rigList.innerHTML = '';
+      rigs.forEach((rig, idx) => {
+        const fs = document.createElement('fieldset');
+        fs.innerHTML = `
+          <legend>${rig.name || `Rig ${idx+1}`}</legend>
+          <label>Name <input type="text" data-key="name" value="${rig.name || ''}"></label>
+          <label>Connection
+            <select data-key="connection_type">
+              <option value="rigctld">rigctld (TCP)</option>
+              <option value="hamlib">hamlib (direct rigctl)</option>
+            </select>
+          </label>
+          <div class="conn rigctld">
+            <label>Host <input type="text" data-key="host" value="${rig.host || '127.0.0.1'}"></label>
+            <label>Port <input type="number" data-key="port" value="${rig.port ?? 4532}"></label>
+          </div>
+          <div class="conn hamlib">
+            <label>Model ID (-m) <input type="number" data-key="model_id" value="${rig.model_id ?? ''}" placeholder="e.g., 3073"></label>
+            <label>Device (-r) <input type="text" data-key="device" value="${rig.device ?? ''}" placeholder="/dev/ttyUSB0 or /dev/cu.usbserial"></label>
+            <label>Baud (-s) <input type="number" data-key="baud" value="${rig.baud ?? ''}" placeholder="38400"></label>
+            <label>Serial opts <input type="text" data-key="serial_opts" value="${rig.serial_opts ?? ''}" placeholder="e.g., N8 RTSCTS"></label>
+            <label>Extra args <input type="text" data-key="extra_args" value="${rig.extra_args ?? ''}" placeholder="additional rigctl flags"></label>
+          </div>
+          <div class="actions">
+            <button type="button" data-action="remove">Remove</button>
+          </div>
+        `;
+        // Initialize selects and visibility
+        const sel = fs.querySelector('select[data-key="connection_type"]');
+        sel.value = rig.connection_type || 'rigctld';
+        const updateVis = () => {
+          fs.querySelector('.conn.rigctld').style.display = sel.value === 'rigctld' ? '' : 'none';
+          fs.querySelector('.conn.hamlib').style.display = sel.value === 'hamlib' ? '' : 'none';
+        };
+        sel.addEventListener('change', updateVis);
+        updateVis();
+        // Wire remove
+        fs.querySelector('[data-action="remove"]').addEventListener('click', () => {
+          rigs.splice(idx, 1);
+          render();
         });
-        document.querySelectorAll(`[data-section="${which} hamlib"]`).forEach(el=>{
-          el.style.display = val === 'hamlib' ? '' : 'none';
-        });
-      }
+        rigList.appendChild(fs);
+      });
     }
-    updateSections();
-    document.querySelectorAll('select[data-switch]').forEach(s=>s.addEventListener('change', updateSections));
+
+    async function loadConfig() {
+      try {
+        const res = await fetch('/api/config');
+        const cfg = await res.json();
+        rigs = Array.isArray(cfg.rigs) && cfg.rigs.length ? cfg.rigs : [];
+        // Set poll interval
+        form.querySelector('input[name="poll"]').value = cfg.poll_interval_ms ?? 750;
+        if (!rigs.length) {
+          rigs = [
+            { name: 'Rig 1', connection_type: 'rigctld', host: '127.0.0.1', port: 4532 },
+          ];
+        }
+        render();
+      } catch {}
+    }
+
+    addRigBtn.addEventListener('click', () => {
+      const nextIndex = rigs.length + 1;
+      rigs.push({ name: `Rig ${nextIndex}`, connection_type: 'rigctld', host: '127.0.0.1', port: 4532 });
+      render();
+    });
+
     form.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      const data = new FormData(form);
-      const rig_a = {
-        name: data.get('a.name'),
-        connection_type: data.get('a.connection_type') || 'rigctld',
-        host: data.get('a.host') || '127.0.0.1',
-        port: Number(data.get('a.port') || 4532),
-        model_id: data.get('a.model_id') ? Number(data.get('a.model_id')) : null,
-        device: data.get('a.device') || null,
-        baud: data.get('a.baud') ? Number(data.get('a.baud')) : null,
-        serial_opts: data.get('a.serial_opts') || null,
-        extra_args: data.get('a.extra_args') || null
-      };
-      const rig_b = {
-        name: data.get('b.name'),
-        connection_type: data.get('b.connection_type') || 'rigctld',
-        host: data.get('b.host') || '127.0.0.1',
-        port: Number(data.get('b.port') || 4533),
-        model_id: data.get('b.model_id') ? Number(data.get('b.model_id')) : null,
-        device: data.get('b.device') || null,
-        baud: data.get('b.baud') ? Number(data.get('b.baud')) : null,
-        serial_opts: data.get('b.serial_opts') || null,
-        extra_args: data.get('b.extra_args') || null
-      };
-      const cfg = { rig_a, rig_b, poll_interval_ms: Number(data.get('poll')) };
-      const res = await fetch('/api/config', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify(cfg) });
+      // collect current values from DOM into rigs array
+      const fsList = Array.from(rigList.querySelectorAll('fieldset'));
+      const newRigs = fsList.map((fs) => {
+        const get = (sel) => fs.querySelector(sel);
+        const val = (sel) => (get(sel)?.value ?? '').trim();
+        const asNum = (sel) => {
+          const v = val(sel); return v === '' ? null : Number(v);
+        };
+        const ct = val('select[data-key="connection_type"]') || 'rigctld';
+        return {
+          name: val('input[data-key="name"]') || 'Rig',
+          connection_type: ct,
+          host: val('input[data-key="host"]') || '127.0.0.1',
+          port: Number(val('input[data-key="port"]') || (4532)),
+          model_id: asNum('input[data-key="model_id"]'),
+          device: val('input[data-key="device"]') || null,
+          baud: asNum('input[data-key="baud"]'),
+          serial_opts: val('input[data-key="serial_opts"]') || null,
+          extra_args: val('input[data-key="extra_args"]') || null,
+        };
+      });
+      const poll = Number(form.querySelector('input[name="poll"]').value || 750);
+      const body = { rigs: newRigs, poll_interval_ms: poll, sync_enabled: true, sync_source_index: 0 };
+      const res = await fetch('/api/config', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify(body) });
       const json = await res.json();
       document.getElementById('saveResult').textContent = json.status === 'ok' ? 'Saved' : 'Failed';
     });
+
+    loadConfig();
   </script>
 </body>
 </html>

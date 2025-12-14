@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional, Literal
+from typing import Optional, Literal, List, Any, Dict
 
 import yaml
 from pydantic import BaseModel, Field
@@ -29,17 +29,49 @@ class RigConfig(BaseModel):
 
 
 class AppConfig(BaseModel):
-    rig_a: RigConfig = Field(default_factory=lambda: RigConfig(name="A"))
-    rig_b: RigConfig = Field(
-        default_factory=lambda: RigConfig(name="B", port=4533)
+    # Multiple rigs instead of fixed A/B
+    rigs: List[RigConfig] = Field(
+        default_factory=lambda: [
+            RigConfig(name="Rig 1"),
+            RigConfig(name="Rig 2", port=4533),
+        ]
     )
     poll_interval_ms: int = 750
+    sync_enabled: bool = True
+    sync_source_index: int = 0
+
+
+def _migrate_config(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Migrate legacy config with rig_a/rig_b to new list-based format."""
+    if "rigs" in data:
+        return data
+    rigs: List[Dict[str, Any]] = []
+    if "rig_a" in data:
+        rigs.append(data.get("rig_a") or {})
+    if "rig_b" in data:
+        rigs.append(data.get("rig_b") or {})
+    if not rigs:
+        # No rigs present; create defaults
+        rigs = [RigConfig(name="Rig 1").model_dump(), RigConfig(name="Rig 2", port=4533).model_dump()]
+    # Carry over poll interval if present
+    migrated: Dict[str, Any] = {
+        "rigs": rigs,
+        "poll_interval_ms": data.get("poll_interval_ms", 750),
+        "sync_enabled": data.get("sync_enabled", True),
+        "sync_source_index": data.get("sync_source_index", 0),
+    }
+    return migrated
 
 
 def load_config(path: Path) -> AppConfig:
     if path.exists():
-        data = yaml.safe_load(path.read_text()) or {}
-        return AppConfig.model_validate(data)
+        raw = yaml.safe_load(path.read_text()) or {}
+        data = _migrate_config(raw)
+        cfg = AppConfig.model_validate(data)
+        # If migration happened (legacy keys), write back in new shape
+        if "rigs" in data and ("rig_a" in raw or "rig_b" in raw):
+            save_config(cfg, path)
+        return cfg
     cfg = AppConfig()
     save_config(cfg, path)
     return cfg

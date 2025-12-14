@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, Depends
 from fastapi.responses import HTMLResponse
@@ -31,10 +31,13 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
 
     app.state.config_path = config_path or Path.cwd() / "multirig.config.yaml"
     app.state.config = load_config(app.state.config_path)
-    app.state.rig_a = RigClient(app.state.config.rig_a)
-    app.state.rig_b = RigClient(app.state.config.rig_b)
+    # Build rigs list
+    app.state.rigs: List[RigClient] = [RigClient(rc) for rc in app.state.config.rigs]
     app.state.sync_service = SyncService(
-        app.state.rig_a, app.state.rig_b, interval_ms=app.state.config.poll_interval_ms
+        app.state.rigs,
+        interval_ms=app.state.config.poll_interval_ms,
+        enabled=app.state.config.sync_enabled,
+        source_index=app.state.config.sync_source_index,
     )
 
     @app.on_event("startup")
@@ -45,14 +48,11 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
     async def _shutdown() -> None:
         await app.state.sync_service.stop()
         # Close rig backends
-        try:
-            await app.state.rig_a.close()
-        except Exception:
-            pass
-        try:
-            await app.state.rig_b.close()
-        except Exception:
-            pass
+        for rig in getattr(app.state, "rigs", []):
+            try:
+                await rig.close()
+            except Exception:
+                pass
 
     # Pages
     @app.get("/", response_class=HTMLResponse)
@@ -72,26 +72,71 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
     async def update_config(cfg: AppConfig):
         app.state.config = cfg
         save_config(cfg, app.state.config_path)
-        # Update rigs
-        app.state.rig_a.update_config(cfg.rig_a)
-        app.state.rig_b.update_config(cfg.rig_b)
+        # Rebuild rigs
+        # Close existing
+        for rig in getattr(app.state, "rigs", []):
+            try:
+                await rig.close()
+            except Exception:
+                pass
+        app.state.rigs = [RigClient(rc) for rc in cfg.rigs]
+        # Update sync service settings/reference
+        app.state.sync_service.rigs = app.state.rigs
         app.state.sync_service.interval_ms = cfg.poll_interval_ms
+        app.state.sync_service.enabled = cfg.sync_enabled
+        app.state.sync_service.source_index = cfg.sync_source_index
         return {"status": "ok"}
 
     @app.get("/api/status")
     async def get_status():
-        a = await app.state.rig_a.safe_status()
-        b = await app.state.rig_b.safe_status()
-        return {"a": a, "b": b, "sync_enabled": app.state.sync_service.enabled}
+        rigs = [await r.safe_status() for r in app.state.rigs]
+        # attach index for client convenience
+        for idx, r in enumerate(rigs):
+            r["index"] = idx
+        return {
+            "rigs": rigs,
+            "sync_enabled": app.state.sync_service.enabled,
+            "sync_source_index": app.state.sync_service.source_index,
+        }
 
     @app.post("/api/sync/{enabled}")
-    async def set_sync(enabled: bool):
+    async def set_sync_compat(enabled: bool):
         app.state.sync_service.enabled = enabled
-        return {"status": "ok", "enabled": enabled}
+        app.state.config.sync_enabled = enabled
+        save_config(app.state.config, app.state.config_path)
+        return {"status": "ok", "enabled": enabled, "sync_source_index": app.state.sync_service.source_index}
+
+    @app.post("/api/sync")
+    async def set_sync(payload: dict):
+        if "enabled" in payload:
+            app.state.sync_service.enabled = bool(payload["enabled"])
+            app.state.config.sync_enabled = app.state.sync_service.enabled
+        if "source_index" in payload:
+            try:
+                app.state.sync_service.source_index = int(payload["source_index"])
+            except Exception:
+                pass
+            app.state.config.sync_source_index = app.state.sync_service.source_index
+        save_config(app.state.config, app.state.config_path)
+        return {
+            "status": "ok",
+            "enabled": app.state.sync_service.enabled,
+            "sync_source_index": app.state.sync_service.source_index,
+        }
 
     @app.post("/api/rig/{which}/set")
     async def set_rig(which: str, payload: dict):
-        rig = app.state.rig_a if which.lower() == "a" else app.state.rig_b
+        # Back-compat: 'a'/'b' map to indices 0/1. Otherwise expect an integer index as string.
+        if which.lower() in ("a", "b"):
+            idx = 0 if which.lower() == "a" else 1
+        else:
+            try:
+                idx = int(which)
+            except ValueError:
+                return {"status": "error", "error": "invalid rig index"}
+        if idx < 0 or idx >= len(app.state.rigs):
+            return {"status": "error", "error": "rig index out of range"}
+        rig = app.state.rigs[idx]
         freq = payload.get("frequency_hz")
         mode = payload.get("mode")
         passband = payload.get("passband")

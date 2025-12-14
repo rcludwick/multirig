@@ -1,6 +1,6 @@
 # MultiRig
 
-Control and sync two ham radio rigs with a modern, dark‑mode web UI. MultiRig mirrors Rig A → Rig B so frequency/mode changes on A are applied to B. Runs on macOS, Linux, and Raspberry Pi.
+Control and sync multiple ham radio rigs with a modern, dark‑mode web UI. Choose one rig as the source and MultiRig mirrors its frequency/mode to all the others. Runs on macOS, Linux, and Raspberry Pi.
 
 ## Requirements
 - Python 3.9+
@@ -44,7 +44,7 @@ Environment variables for `run.sh`:
   ```
 
 ## Configure your rigs
-Open http://localhost:8000/settings and choose how each rig connects:
+Open http://localhost:8000/settings and add one or more rigs. For each rig choose how it connects:
 
 1) rigctld (TCP)
 - Start one `rigctld` per rig with distinct ports, e.g.:
@@ -52,7 +52,7 @@ Open http://localhost:8000/settings and choose how each rig connects:
   rigctld -m <MODEL_ID> -r /dev/ttyUSB0 -s 38400 -t 4532
   rigctld -m <MODEL_ID> -r /dev/ttyUSB1 -s 38400 -t 4533
   ```
-- Point WSJT‑X to the Rig A rigctld (host/port); MultiRig mirrors A → B.
+- Point WSJT‑X to the rigctld of your chosen source rig; MultiRig mirrors that to the others.
 
 2) hamlib (direct rigctl)
 - No rigctld needed; MultiRig talks to a persistent `rigctl` subprocess.
@@ -63,17 +63,18 @@ Open http://localhost:8000/settings and choose how each rig connects:
   - Optional serial opts and extra args
 - On Linux/RPi, ensure access to `/dev/ttyUSB*` (often via `dialout` group).
 
-You can also set the sync poll interval (ms) on the Settings page.
+You can also set the sync poll interval (ms) and choose the source rig on the Dashboard.
 
 ## Endpoints (reference)
 - `GET /` — dashboard UI
 - `GET /settings` — configuration UI
-- `GET /api/status` — status of both rigs + sync flag
-- `POST /api/sync/{enabled}` — toggle sync A→B
-- `GET /api/config` / `POST /api/config` — read/write config
-- `POST /api/rig/{a|b}/set` — set frequency/mode/passband on a rig
+- `GET /api/status` — returns `{ rigs: [...], sync_enabled, sync_source_index }`
+- `POST /api/sync` — body `{ enabled?, source_index? }` to toggle sync and/or set source
+- `POST /api/sync/{enabled}` — legacy toggle (kept for backward compatibility)
+- `GET /api/config` / `POST /api/config` — read/write config (`{ rigs: [...], poll_interval_ms, sync_* }`)
+- `POST /api/rig/{index}/set` — set frequency/mode/passband on a specific rig by index; legacy `a|b` aliases map to 0/1
 - `WS /ws` — streaming updates for the SPA
 
 ## Notes
-- Config is saved to `multirig.config.yaml` in the working directory (git‑ignored by default).
+- Config is saved to `multirig.config.yaml` in the working directory (git‑ignored by default). Existing configs with `rig_a`/`rig_b` are auto‑migrated to the new multi‑rig format on load.
 - Stack: FastAPI + Uvicorn, Pydantic, Jinja2, vanilla JS (SPA via WebSocket).
