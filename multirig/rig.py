@@ -10,6 +10,14 @@ import asyncio.subprocess as asp
 from .config import RigConfig
 
 
+class RigctlError(Exception):
+    """Exception raised when a rigctl command returns an error code."""
+    def __init__(self, code: int, message: str = ""):
+        self.code = code
+        self.message = message
+        super().__init__(f"RPRT {code}: {message}" if message else f"RPRT {code}")
+
+
 @dataclass
 class RigStatus:
     connected: bool
@@ -42,6 +50,18 @@ class RigBackend:
         raise NotImplementedError
 
     async def get_ptt(self) -> Optional[int]:
+        raise NotImplementedError
+
+    async def get_powerstat(self) -> Optional[int]:
+        raise NotImplementedError
+
+    async def chk_vfo(self) -> Optional[int]:
+        raise NotImplementedError
+
+    async def dump_state(self) -> Sequence[str]:
+        raise NotImplementedError
+
+    async def dump_caps(self) -> Sequence[str]:
         raise NotImplementedError
 
     async def status(self) -> RigStatus:
@@ -162,7 +182,7 @@ class RigctldBackend(RigBackend):
         async with self._lock:
             code, lines = await self._send_erp("t")
         if code != 0:
-            return None
+            raise RigctlError(code, "get_ptt")
         kv = self._kv(lines)
         val = kv.get("PTT")
         if val is None:
@@ -171,6 +191,62 @@ class RigctldBackend(RigBackend):
             return int(float(val))
         except Exception:
             return None
+
+    async def get_powerstat(self) -> Optional[int]:
+        async with self._lock:
+            code, lines = await self._send_erp("\\get_powerstat")
+        if code != 0:
+            return None
+        kv = self._kv(lines)
+        val = kv.get("Power Status")
+        if val is None:
+            return None
+        try:
+            return int(float(val))
+        except Exception:
+            return None
+
+    async def chk_vfo(self) -> Optional[int]:
+        # chk_vfo on some hamlib versions (e.g. 4.5.5) doesn't respond to extended protocol +\chk_vfo
+        # correctly (returns empty). We fallback to raw protocol \chk_vfo.
+        async with self._lock:
+            try:
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection(self.host, self.port), timeout=1.5
+                )
+                try:
+                    writer.write(b"\\chk_vfo\n")
+                    await writer.drain()
+                    data = await asyncio.wait_for(reader.readline(), timeout=1.5)
+                    resp = data.decode(errors="ignore").strip()
+                    if not resp:
+                        return None
+                    return int(resp)
+                finally:
+                    writer.close()
+                    with contextlib.suppress(Exception):
+                        await writer.wait_closed()
+            except Exception:
+                return None
+
+    async def dump_state(self) -> Sequence[str]:
+        async with self._lock:
+            code, lines = await self._send_erp("\\dump_state", timeout=5.0)
+        if code != 0:
+            return []
+        # Strip header if present (extended protocol returns "dump_state:" as first line)
+        if lines and lines[0].strip() == "dump_state:":
+            lines = lines[1:]
+        return lines
+
+    async def dump_caps(self) -> Sequence[str]:
+        async with self._lock:
+            code, lines = await self._send_erp("\\dump_caps", timeout=5.0)
+        if code != 0:
+            return []
+        if lines and lines[0].strip() == "dump_caps:":
+            lines = lines[1:]
+        return lines
 
     async def status(self) -> RigStatus:
         try:
@@ -333,6 +409,110 @@ class RigctlProcessBackend(RigBackend):
         except Exception:
             return None
 
+    async def get_powerstat(self) -> Optional[int]:
+        async with self._lock:
+            resp = await self._send("\\get_powerstat")
+        v = resp.strip()
+        if not v or v.startswith("RPRT "):
+            return None
+        try:
+            return int(float(v))
+        except Exception:
+            return None
+
+    async def chk_vfo(self) -> Optional[int]:
+        async with self._lock:
+            resp = await self._send("\\chk_vfo")
+        v = resp.strip()
+        if not v or v.startswith("RPRT "):
+            return None
+        try:
+            return int(float(v))
+        except Exception:
+            return None
+
+    async def dump_state(self) -> Sequence[str]:
+        # dump_state returns many lines, ending with RPRT? 
+        # In interactive mode, we send \dump_state
+        # It returns many lines.
+        # We need to read until we think it's done.
+        # Standard rigctl dump_state ends with a specific pattern? 
+        # Or just read until no more data?
+        # RigctlProcessBackend._send only reads one line.
+        # We need a new method for multi-line read that doesn't rely on count.
+        # But dump_state structure is fixed?
+        # For now, let's implement a specific reader for dump_state or just use a large N?
+        # Using _send_n might work if we know N. But N varies.
+        
+        # Let's defer implementation slightly or use a large timeout read loop.
+        # Actually, for dump_state, we can probably just read until the output stops?
+        # But that's slow.
+        # The last line of dump_state is usually checking for RPRT if extended?
+        # But we are using interactive mode without extended responses usually?
+        # Wait, RigctlProcessBackend sends commands directly.
+        # dump_state output ends.
+        
+        # Let's implement a read_until_timeout or something.
+        # Or maybe just read a large chunk.
+        
+        proc = await self._ensure_proc()
+        assert proc.stdin and proc.stdout
+        
+        cmd = "\\dump_state"
+        
+        async with self._lock:
+             try:
+                proc.stdin.write((cmd + "\n").encode())
+                await proc.stdin.drain()
+                
+                lines = []
+                # It's hard to know when dump_state ends without parsing it or waiting for timeout.
+                # However, rigctl -m 1 dump_state ended with empty line?
+                # No, it just ended.
+                # We can try reading until a short timeout occurs?
+                
+                while True:
+                    try:
+                        line_bytes = await asyncio.wait_for(proc.stdout.readline(), timeout=0.1)
+                        if not line_bytes:
+                            break
+                        line = line_bytes.decode(errors="ignore").strip()
+                        lines.append(line)
+                        # Heuristic: if line looks like the end?
+                        # There is no clear end marker in standard rigctl output for dump_state.
+                    except asyncio.TimeoutError:
+                        break
+                return lines
+             except Exception:
+                 await self.close()
+                 return []
+
+    async def dump_caps(self) -> Sequence[str]:
+        proc = await self._ensure_proc()
+        assert proc.stdin and proc.stdout
+        
+        cmd = "\\dump_caps"
+        
+        async with self._lock:
+             try:
+                proc.stdin.write((cmd + "\n").encode())
+                await proc.stdin.drain()
+                
+                lines = []
+                while True:
+                    try:
+                        line_bytes = await asyncio.wait_for(proc.stdout.readline(), timeout=0.1)
+                        if not line_bytes:
+                            break
+                        line = line_bytes.decode(errors="ignore").strip()
+                        lines.append(line)
+                    except asyncio.TimeoutError:
+                        break
+                return lines
+             except Exception:
+                 await self.close()
+                 return []
+
     async def status(self) -> RigStatus:
         try:
             freq = await self.get_frequency()
@@ -382,6 +562,25 @@ class RigClient:
         return await self._backend.get_frequency()
 
     async def set_frequency(self, hz: int) -> bool:
+        allow_oob = bool(getattr(self.cfg, "allow_out_of_band", False))
+        if not allow_oob:
+            presets = getattr(self.cfg, "band_presets", [])
+            in_any = False
+            for p in presets:
+                try:
+                    if getattr(p, "enabled", True) is False:
+                        continue
+                    lo = getattr(p, "lower_hz", None)
+                    hi = getattr(p, "upper_hz", None)
+                    if lo is None or hi is None:
+                        continue
+                    if hz >= int(lo) and hz <= int(hi):
+                        in_any = True
+                        break
+                except Exception:
+                    continue
+            if not in_any:
+                return False
         return await self._backend.set_frequency(hz)
 
     async def get_mode(self) -> Tuple[Optional[str], Optional[int]]:
@@ -402,6 +601,18 @@ class RigClient:
     async def get_ptt(self) -> Optional[int]:
         return await self._backend.get_ptt()
 
+    async def get_powerstat(self) -> Optional[int]:
+        return await self._backend.get_powerstat()
+
+    async def chk_vfo(self) -> Optional[int]:
+        return await self._backend.chk_vfo()
+
+    async def dump_state(self) -> Sequence[str]:
+        return await self._backend.dump_state()
+
+    async def dump_caps(self) -> Sequence[str]:
+        return await self._backend.dump_caps()
+
     async def status(self) -> RigStatus:
         return await self._backend.status()
 
@@ -418,6 +629,17 @@ class RigClient:
             "passband": s.passband,
             "error": s.error,
             "connection_type": self.cfg.connection_type,
+            "band_presets": [
+                {
+                    "label": p.label,
+                    "frequency_hz": p.frequency_hz,
+                    "enabled": p.enabled,
+                    "lower_hz": p.lower_hz,
+                    "upper_hz": p.upper_hz,
+                }
+                for p in self.cfg.band_presets
+            ],
+            "allow_out_of_band": self.cfg.allow_out_of_band,
         }
         if self.cfg.connection_type == "rigctld":
             data.update({"host": self.cfg.host, "port": self.cfg.port})
