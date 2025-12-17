@@ -1,3 +1,6 @@
 [submodule "ext/hamlib"]
 	path = ext/hamlib
 	url = https://github.com/Hamlib/Hamlib.git
+[submodule "ext/netmind"]
+	path = ext/netmind
+	url = git@github.com:rcludwick/netmind.git
