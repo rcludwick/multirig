@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Callable, Awaitable, Optional, Sequence
 
 from .rig import RigClient, RigctlError
+from .protocols import HamlibParser
 
 
 @dataclass
@@ -43,12 +44,14 @@ class RigctlTcpServer:
         get_rigs: Callable[[], Sequence[RigClient]],
         get_source_index: Callable[[], int],
         get_rigctl_to_main_enabled: Callable[[], bool] = lambda: True,
+        get_sync_enabled: Callable[[], bool] = lambda: True,
         config: Optional[RigctlServerConfig] = None,
         debug: Any = None,
     ):
         self._get_rigs = get_rigs
         self._get_source_index = get_source_index
         self._get_rigctl_to_main_enabled = get_rigctl_to_main_enabled
+        self._get_sync_enabled = get_sync_enabled
         self._cfg = config or _default_server_config()
         self._debug = debug
         self._server: Optional[asyncio.base_events.Server] = None
@@ -86,8 +89,35 @@ class RigctlTcpServer:
         return rigs[idx]
 
     async def _fanout(self, fn: Callable[[RigClient], Awaitable[bool]]) -> bool:
+        rigs = self._get_rigs()
+        if not rigs:
+            return False
+            
+        src_idx = self._get_source_index()
+        if src_idx < 0: src_idx = 0
+        if src_idx >= len(rigs): src_idx = len(rigs) - 1
+        
         ok = True
-        for rig in self._get_rigs():
+        sync_on = self._get_sync_enabled()
+        
+        for i, rig in enumerate(rigs):
+            # Always apply to source rig
+            if i == src_idx:
+                try:
+                    res = await fn(rig)
+                    ok = ok and bool(res)
+                except Exception:
+                    ok = False
+                continue
+            
+            # For others, check sync settings
+            # If sync is disabled, do NOT forward.
+            # If rig has follow_main=False, do NOT forward.
+            if not sync_on:
+                continue
+            if not getattr(rig.cfg, "follow_main", True):
+                continue
+                
             try:
                 res = await fn(rig)
                 ok = ok and bool(res)
@@ -107,8 +137,16 @@ class RigctlTcpServer:
                 if line.strip() in ("q", "Q", "quit", "exit"):
                     return
 
+                if self._debug:
+                    self._debug.add("server_rx", line=line, semantic=HamlibParser.decode(line))
+
                 async with self._lock:
                     resp = await self._handle_command_line(line)
+                
+                if self._debug:
+                    decoded_resp = resp.decode(errors="ignore").strip()
+                    self._debug.add("server_tx", response=decoded_resp, semantic=HamlibParser.decode(decoded_resp))
+
                 writer.write(resp)
                 await writer.drain()
         finally:
@@ -185,7 +223,11 @@ class RigctlTcpServer:
         except Exception:
             return self._format_error("set_freq", erp_prefix, -1)
 
-        ok = await self._fanout(lambda r: r.set_frequency(hz))
+        rig = self._source_rig()
+        if rig is None:
+            return self._format_error("set_freq", erp_prefix, -1)
+        
+        ok = await rig.set_frequency(hz)
         code = 0 if ok else -1
 
         if erp_prefix:
@@ -224,7 +266,11 @@ class RigctlTcpServer:
         else:
             pb = None
 
-        ok = await self._fanout(lambda r: r.set_mode(mode, pb))
+        rig = self._source_rig()
+        if rig is None:
+            return self._format_error("set_mode", erp_prefix, -1)
+            
+        ok = await rig.set_mode(mode, pb)
         code = 0 if ok else -1
 
         if erp_prefix:
@@ -257,7 +303,12 @@ class RigctlTcpServer:
         if not args:
             return self._format_error("set_vfo", erp_prefix, -1)
         vfo = args[0]
-        ok = await self._fanout(lambda r: r.set_vfo(vfo))
+        
+        rig = self._source_rig()
+        if rig is None:
+            return self._format_error("set_vfo", erp_prefix, -1)
+
+        ok = await rig.set_vfo(vfo)
         code = 0 if ok else -1
 
         if erp_prefix:
@@ -291,7 +342,11 @@ class RigctlTcpServer:
         except Exception:
             return self._format_error("set_ptt", erp_prefix, -1)
 
-        ok = await self._fanout(lambda r: r.set_ptt(ptt))
+        rig = self._source_rig()
+        if rig is None:
+            return self._format_error("set_ptt", erp_prefix, -1)
+
+        ok = await rig.set_ptt(ptt)
         code = 0 if ok else -1
 
         if erp_prefix:

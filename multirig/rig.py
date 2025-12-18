@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
-from typing import Optional, Tuple, Dict, Any, List
+from typing import Optional, Tuple, Dict, Any, List, Sequence
 import contextlib
 import shlex
 import asyncio.subprocess as asp
 
 from .config import RigConfig
+from .protocols import HamlibParser
 
 
 class RigctlError(Exception):
@@ -80,17 +81,24 @@ class RigctldBackend(RigBackend):
     async def _send_erp(self, cmd: str, timeout: float = 1.5) -> Tuple[int, List[str]]:
         reader: asyncio.StreamReader
         writer: asyncio.StreamWriter
+        
+        if hasattr(self, "_debug") and self._debug:
+            self._debug.add("rigctld_tx", cmd=cmd, semantic=HamlibParser.decode(cmd))
+
         try:
             reader, writer = await asyncio.wait_for(
                 asyncio.open_connection(self.host, self.port), timeout=timeout
             )
         except Exception as e:  # noqa: BLE001
+            if hasattr(self, "_debug") and self._debug:
+                self._debug.add("rigctld_error", error=str(e))
             raise ConnectionError(f"rigctld connect failed {self.host}:{self.port}: {e}")
 
         try:
             writer.write(("+" + cmd + "\n").encode())
             await writer.drain()
             lines: List[str] = []
+            rprt_code: int = -1
             while True:
                 data = await asyncio.wait_for(reader.readline(), timeout=timeout)
                 if not data:
@@ -98,12 +106,20 @@ class RigctldBackend(RigBackend):
                 s = data.decode(errors="ignore").strip("\r\n")
                 if s.startswith("RPRT "):
                     try:
-                        code = int(s.split()[1])
+                        rprt_code = int(s.split()[1])
                     except Exception:
-                        code = -1
-                    return code, lines
+                        rprt_code = -1
+                    break
                 lines.append(s)
-            return -1, lines
+            
+            if hasattr(self, "_debug") and self._debug:
+                semantic_content = f"RPRT {rprt_code}"
+                if lines:
+                    # Try to decode the first significant line
+                    semantic_content = HamlibParser.decode(lines[0])
+                self._debug.add("rigctld_rx", rprt=rprt_code, lines=lines, semantic=semantic_content)
+            
+            return rprt_code, lines
         finally:
             writer.close()
             with contextlib.suppress(Exception):
@@ -538,6 +554,7 @@ class RigClient:
     def __init__(self, cfg: RigConfig):
         self.cfg = cfg
         self._backend: RigBackend = self._make_backend(cfg)
+        self._last_error: Optional[str] = None
 
     def _make_backend(self, cfg: RigConfig) -> RigBackend:
         if cfg.connection_type == "hamlib":
@@ -566,6 +583,7 @@ class RigClient:
         if not allow_oob:
             presets = getattr(self.cfg, "band_presets", [])
             in_any = False
+            has_any_ranges = False
             for p in presets:
                 try:
                     if getattr(p, "enabled", True) is False:
@@ -573,30 +591,59 @@ class RigClient:
                     lo = getattr(p, "lower_hz", None)
                     hi = getattr(p, "upper_hz", None)
                     if lo is None or hi is None:
-                        continue
+                        # Band preset without explicit ranges - allow any frequency
+                        in_any = True
+                        break
+                    has_any_ranges = True
                     if hz >= int(lo) and hz <= int(hi):
                         in_any = True
                         break
                 except Exception:
                     continue
-            if not in_any:
+            # Only reject if we have explicit ranges and frequency doesn't match any
+            if has_any_ranges and not in_any:
+                self._last_error = "Frequency out of configured band ranges"
                 return False
-        return await self._backend.set_frequency(hz)
+        
+        # If checks pass, try to set frequency on backend
+        res = await self._backend.set_frequency(hz)
+        if not res:
+            self._last_error = "Failed to set frequency on rig backend"
+            return False
+        
+        # Don't clear _last_error here - let caller manage error state
+        return True
 
     async def get_mode(self) -> Tuple[Optional[str], Optional[int]]:
         return await self._backend.get_mode()
 
     async def set_mode(self, mode: str, passband: Optional[int] = None) -> bool:
-        return await self._backend.set_mode(mode, passband)
+        # TODO: Add mode-specific validation if needed, similar to frequency
+        res = await self._backend.set_mode(mode, passband)
+        if not res:
+            self._last_error = "Failed to set mode on rig backend"
+            return False
+        # Don't clear _last_error here - let caller manage error state
+        return True
 
     async def set_vfo(self, vfo: str) -> bool:
-        return await self._backend.set_vfo(vfo)
+        res = await self._backend.set_vfo(vfo)
+        if not res:
+            self._last_error = "Failed to set VFO on rig backend"
+            return False
+        # Don't clear _last_error here - let caller manage error state
+        return True
 
     async def get_vfo(self) -> Optional[str]:
         return await self._backend.get_vfo()
 
     async def set_ptt(self, ptt: int) -> bool:
-        return await self._backend.set_ptt(ptt)
+        res = await self._backend.set_ptt(ptt)
+        if not res:
+            self._last_error = "Failed to set PTT on rig backend"
+            return False
+        # Don't clear _last_error here - let caller manage error state
+        return True
 
     async def get_ptt(self) -> Optional[int]:
         return await self._backend.get_ptt()
@@ -623,12 +670,16 @@ class RigClient:
         s = await self.status()
         data: Dict[str, Any] = {
             "name": self.cfg.name,
+            "enabled": getattr(self.cfg, "enabled", True),
             "connected": s.connected,
             "frequency_hz": s.frequency_hz,
             "mode": s.mode,
             "passband": s.passband,
-            "error": s.error,
+            "error": s.error, # Connection error
+            "last_error": self._last_error, # Last operational error
             "connection_type": self.cfg.connection_type,
+            "follow_main": getattr(self.cfg, "follow_main", True),
+            "model_id": self.cfg.model_id,
             "band_presets": [
                 {
                     "label": p.label,
@@ -645,7 +696,6 @@ class RigClient:
             data.update({"host": self.cfg.host, "port": self.cfg.port})
         else:
             data.update({
-                "model_id": self.cfg.model_id,
                 "device": self.cfg.device,
                 "baud": self.cfg.baud,
             })
