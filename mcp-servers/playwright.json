@@ -1,0 +1,21 @@
+{
+  "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
+  "source": {
+    "type": "filesystem",
+    "path": "playwright_server.py",
+    "entrypoint": "create_playwright_server"
+  },
+  "environment": {
+    "type": "uv",
+    "dependencies": [
+      "@playwright/mcp@latest"
+    ]
+  },
+  "deployment": {
+    "transport": "stdio",
+    "args": [
+      "npx",
+      "@playwright/mcp@latest"
+    ]
+  }
+}

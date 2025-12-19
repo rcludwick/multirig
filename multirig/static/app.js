@@ -1113,6 +1113,32 @@
       parseFrequencyInput,
       enabledBandPresetMatch,
       bandForHz,
+      formatFreq,
+      formatRw,
+      bandLabelToMeters,
+      getSectionCollapsed,
+      setSectionCollapsed,
+      applySections,
+      renderVfoControls,
+      renderVfoFreqs,
+      setRigUiError,
+      clearRigUiError,
+      __setVfoFreqCache: (idx, entry) => {
+        vfoFreqCache.set(idx, entry || {});
+      },
+      __getRigUiError: (idx) => rigUiErrorCache.get(idx),
+      renderBandButtons,
+      renderBandLabel,
+      renderModeButtons,
+      renderCapsBadges,
+      ensureGrid,
+      __injectRigModels: (models) => {
+        rigModels = models || [];
+        rigModelById = new Map();
+        for (const m of rigModels) {
+          if (m && m.id != null) rigModelById.set(String(m.id), m);
+        }
+      },
     };
   }
 })();

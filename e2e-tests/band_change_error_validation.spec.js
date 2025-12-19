@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const { ensureProfileExists, loadProfile, deleteProfile } = require('./profile_helpers');
 
 test.describe('Band Change Error Validation', () => {
   test('should show error when setting out-of-band frequency if not allowed', async ({ page, request }) => {
@@ -7,7 +8,7 @@ test.describe('Band Change Error Validation', () => {
     const targetPort = 4532;
     
     const proxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      params: {
+      data: {
         local_port: proxyPort,
         target_host: '127.0.0.1',
         target_port: targetPort,
@@ -37,13 +38,13 @@ test.describe('Band Change Error Validation', () => {
     };
     
     const configYaml = JSON.stringify(config);
-    const importRes = await request.post('http://127.0.0.1:8000/api/config/import', {
-      data: configYaml,
-      headers: { 'Content-Type': 'text/yaml' }
-    });
-    expect(importRes.ok()).toBeTruthy();
-    
-    await page.waitForTimeout(1000);
+
+    const profileName = 'test_band_change_error_validation';
+    try {
+      await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
+      await loadProfile(request, profileName);
+      
+      await page.waitForTimeout(1000);
 
     // 3. Go to Dashboard
     await page.goto('/');
@@ -80,5 +81,11 @@ test.describe('Band Change Error Validation', () => {
         p.data_str.includes('F 7074000')
     );
     expect(found).toBeUndefined();
-  });
+    } finally {
+      await deleteProfile(request, profileName);
+    }
+    await expect(
+      ensureProfileExists(request, profileName, { allowCreate: false })
+    ).rejects.toThrow(/profile not found/);
+});
 });

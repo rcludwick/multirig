@@ -1,0 +1,14 @@
+{
+  "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
+  "source": {
+    "type": "filesystem",
+    "path": "remote_client.py",
+    "entrypoint": "create_remote_client"
+  },
+  "deployment": {
+    "transport": "sse",
+    "host": "127.0.0.1",
+    "port": 8080,
+    "path": "/mcp/deepwiki"
+  }
+}

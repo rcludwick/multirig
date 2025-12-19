@@ -1,0 +1,22 @@
+{
+  "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
+  "source": {
+    "type": "filesystem",
+    "path": "puppeteer_server.py",
+    "entrypoint": "create_puppeteer_server"
+  },
+  "environment": {
+    "type": "uv",
+    "dependencies": [
+      "@modelcontextprotocol/server-puppeteer"
+    ]
+  },
+  "deployment": {
+    "transport": "stdio",
+    "args": [
+      "npx",
+      "-y",
+      "@modelcontextprotocol/server-puppeteer"
+    ]
+  }
+}

@@ -1,6 +1,8 @@
 const { test, expect } = require('@playwright/test');
 const net = require('net');
 
+const { ensureProfileExists, loadProfile, deleteProfile } = require('./profile_helpers');
+
 test.describe('Disabled Band Validation', () => {
   test('should NOT forward frequency command for disabled band via rigctl', async ({ request }) => {
     // 1. Setup Netmind Proxy: Listen on 9005 -> 4532
@@ -8,7 +10,7 @@ test.describe('Disabled Band Validation', () => {
     const targetPort = 4532;
     
     const proxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      params: {
+      data: {
         local_port: proxyPort,
         target_host: '127.0.0.1',
         target_port: targetPort,
@@ -38,13 +40,12 @@ test.describe('Disabled Band Validation', () => {
     };
     
     const configYaml = JSON.stringify(config);
-    const importRes = await request.post('http://127.0.0.1:8000/api/config/import', {
-      data: configYaml,
-      headers: { 'Content-Type': 'text/yaml' }
-    });
-    expect(importRes.ok()).toBeTruthy();
-    
-    await new Promise(r => setTimeout(r, 1000));
+
+    const profileName = 'test_band_disabled_validation';
+    await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
+    await loadProfile(request, profileName);
+    try {
+      await new Promise(r => setTimeout(r, 1000));
 
     // 3. Connect to Multirig Rigctl (4534) and send F 3573000 (80m, disabled)
     const client = new net.Socket();
@@ -83,5 +84,11 @@ test.describe('Disabled Band Validation', () => {
     
     // This assertion is expected to FAIL currently because code doesn't enforce it yet
     expect(found).toBeFalsy(); 
+    } finally {
+      await deleteProfile(request, profileName);
+    }
+    await expect(
+      ensureProfileExists(request, profileName, { allowCreate: false })
+    ).rejects.toThrow(/profile not found/);
   });
 });

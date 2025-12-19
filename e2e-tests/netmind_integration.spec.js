@@ -5,7 +5,7 @@ test.describe('Netmind Integration', () => {
   test('should forward dump_caps from Multirig to Netmind to Rig', async ({ request }) => {
     // 1. Setup Netmind Proxy: Listen on 9001, Forward to 4532 (Dummy Rig)
     const proxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      params: {
+      data: {
         local_port: 9001,
         target_host: '127.0.0.1',
         target_port: 4532,
@@ -16,7 +16,7 @@ test.describe('Netmind Integration', () => {
     expect(proxyRes.ok()).toBeTruthy();
 
     // 2. Configure Multirig to use the Netmind Proxy as "Rig 1"
-    const configRes = await request.get('http://127.0.0.1:8000/api/config');
+    const configRes = await request.get('/api/config');
     expect(configRes.ok()).toBeTruthy();
     const config = await configRes.json();
 
@@ -32,7 +32,7 @@ test.describe('Netmind Integration', () => {
     ];
     config.rigctl_listen_port = 4534;
 
-    const updateRes = await request.post('http://127.0.0.1:8000/api/config', {
+    const updateRes = await request.post('/api/config', {
       data: config
     });
     expect(updateRes.ok()).toBeTruthy();

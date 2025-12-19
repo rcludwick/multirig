@@ -42,7 +42,12 @@ class SyncService:
                 # validate source index
                 if not self.rigs:
                     continue
+                enabled_idxs = [i for i, r in enumerate(self.rigs) if getattr(r.cfg, "enabled", True)]
+                if not enabled_idxs:
+                    continue
                 src_idx = max(0, min(self.source_index, len(self.rigs) - 1))
+                if src_idx not in enabled_idxs:
+                    src_idx = enabled_idxs[0]
                 src = self.rigs[src_idx]
 
                 status_src = await src.status()
@@ -58,19 +63,37 @@ class SyncService:
                     continue
 
                 # Apply to all targets except source
+                tasks = []
                 for i, rig in enumerate(self.rigs):
                     if i == src_idx:
                         continue
-                    if freq is not None:
-                        try:
-                            await rig.set_frequency(freq)
-                        except Exception:
-                            pass
-                    if mode is not None:
-                        try:
-                            await rig.set_mode(mode, pb)
-                        except Exception:
-                            pass
+                    if not getattr(rig.cfg, "enabled", True):
+                        continue
+                    if not getattr(rig.cfg, "follow_main", True):
+                        continue
+                    
+                    async def _do_update(r=rig, f=freq, m=mode, p=pb):
+                        # Clear previous error on attempting sync
+                        r._last_error = None
+                        freq_ok = True
+                        mode_ok = True
+                        if f is not None:
+                            # set_frequency returns False on band limit violation
+                            freq_ok = await r.set_frequency(f)
+                            if not freq_ok:
+                                r._last_error = "Frequency out of configured band ranges for follower"
+                        if m is not None:
+                            mode_ok = await r.set_mode(m, p)
+                            if not mode_ok and r._last_error is None: # don't overwrite freq error
+                                r._last_error = "Failed to set mode for follower"
+                        # If both fail and no specific error from set_frequency, set a generic one
+                        if not freq_ok and not mode_ok and r._last_error is None:
+                            r._last_error = "Failed to sync frequency and mode for follower"
+
+                    tasks.append(_do_update())
+
+                if tasks:
+                    await asyncio.gather(*tasks)
 
                 self._last = (freq, mode, pb)
             except asyncio.CancelledError:

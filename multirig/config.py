@@ -8,7 +8,37 @@ import yaml
 from pydantic import BaseModel, Field, model_validator
 
 
+def _normalize_band_label(label: str) -> str:
+    return (label or "").strip().lower()
+
+
+_BAND_DEFINITIONS: List[Dict[str, Any]] = [
+    {"label": "160m", "lo": 1800000, "hi": 2000000, "default_hz": 1900000},
+    {"label": "80m", "lo": 3500000, "hi": 4000000, "default_hz": 3573000},
+    {"label": "60m", "lo": 5330000, "hi": 5406000, "default_hz": 5357000},
+    {"label": "40m", "lo": 7000000, "hi": 7300000, "default_hz": 7074000},
+    {"label": "30m", "lo": 10100000, "hi": 10150000, "default_hz": 10136000},
+    {"label": "20m", "lo": 14000000, "hi": 14350000, "default_hz": 14074000},
+    {"label": "17m", "lo": 18068000, "hi": 18168000, "default_hz": 18100000},
+    {"label": "15m", "lo": 21000000, "hi": 21450000, "default_hz": 21074000},
+    {"label": "12m", "lo": 24890000, "hi": 24990000, "default_hz": 24915000},
+    {"label": "10m", "lo": 28000000, "hi": 29700000, "default_hz": 28074000},
+    {"label": "6m", "lo": 50000000, "hi": 54000000, "default_hz": 50125000},
+    {"label": "2m", "lo": 144000000, "hi": 148000000, "default_hz": 145000000},
+    {"label": "1.25m", "lo": 222000000, "hi": 225000000, "default_hz": 223500000},
+    {"label": "70cm", "lo": 420000000, "hi": 450000000, "default_hz": 432100000},
+    {"label": "33cm", "lo": 902000000, "hi": 928000000, "default_hz": 903000000},
+    {"label": "23cm", "lo": 1240000000, "hi": 1300000000, "default_hz": 1296000000},
+]
+
+_BAND_DEFINITIONS_BY_KEY: Dict[str, Dict[str, Any]] = {
+    _normalize_band_label(d["label"]): d for d in _BAND_DEFINITIONS
+}
+
+
 class BandPreset(BaseModel):
+    """A quick-select band preset and its allowed frequency range."""
+
     label: str
     frequency_hz: int
     enabled: bool = True
@@ -31,48 +61,24 @@ class BandPreset(BaseModel):
 
 
 def _band_limits(label: str) -> Optional[tuple[int, int]]:
-    key = (label or "").strip().lower()
-    table: Dict[str, tuple[int, int]] = {
-        "160m": (1800000, 2000000),
-        "80m": (3500000, 4000000),
-        "60m": (5330000, 5406000),
-        "40m": (7000000, 7300000),
-        "30m": (10100000, 10150000),
-        "20m": (14000000, 14350000),
-        "17m": (18068000, 18168000),
-        "15m": (21000000, 21450000),
-        "12m": (24890000, 24990000),
-        "10m": (28000000, 29700000),
-        "6m": (50000000, 54000000),
-        "2m": (144000000, 148000000),
-        "1.25m": (222000000, 225000000),
-        "70cm": (420000000, 450000000),
-        "33cm": (902000000, 928000000),
-        "23cm": (1240000000, 1300000000),
-    }
-    return table.get(key)
+    """Return default band limits for a known amateur band label.
+
+    Args:
+        label: Band label (e.g. "20m", "2m", "70cm").
+
+    Returns:
+        Tuple of (lower_hz, upper_hz), or None if unknown.
+    """
+    key = _normalize_band_label(label)
+    d = _BAND_DEFINITIONS_BY_KEY.get(key)
+    if not d:
+        return None
+    return int(d["lo"]), int(d["hi"])
 
 
 def _all_band_definitions() -> List[Dict[str, Any]]:
     """Return all known amateur radio band definitions."""
-    return [
-        {"label": "160m", "lo": 1800000, "hi": 2000000, "default_hz": 1900000},
-        {"label": "80m", "lo": 3500000, "hi": 4000000, "default_hz": 3573000},
-        {"label": "60m", "lo": 5330000, "hi": 5406000, "default_hz": 5357000},
-        {"label": "40m", "lo": 7000000, "hi": 7300000, "default_hz": 7074000},
-        {"label": "30m", "lo": 10100000, "hi": 10150000, "default_hz": 10136000},
-        {"label": "20m", "lo": 14000000, "hi": 14350000, "default_hz": 14074000},
-        {"label": "17m", "lo": 18068000, "hi": 18168000, "default_hz": 18100000},
-        {"label": "15m", "lo": 21000000, "hi": 21450000, "default_hz": 21074000},
-        {"label": "12m", "lo": 24890000, "hi": 24990000, "default_hz": 24915000},
-        {"label": "10m", "lo": 28000000, "hi": 29700000, "default_hz": 28074000},
-        {"label": "6m", "lo": 50000000, "hi": 54000000, "default_hz": 50125000},
-        {"label": "2m", "lo": 144000000, "hi": 148000000, "default_hz": 145000000},
-        {"label": "1.25m", "lo": 222000000, "hi": 225000000, "default_hz": 223500000},
-        {"label": "70cm", "lo": 420000000, "hi": 450000000, "default_hz": 432100000},
-        {"label": "33cm", "lo": 902000000, "hi": 928000000, "default_hz": 903000000},
-        {"label": "23cm", "lo": 1240000000, "hi": 1300000000, "default_hz": 1296000000},
-    ]
+    return [{**d} for d in _BAND_DEFINITIONS]
 
 
 def detect_bands_from_ranges(freq_ranges: List[tuple[int, int]]) -> List[BandPreset]:
@@ -143,27 +149,16 @@ def parse_dump_state_ranges(dump_state_lines: List[str]) -> List[tuple[int, int]
 
 
 def _default_band_presets() -> List[BandPreset]:
+    """Return the default set of enabled band presets."""
     return [
-        BandPreset(label="160m", frequency_hz=1900000, enabled=True),
-        BandPreset(label="80m", frequency_hz=3573000, enabled=True),
-        BandPreset(label="60m", frequency_hz=5357000, enabled=True),
-        BandPreset(label="40m", frequency_hz=7074000, enabled=True),
-        BandPreset(label="30m", frequency_hz=10136000, enabled=True),
-        BandPreset(label="20m", frequency_hz=14074000, enabled=True),
-        BandPreset(label="17m", frequency_hz=18100000, enabled=True),
-        BandPreset(label="15m", frequency_hz=21074000, enabled=True),
-        BandPreset(label="12m", frequency_hz=24915000, enabled=True),
-        BandPreset(label="10m", frequency_hz=28074000, enabled=True),
-        BandPreset(label="6m", frequency_hz=50125000, enabled=True),
-        BandPreset(label="2m", frequency_hz=145000000, enabled=True),
-        BandPreset(label="1.25m", frequency_hz=223500000, enabled=True),
-        BandPreset(label="70cm", frequency_hz=432100000, enabled=True),
-        BandPreset(label="33cm", frequency_hz=903000000, enabled=True),
-        BandPreset(label="23cm", frequency_hz=1296000000, enabled=True),
+        BandPreset(label=d["label"], frequency_hz=int(d["default_hz"]), enabled=True)
+        for d in _BAND_DEFINITIONS
     ]
 
 
 class RigConfig(BaseModel):
+    """Configuration for a single rig and its connection backend."""
+
     name: str = Field(default="Rig", description="Friendly name")
     enabled: bool = Field(default=True, description="Enable this rig for rigctl fanout")
     poll_interval_ms: int = Field(
@@ -200,6 +195,13 @@ class RigConfig(BaseModel):
 
 
 class AppConfig(BaseModel):
+    """Top-level application configuration.
+
+    Notes:
+        `test_mode` is derived from the `MULTIRIG_TEST_MODE` environment variable
+        and is excluded from serialization.
+    """
+
     # Multiple rigs instead of fixed A/B
     rigs: List[RigConfig] = Field(
         default_factory=lambda: [
@@ -217,7 +219,14 @@ class AppConfig(BaseModel):
 
 
 def _migrate_config(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Migrate legacy config with rig_a/rig_b to new list-based format."""
+    """Migrate legacy config with `rig_a`/`rig_b` to the list-based format.
+
+    Args:
+        data: Raw config mapping parsed from YAML.
+
+    Returns:
+        Mapping in the new schema shape.
+    """
     if "rigs" in data:
         return data
     rigs: List[Dict[str, Any]] = []
@@ -242,6 +251,17 @@ def _migrate_config(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def load_config(path: Path) -> AppConfig:
+    """Load configuration from disk and apply schema migration.
+
+    The `test_mode` flag is derived from the `MULTIRIG_TEST_MODE` environment
+    variable.
+
+    Args:
+        path: Path to the main YAML config.
+
+    Returns:
+        A validated `AppConfig` instance.
+    """
     test_mode = os.getenv("MULTIRIG_TEST_MODE") == "1"
     if path.exists():
         raw = yaml.safe_load(path.read_text()) or {}
@@ -259,6 +279,14 @@ def load_config(path: Path) -> AppConfig:
 
 
 def save_config(cfg: AppConfig, path: Path) -> None:
+    """Persist configuration to disk.
+
+    In `test_mode`, this is a no-op.
+
+    Args:
+        cfg: Configuration to save.
+        path: Path to write YAML to.
+    """
     if cfg.test_mode:
         return
     path.write_text(yaml.safe_dump(cfg.model_dump(), sort_keys=False))

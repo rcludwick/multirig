@@ -1,0 +1,22 @@
+{
+  "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
+  "source": {
+    "type": "filesystem",
+    "path": "chrome_devtools_server.py",
+    "entrypoint": "create_chrome_devtools_server"
+  },
+  "environment": {
+    "type": "uv",
+    "dependencies": [
+      "chrome-devtools-mcp@latest"
+    ]
+  },
+  "deployment": {
+    "transport": "stdio",
+    "args": [
+      "npx",
+      "-y",
+      "chrome-devtools-mcp@latest"
+    ]
+  }
+}

@@ -27,21 +27,37 @@ INSTALL_STAMP := $(PREFIX_ABS)/.installed.$(PREFIX_ID)
 
 .PHONY: help all venv hamlib-bootstrap hamlib-configure hamlib-build hamlib-install \
         python-bindings-install bindings reinstall clean distclean venv-contained \
-        check-prereqs ensure-prefix-dir ensure-venv-dirs run generate-rig-list
+        check-prereqs ensure-prefix-dir ensure-venv-dirs run generate-rig-list build-app-js minify-static test test-py test-js test-e2e install \
+        coverage coverage-py coverage-js
+
 
 help:
 	@echo "Targets:"
 	@echo "  make all                       # Build Hamlib and install Python bindings into .venv"
 	@echo "  make venv                      # Create .venv using uv"
+	@echo "  make install                   # Install Python deps into .venv (editable)"
 	@echo "  make hamlib-bootstrap          # Run ./bootstrap in ext/hamlib (needed for git checkout)"
 	@echo "  make hamlib-configure          # Configure Hamlib with prefix $(PREFIX)"
 	@echo "  make hamlib-build              # Build Hamlib (parallel: $(JOBS) jobs)"
 	@echo "  make hamlib-install            # Install Hamlib into $(PREFIX)"
 	@echo "  make python-bindings-install   # Install Hamlib Python bindings into .venv via uv"
 	@echo "  make venv-contained            # Build+install Hamlib core into .venv and install bindings with rpath"
-	@echo "  make check-prereqs             # Check build prerequisites (autotools, pkg-config, swig)"
+	@echo "  make bindings                  # Alias for python-bindings-install"
+	@echo "  make reinstall                 # Force reinstall Hamlib Python bindings into .venv"
+	@echo "  make ensure-prefix-dir         # Validate/create PREFIX directory"
+	@echo "  make ensure-venv-dirs          # Validate/create venv dirs for venv-contained builds"
+	@echo "  make check-prereqs             # Check build prerequisites (autotools, pkg-config, swig, uv)"
 	@echo "  make generate-rig-list         # Generate multirig/static/rig_models.json from rigctl --list"
 	@echo "  make run                       # Ensure Hamlib is installed and run the server (via run.sh)"
+	@echo "  make minify-static             # Minify static assets (*.min.js, *.min.css)"
+	@echo "  make test                      # Run all tests (python + js + e2e)"
+	@echo "  make test-py                   # Run pytest unit tests"
+	@echo "  make test-js                   # Run Jest unit tests for frontend JS"
+	@echo "  make test-e2e                  # Run Playwright E2E tests"
+	@echo "  make coverage                  # Run coverage for python + js"
+	@echo "  make coverage-py               # Run Python coverage (pytest-cov)"
+	@echo "  make coverage-js               # Run JS coverage (jest --coverage)"
+	@echo "  make build-app-js              # Rebuild multirig/static/app.min.js from multirig/static/app.js"
 	@echo "  make clean                     # Clean Hamlib build directory"
 	@echo "  make distclean                 # Remove build + install outputs (keeps submodule)"
 
@@ -75,6 +91,10 @@ venv:
 	fi
 	@"$(UV)" pip install pip
 	@"$(UV_PY)" -m pip -q install --upgrade pip setuptools wheel >/dev/null
+
+install: venv
+	@echo "[Info] Installing dependencies"
+	@"$(UV)" pip install --python "$(UV_PY)" -e .
 
 # Ensure the chosen PREFIX is a directory (Hamlib configure/install require an absolute dir)
 ensure-prefix-dir:
@@ -200,7 +220,53 @@ generate-rig-list: hamlib-install
 	@echo "[Info] Generating rig models list from rigctl"
 	@$(PYTHON) scripts/generate_rig_list.py "$(PREFIX_ABS)/bin/rigctl" "multirig/static/rig_models.json"
 
+minify-static: install
+	@echo "[Info] Minifying static assets"
+	@"$(UV_PY)" scripts/minify.py
+
 # Run the server (ensures Hamlib is installed first, but skips rebuild if already importable)
-run: python-bindings-install
+run: python-bindings-install minify-static
 	@echo "[Info] Starting server via run.sh"
-	@bash run.sh
+	@./run.sh
+
+test: test-py test-js test-e2e
+
+test-py: venv
+	@echo "[Info] Installing dev (test) dependencies"
+	@"$(UV)" pip install --python "$(UV_PY)" -e ".[dev]"
+	@echo "[Info] Running pytest"
+	@"$(UV_PY)" -m pytest
+
+coverage: coverage-py coverage-js
+
+coverage-py: venv
+	@echo "[Info] Installing dev (test) dependencies"
+	@"$(UV)" pip install --python "$(UV_PY)" -e ".[dev]"
+	@echo "[Info] Running pytest with coverage"
+	@"$(UV_PY)" -m pytest --cov=multirig --cov-report=term-missing --cov-report=html --cov-report=xml
+
+test-js:
+	@echo "[Info] Installing JS dependencies"
+	@npm install
+	@echo "[Info] Running Jest"
+	@npm test
+
+coverage-js:
+	@echo "[Info] Installing JS dependencies"
+	@npm install
+	@echo "[Info] Running Jest with coverage"
+	@npm test -- --coverage
+
+# Rebuild minified dashboard JS (app.min.js) from source (app.js).
+# Note: This uses the local node_modules via npx; it will install deps if needed.
+build-app-js:
+	@echo "[Info] Installing JS dependencies"
+	@npm install
+	@echo "[Info] Building multirig/static/app.min.js"
+	@npx terser multirig/static/app.js -c -m --ecma 2020 -o multirig/static/app.min.js
+
+test-e2e:
+	@echo "[Info] Installing Playwright browsers"
+	@npx playwright install --with-deps chromium
+	@echo "[Info] Running Playwright E2E tests"
+	@npx playwright test

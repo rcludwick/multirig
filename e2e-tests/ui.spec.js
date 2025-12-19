@@ -1,5 +1,30 @@
 const { test, expect } = require('@playwright/test');
 
+ const { ensureProfileExists, loadProfile, deleteProfile } = require('./profile_helpers');
+
+ const profileName = 'test_ui_default';
+ const configYaml = JSON.stringify({
+   rigs: [
+     {
+       name: 'UI Test Rig',
+       connection_type: 'rigctld',
+       host: '127.0.0.1',
+       port: 4532,
+       poll_interval_ms: 200,
+     },
+   ],
+   poll_interval_ms: 200,
+ });
+
+ test.beforeAll(async ({ request }) => {
+   await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
+   await loadProfile(request, profileName);
+ });
+
+ test.afterAll(async ({ request }) => {
+   await deleteProfile(request, profileName);
+ });
+
 test.describe('Dashboard UI', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');

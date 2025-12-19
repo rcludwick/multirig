@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MultiRig Dashboard</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?ts={{ assets_ts }}">
   <link rel="icon" href="data:,">
-  <script defer src="/static/app.js"></script>
+  <script defer src="/static/app.min.js"></script>
   <script>
     window.MULTIRIG_CONFIG = { wsPath: "/ws" };
   </script>
@@ -17,24 +17,72 @@
   </head>
 <body>
   <header class="topbar">
-    <div class="brand">MultiRig</div>
-    <nav>
-      <a href="/settings">Settings</a>
-      <button id="darkToggle" title="Toggle dark mode">🌓</button>
-    </nav>
+    <div class="brand brand-lcd">
+      <div class="brand-lcd-title">Multirig</div>
+      <div class="brand-lcd-meta">
+        <span class="brand-lcd-version">v{{ app_version }}</span>
+        <span class="brand-lcd-sep">•</span>
+        <span class="brand-lcd-author">AJ7HR</span>
+      </div>
+    </div>
   </header>
 
-  <main class="container">
+  <main class="container dashboard-page">
+    <div class="page-nav">
+      <a class="page-nav-btn active" href="/">Rigs</a>
+      <a class="page-nav-btn" href="/settings">Config</a>
+    </div>
+    <section class="server-bar">
+      <div class="server-bar-header">
+        <div class="server-meta">
+          <div class="server-title">rigctl listener</div>
+          <div class="server-addr" id="rigctlAddr">—</div>
+          <div class="server-title" style="margin-top:10px;">main rig</div>
+          <select id="mainRigSelect" title="Main rig"></select>
+        </div>
+        <div class="server-actions">
+          <div class="server-toggles">
+            <div class="server-toggle">
+              <div class="server-toggle-label">TCP → MAIN</div>
+              <label class="switch" title="Enable syncing from rigctl TCP listener to the main rig">
+                <input type="checkbox" id="rigctlToMainToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="server-toggle">
+              <div class="server-toggle-label">MAIN → FOLLOWERS</div>
+              <label class="switch" title="Enable syncing from main rig to follower rigs">
+                <input type="checkbox" id="mainToFollowersToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="server-toggle">
+              <div class="server-toggle-label">ALL RIGS</div>
+              <label class="switch" title="Enable/disable all rigs">
+                <input type="checkbox" id="allRigsEnabledToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rig-section collapsed" id="serverDebugSection">
+        <button type="button" class="rig-section-header" id="toggleServerDebug">
+          <span class="turnstile">▼</span>
+          <span class="rig-section-title">TCP Traffic (<span id="debugPortDisplay">TCP</span>)</span>
+        </button>
+        <div class="rig-section-body" style="display:none;">
+           <div class="debug-header">
+              <div class="debug-title">Rigctl server packets</div>
+              <button type="button" class="debug-close" id="clearServerDebug">Clear</button>
+            </div>
+            <pre class="debug-log" id="serverDebugLog"></pre>
+        </div>
+      </div>
+    </section>
+
     <section class="status-grid" id="rigGrid"></section>
 
-    <section class="sync">
-      <label class="switch">
-        <input type="checkbox" id="syncToggle">
-        <span class="slider"></span>
-      </label>
-      <span>Sync all rigs to source</span>
-      <select id="sourceSelect" title="Source rig"></select>
-    </section>
   </main>
 
   <footer class="footer">

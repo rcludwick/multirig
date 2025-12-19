@@ -1,0 +1,25 @@
+{
+  "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
+  "source": {
+    "type": "filesystem",
+    "path": "github_server.py",
+    "entrypoint": "create_github_server"
+  },
+  "environment": {
+    "type": "uv",
+    "dependencies": [
+      "@modelcontextprotocol/server-github"
+    ]
+  },
+  "deployment": {
+    "transport": "stdio",
+    "args": [
+      "npx",
+      "-y",
+      "@modelcontextprotocol/server-github"
+    ],
+    "env": {
+      "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+    }
+  }
+}

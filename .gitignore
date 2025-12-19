@@ -6,3 +6,11 @@ node_modules/
 playwright-report/
 test-results/
 .idea/
+.coverage
+coverage/
+htmlcov/
+coverage.xml
+multirig.config.active_profile
+multirig.config.profiles/
+multirig/static/*.min.js
+multirig/static/*.min.css

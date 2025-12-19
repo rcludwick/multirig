@@ -8,6 +8,10 @@ Control and sync multiple ham radio rigs with a modern, dark‑mode web UI. Choo
   - macOS: `brew install hamlib`
   - Debian/Ubuntu/RPi: `sudo apt-get install hamlib` (or `hamlib-utils`)
 
+## Development tools
+- Node.js + npm (for Jest + Playwright)
+- `uv` (recommended when using `make` targets)
+
 ## Quick start (recommended)
 Run the helper script — it creates a virtualenv, installs deps, and starts the app.
 
@@ -15,6 +19,12 @@ Run the helper script — it creates a virtualenv, installs deps, and starts the
 bash run.sh
 ```
 Then open http://localhost:8000
+
+If you want a repo-contained Hamlib build (used by E2E tests), use:
+
+```
+make run
+```
 
 Environment variables for `run.sh`:
 - `PYTHON` (default `python3`)
@@ -42,6 +52,74 @@ Environment variables for `run.sh`:
   pip install -e .
   multirig
   ```
+
+## Testing
+
+MultiRig has three test layers:
+
+- Python unit tests (`pytest`)
+- Frontend JS unit tests (`jest`)
+- Browser E2E tests (`playwright`)
+
+### Run all tests
+
+```
+make test
+```
+
+### Python unit tests
+
+```
+make test-py
+```
+
+### JS unit tests
+
+```
+make test-js
+```
+
+### Playwright E2E tests
+
+```
+make test-e2e
+```
+
+Notes:
+
+- The Playwright config (`playwright.config.js`) starts:
+  - MultiRig via `./run.sh`
+  - A dummy `rigctld` for Hamlib on port `4532` (from `ext/hamlib/prefix/bin/rigctld`)
+  - The Netmind test proxy service on port `9000` (from `ext/netmind`)
+- E2E tests run MultiRig with `MULTIRIG_TEST_MODE=1` to avoid writing `multirig.config.yaml`.
+- If you haven’t built the repo-local Hamlib yet, run `make all` (or `make run`) first.
+
+## Writing Playwright tests
+
+E2E tests live in `e2e-tests/`.
+
+### Config setup via profiles
+
+Tests should use configuration profiles instead of calling `/api/config/import` directly.
+
+- Create a unique profile name prefixed with `test_`.
+- Use `ensureProfileExists()` with `allowCreate: true` to create the profile if missing.
+- Load it with `loadProfile()`.
+- Delete it in `finally` using `deleteProfile()`.
+- Assert that `ensureProfileExists(..., { allowCreate: false })` throws after deletion.
+
+Helpers:
+
+- `e2e-tests/profile_helpers.js`
+  - `ensureProfileExists(request, name, { allowCreate, configYaml })`
+  - `loadProfile(request, name)`
+  - `deleteProfile(request, name)`
+
+### Why profiles?
+
+- Profiles are a server-side snapshot of config.
+- In `MULTIRIG_TEST_MODE=1` profiles are stored in-memory, so tests don’t touch the filesystem.
+- Tests can reliably clean up after themselves and verify that cleanup worked.
 
 ## Configure your rigs
 Open http://localhost:8000/settings and add one or more rigs. For each rig choose how it connects:
@@ -72,6 +150,12 @@ You can also set the sync poll interval (ms) and choose the source rig on the Da
 - `POST /api/sync` — body `{ enabled?, source_index? }` to toggle sync and/or set source
 - `POST /api/sync/{enabled}` — legacy toggle (kept for backward compatibility)
 - `GET /api/config` / `POST /api/config` — read/write config (`{ rigs: [...], poll_interval_ms, sync_* }`)
+- `GET /api/config/export` / `POST /api/config/import` — export/import YAML config
+- `GET /api/config/profiles` — list profile names
+- `POST /api/config/profiles/{name}` — save current config as profile
+- `POST /api/config/profiles/{name}/load` — load profile
+- `GET /api/config/profiles/{name}/export` — export profile YAML
+- `DELETE /api/config/profiles/{name}` — delete profile
 - `POST /api/rig/{index}/set` — set frequency/mode/passband on a specific rig by index; legacy `a|b` aliases map to 0/1
 - `WS /ws` — streaming updates for the SPA
 
