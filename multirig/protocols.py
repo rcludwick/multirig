@@ -12,7 +12,7 @@ class HamlibParser:
     """Parses Hamlib 'rigctld' TCP protocol commands into human-readable descriptions.
     
     This parser uses regex patterns to identify common Hamlib commands and responses,
-translating them into semantic strings (e.g., "SET FREQ" instead of "F ...").
+    translating them into semantic strings (e.g., "SET FREQ" instead of "F ...").
     """
     
     # Regex patterns for common Hamlib commands
@@ -33,6 +33,8 @@ translating them into semantic strings (e.g., "SET FREQ" instead of "F ...").
         (r"^RPRT\s+0", "SUCCESS"),
         (r"^RPRT\s+-(\d+)", "ERROR")
     ]
+
+    _COMPILED_PATTERNS = [(re.compile(p), l) for p, l in PATTERNS]
 
     @classmethod
     def decode(cls, data: Union[bytes, str]) -> str:
@@ -58,8 +60,8 @@ translating them into semantic strings (e.g., "SET FREQ" instead of "F ...").
             return "<EMPTY>"
 
         # Check against known patterns
-        for pattern, label in cls.PATTERNS:
-            match = re.match(pattern, text)
+        for pattern, label in cls._COMPILED_PATTERNS:
+            match = pattern.match(text)
             if match:
                 args = " ".join(match.groups())
                 return f"{label}: {args}" if args else label

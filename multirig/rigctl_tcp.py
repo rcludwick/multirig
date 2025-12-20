@@ -56,6 +56,22 @@ class RigctlTcpServer:
         self._debug = debug
         self._server: Optional[asyncio.base_events.Server] = None
         self._lock = asyncio.Lock()
+        
+        self._command_map = {
+            "F": self._cmd_set_freq, "set_freq": self._cmd_set_freq,
+            "f": self._cmd_get_freq, "get_freq": self._cmd_get_freq,
+            "M": self._cmd_set_mode, "set_mode": self._cmd_set_mode,
+            "m": self._cmd_get_mode, "get_mode": self._cmd_get_mode,
+            "V": self._cmd_set_vfo, "set_vfo": self._cmd_set_vfo,
+            "v": self._cmd_get_vfo, "get_vfo": self._cmd_get_vfo,
+            "T": self._cmd_set_ptt, "set_ptt": self._cmd_set_ptt,
+            "t": self._cmd_get_ptt, "get_ptt": self._cmd_get_ptt,
+            "l": self._cmd_get_level, "get_level": self._cmd_get_level,
+            "s": self._cmd_get_split_vfo, "get_split_vfo": self._cmd_get_split_vfo,
+            "get_powerstat": self._cmd_get_powerstat,
+            "dump_state": self._cmd_dump_state,
+            "dump_caps": self._cmd_dump_caps,
+        }
 
     @property
     def host(self) -> str:
@@ -176,34 +192,14 @@ class RigctlTcpServer:
         else:
             cmd_key = cmd
 
-        if cmd_key in ("F", "set_freq"):
-            return await self._cmd_set_freq(args, erp_prefix)
-        if cmd_key in ("f", "get_freq"):
-            return await self._cmd_get_freq(erp_prefix)
-        if cmd_key in ("M", "set_mode"):
-            return await self._cmd_set_mode(args, erp_prefix)
-        if cmd_key in ("m", "get_mode"):
-            return await self._cmd_get_mode(erp_prefix)
-        if cmd_key in ("V", "set_vfo"):
-            return await self._cmd_set_vfo(args, erp_prefix)
-        if cmd_key in ("v", "get_vfo"):
-            return await self._cmd_get_vfo(erp_prefix)
-        if cmd_key in ("T", "set_ptt"):
-            return await self._cmd_set_ptt(args, erp_prefix)
-        if cmd_key in ("t", "get_ptt"):
-            return await self._cmd_get_ptt(erp_prefix)
-        if cmd_key in ("l", "get_level"):
-            return await self._cmd_get_level(args, erp_prefix)
-        if cmd_key in ("s", "get_split_vfo"):
-            return await self._cmd_get_split_vfo(erp_prefix)
-        if cmd_key == "get_powerstat":
-            return await self._cmd_get_powerstat(erp_prefix)
+        # Optimized dispatch
+        handler = self._command_map.get(cmd_key)
+        if handler:
+            return await handler(args, erp_prefix)
+
+        # Special handling for chk_vfo (requires is_raw)
         if cmd_key == "chk_vfo":
             return await self._cmd_chk_vfo(erp_prefix, is_raw)
-        if cmd_key == "dump_state":
-            return await self._cmd_dump_state(erp_prefix)
-        if cmd_key == "dump_caps":
-            return await self._cmd_dump_caps(erp_prefix)
 
         return self._format_error("unknown", erp_prefix, -4)
 
@@ -236,7 +232,7 @@ class RigctlTcpServer:
             return _records_to_bytes(records, sep)
         return f"RPRT {code}\n".encode()
 
-    async def _cmd_get_freq(self, erp_prefix: Optional[str]) -> bytes:
+    async def _cmd_get_freq(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_freq", erp_prefix, -1)
@@ -280,7 +276,7 @@ class RigctlTcpServer:
             return _records_to_bytes(records, sep)
         return f"RPRT {code}\n".encode()
 
-    async def _cmd_get_mode(self, erp_prefix: Optional[str]) -> bytes:
+    async def _cmd_get_mode(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_mode", erp_prefix, -1)
@@ -317,7 +313,7 @@ class RigctlTcpServer:
             return _records_to_bytes(records, sep)
         return f"RPRT {code}\n".encode()
 
-    async def _cmd_get_vfo(self, erp_prefix: Optional[str]) -> bytes:
+    async def _cmd_get_vfo(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_vfo", erp_prefix, -1)
@@ -355,7 +351,7 @@ class RigctlTcpServer:
             return _records_to_bytes(records, sep)
         return f"RPRT {code}\n".encode()
 
-    async def _cmd_get_ptt(self, erp_prefix: Optional[str]) -> bytes:
+    async def _cmd_get_ptt(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_ptt", erp_prefix, -1)
@@ -391,7 +387,7 @@ class RigctlTcpServer:
             return _records_to_bytes(records, sep)
         return f"{value}\n".encode()
 
-    async def _cmd_get_split_vfo(self, erp_prefix: Optional[str]) -> bytes:
+    async def _cmd_get_split_vfo(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
         # get_split_vfo command - returns split status and TX VFO
         # For now, return split=0 (off) and current VFO
         rig = self._source_rig()
@@ -412,7 +408,7 @@ class RigctlTcpServer:
             return _records_to_bytes(records, sep)
         return f"{split}\n{tx_vfo}\n".encode()
 
-    async def _cmd_get_powerstat(self, erp_prefix: Optional[str]) -> bytes:
+    async def _cmd_get_powerstat(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_powerstat", erp_prefix, -1)
@@ -451,7 +447,7 @@ class RigctlTcpServer:
             
         return f"CHKVFO {ret}\n".encode()
 
-    async def _cmd_dump_state(self, erp_prefix: Optional[str]) -> bytes:
+    async def _cmd_dump_state(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
         rig = self._source_rig()
         if rig is None:
             return self._format_error("dump_state", erp_prefix, -1)
@@ -478,7 +474,7 @@ class RigctlTcpServer:
 
         return content.encode()
 
-    async def _cmd_dump_caps(self, erp_prefix: Optional[str]) -> bytes:
+    async def _cmd_dump_caps(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
         rig = self._source_rig()
         if rig is None:
             return self._format_error("dump_caps", erp_prefix, -1)

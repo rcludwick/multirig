@@ -63,6 +63,18 @@ def parse_dump_caps(text: str) -> tuple[dict[str, bool], list[str]]:
     caps: dict[str, bool] = {}
     modes: list[str] = []
     modes_seen: set[str] = set()
+    
+    cap_map = {
+        "Can set Frequency": "freq_set",
+        "Can get Frequency": "freq_get",
+        "Can set Mode": "mode_set",
+        "Can get Mode": "mode_get",
+        "Can set VFO": "vfo_set",
+        "Can get VFO": "vfo_get",
+        "Can set PTT": "ptt_set",
+        "Can get PTT": "ptt_get",
+    }
+
     for line in (text or "").splitlines():
         s = line.strip()
         if s.startswith("Mode list:"):
@@ -71,28 +83,16 @@ def parse_dump_caps(text: str) -> tuple[dict[str, bool], list[str]]:
                 if m not in modes_seen:
                     modes_seen.add(m)
                     modes.append(m)
-        if not s.startswith("Can "):
             continue
+
         if ":" not in s:
             continue
+            
         key, rest = s.split(":", 1)
-        flag = rest.strip()[:1]
-        if key == "Can set Frequency":
-            caps["freq_set"] = _parse_bool_flag(flag)
-        elif key == "Can get Frequency":
-            caps["freq_get"] = _parse_bool_flag(flag)
-        elif key == "Can set Mode":
-            caps["mode_set"] = _parse_bool_flag(flag)
-        elif key == "Can get Mode":
-            caps["mode_get"] = _parse_bool_flag(flag)
-        elif key == "Can set VFO":
-            caps["vfo_set"] = _parse_bool_flag(flag)
-        elif key == "Can get VFO":
-            caps["vfo_get"] = _parse_bool_flag(flag)
-        elif key == "Can set PTT":
-            caps["ptt_set"] = _parse_bool_flag(flag)
-        elif key == "Can get PTT":
-            caps["ptt_get"] = _parse_bool_flag(flag)
+        key = key.strip()
+        
+        if key in cap_map:
+            caps[cap_map[key]] = _parse_bool_flag(rest.strip()[:1])
 
     return caps, modes
 

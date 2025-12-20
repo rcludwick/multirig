@@ -1,0 +1,2 @@
+[console_scripts]
+multirig = multirig.app:run
