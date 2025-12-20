@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const net = require('net');
 
-const { ensureProfileExists, loadProfile, deleteProfile } = require('./profile_helpers');
+const { ensureProfileExists, loadProfile, deleteProfile, createProxy } = require('./profile_helpers');
 
 test.describe.configure({ mode: 'serial' });
 
@@ -12,25 +12,21 @@ test.describe('Rig Following Scenarios', () => {
     const followerRigProxyPort = 9011;
     const targetRigctldPort = 4532;
 
-    const mainProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: mainRigProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Main_Rig_Follow_Test_1',
-        protocol: 'hamlib'
-      }
+    const mainProxyRes = await createProxy(request, {
+      local_port: mainRigProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Main_Rig_Follow_Test_1',
+      protocol: 'hamlib'
     });
     expect(mainProxyRes.ok()).toBeTruthy();
 
-    const followerProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: followerRigProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Follower_Rig_Follow_Test_1',
-        protocol: 'hamlib'
-      }
+    const followerProxyRes = await createProxy(request, {
+      local_port: followerRigProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Follower_Rig_Follow_Test_1',
+      protocol: 'hamlib'
     });
     expect(followerProxyRes.ok()).toBeTruthy();
 
@@ -86,7 +82,7 @@ test.describe('Rig Following Scenarios', () => {
     let mainRigFound = undefined;
     for (let i = 0; i < 5; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Main_Rig_Follow_Test_1' } 
+        params: { limit: 500, proxy_name: 'Main_Rig_Follow_Test_1' } 
       });
       const history = await historyRes.json();
       mainRigFound = history.find(p => 
@@ -102,7 +98,7 @@ test.describe('Rig Following Scenarios', () => {
     let followerRigFound = undefined;
     for (let i = 0; i < 5; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Follower_Rig_Follow_Test_1' } 
+        params: { limit: 500, proxy_name: 'Follower_Rig_Follow_Test_1' } 
       });
       const history = await historyRes.json();
       followerRigFound = history.find(p => 
@@ -116,6 +112,8 @@ test.describe('Rig Following Scenarios', () => {
     expect(followerRigFound).toBeTruthy();
     } finally {
       await deleteProfile(request, profileName);
+      await request.delete('http://127.0.0.1:9000/api/proxies/9010').catch(() => {});
+      await request.delete('http://127.0.0.1:9000/api/proxies/9011').catch(() => {});
     }
     await expect(
       ensureProfileExists(request, profileName, { allowCreate: false })
@@ -127,25 +125,21 @@ test.describe('Rig Following Scenarios', () => {
     const followerRigProxyPort = 9013;
     const targetRigctldPort = 4532;
 
-    const mainProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: mainRigProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Main_Rig_Follow_Test_2',
-        protocol: 'hamlib'
-      }
+    const mainProxyRes = await createProxy(request, {
+      local_port: mainRigProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Main_Rig_Follow_Test_2',
+      protocol: 'hamlib'
     });
     expect(mainProxyRes.ok()).toBeTruthy();
 
-    const followerProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: followerRigProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Follower_Rig_Follow_Test_2',
-        protocol: 'hamlib'
-      }
+    const followerProxyRes = await createProxy(request, {
+      local_port: followerRigProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Follower_Rig_Follow_Test_2',
+      protocol: 'hamlib'
     });
     expect(followerProxyRes.ok()).toBeTruthy();
 
@@ -201,7 +195,7 @@ test.describe('Rig Following Scenarios', () => {
     let mainRigFound = undefined;
     for (let i = 0; i < 5; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Main_Rig_Follow_Test_2' } 
+        params: { limit: 500, proxy_name: 'Main_Rig_Follow_Test_2' } 
       });
       const history = await historyRes.json();
       mainRigFound = history.find(p => 
@@ -217,7 +211,7 @@ test.describe('Rig Following Scenarios', () => {
     let followerRigFound = undefined;
     for (let i = 0; i < 5; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Follower_Rig_Follow_Test_2' } 
+        params: { limit: 500, proxy_name: 'Follower_Rig_Follow_Test_2' } 
       });
       const history = await historyRes.json();
       followerRigFound = history.find(p => 
@@ -231,6 +225,8 @@ test.describe('Rig Following Scenarios', () => {
     expect(followerRigFound).toBeFalsy();
     } finally {
       await deleteProfile(request, profileName);
+      await request.delete('http://127.0.0.1:9000/api/proxies/9012').catch(() => {});
+      await request.delete('http://127.0.0.1:9000/api/proxies/9013').catch(() => {});
     }
     await expect(
       ensureProfileExists(request, profileName, { allowCreate: false })
@@ -242,25 +238,21 @@ test.describe('Rig Following Scenarios', () => {
     const followerRigProxyPort = 9015;
     const targetRigctldPort = 4532;
 
-    const mainProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: mainRigProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Main_Rig_Follow_Test_3',
-        protocol: 'hamlib'
-      }
+    const mainProxyRes = await createProxy(request, {
+      local_port: mainRigProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Main_Rig_Follow_Test_3',
+      protocol: 'hamlib'
     });
     expect(mainProxyRes.ok()).toBeTruthy();
 
-    const followerProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: followerRigProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Follower_Rig_Follow_Test_3',
-        protocol: 'hamlib'
-      }
+    const followerProxyRes = await createProxy(request, {
+      local_port: followerRigProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Follower_Rig_Follow_Test_3',
+      protocol: 'hamlib'
     });
     expect(followerProxyRes.ok()).toBeTruthy();
 
@@ -322,7 +314,7 @@ test.describe('Rig Following Scenarios', () => {
     let mainRigFound = undefined;
     for (let i = 0; i < 5; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Main_Rig_Follow_Test_3' } 
+        params: { limit: 500, proxy_name: 'Main_Rig_Follow_Test_3' } 
       });
       const history = await historyRes.json();
       mainRigFound = history.find(p => 
@@ -338,7 +330,7 @@ test.describe('Rig Following Scenarios', () => {
     let followerRigFound = undefined;
     for (let i = 0; i < 5; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Follower_Rig_Follow_Test_3' } 
+        params: { limit: 500, proxy_name: 'Follower_Rig_Follow_Test_3' } 
       });
       const history = await historyRes.json();
       followerRigFound = history.find(p => 
@@ -367,6 +359,8 @@ test.describe('Rig Following Scenarios', () => {
     expect(statusFound).toBeTruthy();
     } finally {
       await deleteProfile(request, profileName);
+      await request.delete('http://127.0.0.1:9000/api/proxies/9014').catch(() => {});
+      await request.delete('http://127.0.0.1:9000/api/proxies/9015').catch(() => {});
     }
     await expect(
       ensureProfileExists(request, profileName, { allowCreate: false })
@@ -378,25 +372,21 @@ test.describe('Rig Following Scenarios', () => {
     const followerRigProxyPort = 9017;
     const targetRigctldPort = 4532;
 
-    const mainProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: mainRigProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Main_Rig_Follow_Test_4',
-        protocol: 'hamlib'
-      }
+    const mainProxyRes = await createProxy(request, {
+      local_port: mainRigProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Main_Rig_Follow_Test_4',
+      protocol: 'hamlib'
     });
     expect(mainProxyRes.ok()).toBeTruthy();
 
-    const followerProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: followerRigProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Follower_Rig_Follow_Test_4',
-        protocol: 'hamlib'
-      }
+    const followerProxyRes = await createProxy(request, {
+      local_port: followerRigProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Follower_Rig_Follow_Test_4',
+      protocol: 'hamlib'
     });
     expect(followerProxyRes.ok()).toBeTruthy();
 
@@ -458,7 +448,7 @@ test.describe('Rig Following Scenarios', () => {
     let mainRigFound = undefined;
     for (let i = 0; i < 5; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Main_Rig_Follow_Test_4' } 
+        params: { limit: 500, proxy_name: 'Main_Rig_Follow_Test_4' } 
       });
       const history = await historyRes.json();
       mainRigFound = history.find(p => 
@@ -474,7 +464,7 @@ test.describe('Rig Following Scenarios', () => {
     let followerRigFound = undefined;
     for (let i = 0; i < 5; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Follower_Rig_Follow_Test_4' } 
+        params: { limit: 500, proxy_name: 'Follower_Rig_Follow_Test_4' } 
       });
       const history = await historyRes.json();
       followerRigFound = history.find(p => 
@@ -488,6 +478,8 @@ test.describe('Rig Following Scenarios', () => {
     expect(followerRigFound).toBeTruthy();
     } finally {
       await deleteProfile(request, profileName);
+      await request.delete('http://127.0.0.1:9000/api/proxies/9016').catch(() => {});
+      await request.delete('http://127.0.0.1:9000/api/proxies/9017').catch(() => {});
     }
     await expect(
       ensureProfileExists(request, profileName, { allowCreate: false })
@@ -500,36 +492,30 @@ test.describe('Rig Following Scenarios', () => {
     const follower2ProxyPort = 9052;
     const targetRigctldPort = 4532;
 
-    const mainProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: mainRigProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Main_Rig_Follow_Test_6',
-        protocol: 'hamlib'
-      }
+    const mainProxyRes = await createProxy(request, {
+      local_port: mainRigProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Main_Rig_Follow_Test_6',
+      protocol: 'hamlib'
     });
     expect(mainProxyRes.ok()).toBeTruthy();
 
-    const follower1ProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: follower1ProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Follower1_Rig_Follow_Test_6',
-        protocol: 'hamlib'
-      }
+    const follower1ProxyRes = await createProxy(request, {
+      local_port: follower1ProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Follower1_Rig_Follow_Test_6',
+      protocol: 'hamlib'
     });
     expect(follower1ProxyRes.ok()).toBeTruthy();
 
-    const follower2ProxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: follower2ProxyPort,
-        target_host: '127.0.0.1',
-        target_port: targetRigctldPort,
-        name: 'Follower2_Rig_Follow_Test_6',
-        protocol: 'hamlib'
-      }
+    const follower2ProxyRes = await createProxy(request, {
+      local_port: follower2ProxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetRigctldPort,
+      name: 'Follower2_Rig_Follow_Test_6',
+      protocol: 'hamlib'
     });
     expect(follower2ProxyRes.ok()).toBeTruthy();
 
@@ -597,7 +583,7 @@ test.describe('Rig Following Scenarios', () => {
     let mainRigFound = undefined;
     for (let i = 0; i < 10; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Main_Rig_Follow_Test_6' } 
+        params: { limit: 500, proxy_name: 'Main_Rig_Follow_Test_6' } 
       });
       const history = await historyRes.json();
       mainRigFound = history.find(p => 
@@ -613,7 +599,7 @@ test.describe('Rig Following Scenarios', () => {
     let follower1Found = undefined;
     for (let i = 0; i < 10; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Follower1_Rig_Follow_Test_6' } 
+        params: { limit: 500, proxy_name: 'Follower1_Rig_Follow_Test_6' } 
       });
       const history = await historyRes.json();
       follower1Found = history.find(p => 
@@ -629,7 +615,7 @@ test.describe('Rig Following Scenarios', () => {
     let follower2Found = undefined;
     for (let i = 0; i < 10; i++) {
       const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
-        params: { limit: 100, proxy_name: 'Follower2_Rig_Follow_Test_6' } 
+        params: { limit: 500, proxy_name: 'Follower2_Rig_Follow_Test_6' } 
       });
       const history = await historyRes.json();
       follower2Found = history.find(p => 
@@ -643,6 +629,9 @@ test.describe('Rig Following Scenarios', () => {
     expect(follower2Found).toBeFalsy();
     } finally {
       await deleteProfile(request, profileName);
+      await request.delete('http://127.0.0.1:9000/api/proxies/9050').catch(() => {});
+      await request.delete('http://127.0.0.1:9000/api/proxies/9051').catch(() => {});
+      await request.delete('http://127.0.0.1:9000/api/proxies/9052').catch(() => {});
     }
     await expect(
       ensureProfileExists(request, profileName, { allowCreate: false })

@@ -11,6 +11,92 @@ from .config import RigConfig
 from .protocols import HamlibParser
 
 
+def _parse_bool_flag(v: str) -> bool:
+    """Parse a boolean flag from dump_caps output.
+    
+    Args:
+        v: Flag character ('Y', 'E', 'N', etc.).
+    
+    Returns:
+        True if flag is 'Y' or 'E', False otherwise.
+    """
+    s = (v or "").strip().upper()
+    return s in {"Y", "E"}
+
+
+def _parse_mode_list(rest: str) -> list[str]:
+    """Parse mode list from dump_caps output.
+    
+    Args:
+        rest: Mode list string (e.g., "USB LSB CW AM FM").
+    
+    Returns:
+        List of unique mode strings, deduplicated and cleaned.
+    """
+    rest = (rest or "").strip()
+    if not rest or rest.startswith("None"):
+        return []
+    out: list[str] = []
+    seen: set[str] = set()
+    for tok in rest.split():
+        t = tok.strip().rstrip(",;:")
+        t = t.rstrip(".")
+        if not t or t == "None":
+            continue
+        if t not in seen:
+            seen.add(t)
+            out.append(t)
+    return out
+
+
+def parse_dump_caps(text: str) -> tuple[dict[str, bool], list[str]]:
+    """Parse rig capabilities from dump_caps output.
+    
+    Args:
+        text: Output from 'dump_caps' rigctl command.
+    
+    Returns:
+        Tuple of (capabilities dict, modes list). Capabilities dict has keys like
+        'freq_get', 'freq_set', 'mode_get', 'mode_set', 'vfo_get', 'vfo_set',
+        'ptt_get', 'ptt_set' with boolean values.
+    """
+    caps: dict[str, bool] = {}
+    modes: list[str] = []
+    modes_seen: set[str] = set()
+    for line in (text or "").splitlines():
+        s = line.strip()
+        if s.startswith("Mode list:"):
+            _, rest = s.split(":", 1)
+            for m in _parse_mode_list(rest):
+                if m not in modes_seen:
+                    modes_seen.add(m)
+                    modes.append(m)
+        if not s.startswith("Can "):
+            continue
+        if ":" not in s:
+            continue
+        key, rest = s.split(":", 1)
+        flag = rest.strip()[:1]
+        if key == "Can set Frequency":
+            caps["freq_set"] = _parse_bool_flag(flag)
+        elif key == "Can get Frequency":
+            caps["freq_get"] = _parse_bool_flag(flag)
+        elif key == "Can set Mode":
+            caps["mode_set"] = _parse_bool_flag(flag)
+        elif key == "Can get Mode":
+            caps["mode_get"] = _parse_bool_flag(flag)
+        elif key == "Can set VFO":
+            caps["vfo_set"] = _parse_bool_flag(flag)
+        elif key == "Can get VFO":
+            caps["vfo_get"] = _parse_bool_flag(flag)
+        elif key == "Can set PTT":
+            caps["ptt_set"] = _parse_bool_flag(flag)
+        elif key == "Can get PTT":
+            caps["ptt_get"] = _parse_bool_flag(flag)
+
+    return caps, modes
+
+
 class RigctlError(Exception):
     """Exception raised when a rigctl command returns an error code."""
     def __init__(self, code: int, message: str = ""):
@@ -650,6 +736,11 @@ class RigClient:
         self.cfg = cfg
         self._backend: RigBackend = self._make_backend(cfg)
         self._last_error: Optional[str] = None
+        self._caps: Optional[Dict[str, bool]] = None
+        self._modes: Optional[List[str]] = None
+        self._caps_detected: bool = False
+        self._last_connected_state: bool = False
+        self._check_caps_call_count: int = 0
 
     def _make_backend(self, cfg: RigConfig) -> RigBackend:
         if cfg.connection_type == "hamlib":
@@ -755,6 +846,53 @@ class RigClient:
     async def dump_caps(self) -> Sequence[str]:
         return await self._backend.dump_caps()
 
+    async def refresh_caps(self) -> Dict[str, Any]:
+        """Refresh rig capabilities by running dump_caps and caching results.
+        
+        Returns:
+            Dict with 'caps' (capabilities dict), 'modes' (list of mode strings),
+            and 'raw' (raw dump_caps output lines).
+        """
+        lines = await self.dump_caps()
+        text = "\n".join([ln for ln in lines if ln is not None])
+        caps, modes = parse_dump_caps(text)
+        self._caps = caps or None
+        self._modes = modes or None
+        return {
+            "caps": self._caps or {},
+            "modes": self._modes or [],
+            "raw": list(lines) if lines is not None else [],
+        }
+
+    async def check_and_refresh_caps(self) -> None:
+        """Check connection status and automatically refresh capabilities on first connection.
+        
+        This method should be called periodically (e.g., from a polling loop) to detect
+        when a rig connects and automatically run dump_caps to detect its capabilities.
+        Capabilities are only refreshed once per connection to avoid overhead.
+        """
+        self._check_caps_call_count += 1
+        try:
+            status = await self.status()
+            current_connected = status.connected
+            
+            # Detect disconnection - reset the caps_detected flag
+            if self._last_connected_state and not current_connected:
+                self._caps_detected = False
+            
+            # Detect first connection or reconnection
+            if current_connected and not self._caps_detected:
+                try:
+                    await self.refresh_caps()
+                    self._caps_detected = True
+                except Exception:
+                    # Mark as detected even on failure to avoid repeated attempts
+                    self._caps_detected = True
+            
+            self._last_connected_state = current_connected
+        except Exception:
+            pass
+
     async def status(self) -> RigStatus:
         return await self._backend.status()
 
@@ -762,6 +900,11 @@ class RigClient:
         await self._backend.close()
 
     async def safe_status(self) -> Dict[str, Any]:
+        """Get JSON-safe rig status including capabilities and band presets.
+        
+        Returns:
+            Dict with rig status, configuration, and cached capabilities.
+        """
         s = await self.status()
         data: Dict[str, Any] = {
             "name": self.cfg.name,
@@ -770,11 +913,13 @@ class RigClient:
             "frequency_hz": s.frequency_hz,
             "mode": s.mode,
             "passband": s.passband,
-            "error": s.error, # Connection error
-            "last_error": self._last_error, # Last operational error
+            "error": s.error,
+            "last_error": self._last_error,
             "connection_type": self.cfg.connection_type,
             "follow_main": getattr(self.cfg, "follow_main", True),
             "model_id": self.cfg.model_id,
+            "caps": self._caps,
+            "modes": self._modes,
             "band_presets": [
                 {
                     "label": p.label,
@@ -786,12 +931,10 @@ class RigClient:
                 for p in self.cfg.band_presets
             ],
             "allow_out_of_band": self.cfg.allow_out_of_band,
+            "check_caps_call_count": self._check_caps_call_count,
         }
         if self.cfg.connection_type == "rigctld":
             data.update({"host": self.cfg.host, "port": self.cfg.port})
         else:
-            data.update({
-                "device": self.cfg.device,
-                "baud": self.cfg.baud,
-            })
+            data.update({"device": self.cfg.device, "baud": self.cfg.baud})
         return data

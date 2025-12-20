@@ -603,6 +603,15 @@
                 body: JSON.stringify(rigConfig),
               });
               const result = await res.json();
+
+              const modelId = fieldset.querySelector('select[data-key="model_id"]')?.value;
+              if (modelId != null && String(modelId).trim() !== '' && result && result.caps && typeof result.caps === 'object') {
+                const model = getModelById(modelId);
+                if (model) {
+                  model.caps = result.caps;
+                  if (Array.isArray(result.modes)) model.modes = result.modes;
+                }
+              }
               if (result?.detected_bands && Array.isArray(result.detected_bands) && result.detected_bands.length) {
                 nextPresets = result.detected_bands;
               }
@@ -613,9 +622,7 @@
             nextPresets = defaultBandPresets();
           }
 
-          // Clear all existing rows
           rows.innerHTML = '';
-          // Add default bands
           nextPresets.forEach((p) => {
             addRow(p);
           });
@@ -628,12 +635,23 @@
       rebuildOptions();
     }
 
+    /**
+     * Get a rig model by ID.
+     * @param {number|string} modelId - The model ID to look up.
+     * @returns {Object|null} The model object or null if not found.
+     */
     function getModelById(modelId) {
       const id = Number(modelId);
       if (!Number.isFinite(id)) return null;
       return rigModels.find(m => Number(m.id) === id) || null;
     }
 
+    /**
+     * Format read/write capability flags.
+     * @param {boolean} getOk - Whether read is supported.
+     * @param {boolean} setOk - Whether write is supported.
+     * @returns {string} 'RW', 'R', 'W', or empty string.
+     */
     function formatRw(getOk, setOk) {
       if (getOk && setOk) return 'RW';
       if (getOk) return 'R';
@@ -641,6 +659,11 @@
       return '';
     }
 
+    /**
+     * Render capability badges for a rig model.
+     * @param {HTMLElement} el - Container element for badges.
+     * @param {number|string} modelId - The model ID.
+     */
     function renderCapsBadges(el, modelId) {
       if (!el) return;
       if (modelId === null || modelId === undefined || String(modelId).trim() === '') {
@@ -682,6 +705,11 @@
       });
     }
 
+    /**
+     * Render mode badges for a rig model.
+     * @param {HTMLElement} el - Container element for badges.
+     * @param {number|string} modelId - The model ID.
+     */
     function renderModesBadges(el, modelId) {
       if (!el) return;
       if (modelId === null || modelId === undefined || String(modelId).trim() === '') {
@@ -851,6 +879,71 @@
       }
     }
 
+    async function refreshRigCaps(fieldset) {
+      const btn = fieldset.querySelector('[data-action="caps"]');
+      const resultDiv = fieldset.querySelector('.test-result');
+      if (!btn) return;
+
+      const prevText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Getting...';
+      if (resultDiv) {
+        resultDiv.style.display = 'block';
+        resultDiv.classList.remove('loading', 'success', 'warning', 'error');
+        resultDiv.classList.add('loading');
+        resultDiv.textContent = 'Fetching capabilities (dump_caps)...';
+      }
+
+      try {
+        const rigConfig = collectRigConfig(fieldset);
+        const res = await fetch('/api/test-rig', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(rigConfig)
+        });
+        const result = await res.json();
+
+        const modelId = fieldset.querySelector('select[data-key="model_id"]')?.value;
+        if (modelId == null || String(modelId).trim() === '') {
+          throw new Error('Select a model first');
+        }
+
+        if (!result || !result.caps || typeof result.caps !== 'object') {
+          throw new Error('No caps returned');
+        }
+
+        const model = getModelById(modelId);
+        if (!model) {
+          throw new Error('Model not found');
+        }
+        model.caps = result.caps;
+        if (Array.isArray(result.modes)) model.modes = result.modes;
+
+        // Re-render badges.
+        try {
+          const capsEl = fieldset.querySelector('[data-role="caps"]');
+          const modesEl = fieldset.querySelector('[data-role="modes"]');
+          renderCapsBadges(capsEl, modelId);
+          renderModesBadges(modesEl, modelId);
+        } catch {}
+
+        if (resultDiv) {
+          resultDiv.classList.remove('loading', 'warning', 'error');
+          resultDiv.classList.add('success');
+          resultDiv.textContent = 'Capabilities updated.';
+        }
+      } catch (e) {
+        if (resultDiv) {
+          resultDiv.classList.remove('loading', 'success', 'warning');
+          resultDiv.classList.add('error');
+          resultDiv.textContent = `Failed to get capabilities: ${e.message || e}`;
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = prevText;
+      }
+    }
+
     async function showSerialPorts(fieldset) {
       const portsDiv = fieldset.querySelector('.ports-list');
       const deviceInput = fieldset.querySelector('input[data-key="device"]');
@@ -933,6 +1026,7 @@
           </div>
           <div class="actions">
             <button type="button" data-action="test">Test Connection</button>
+            <button type="button" data-action="caps">Get capabilities</button>
             <button type="button" data-action="remove">Remove</button>
           </div>
           <div class="rig-section" data-role="band-presets-section">
@@ -973,6 +1067,11 @@
         // Wire test button
         fs.querySelector('[data-action="test"]').addEventListener('click', async () => {
           await testRigConnection(fs);
+        });
+
+        // Wire caps button
+        fs.querySelector('[data-action="caps"]').addEventListener('click', async () => {
+          await refreshRigCaps(fs);
         });
 
         // Wire show ports button
@@ -1022,6 +1121,26 @@
         suppressAutosave = true;
         const res = await fetch('/api/config');
         const cfg = await res.json();
+        
+        // Also load runtime status to get auto-detected caps
+        try {
+          const statusRes = await fetch('/api/status');
+          const status = await statusRes.json();
+          const statusRigs = Array.isArray(status?.rigs) ? status.rigs : [];
+          // Merge detected caps into rigModels cache for display
+          statusRigs.forEach(r => {
+            if (r.model_id != null && r.caps) {
+              const model = getModelById(r.model_id);
+              if (model) {
+                model.caps = r.caps;
+                if (Array.isArray(r.modes)) model.modes = r.modes;
+              }
+            }
+          });
+        } catch (e) {
+          console.warn('Failed to load status for caps:', e);
+        }
+
         rigs = Array.isArray(cfg.rigs) && cfg.rigs.length ? cfg.rigs : [];
         syncEnabled = cfg.sync_enabled !== false;
         syncSourceIndex = Number.isFinite(Number(cfg.sync_source_index)) ? Number(cfg.sync_source_index) : 0;

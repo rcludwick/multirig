@@ -36,6 +36,15 @@ class SyncService:
         while True:
             try:
                 await asyncio.sleep(interval)
+                
+                # Check and refresh capabilities for all rigs
+                for rig in self.rigs:
+                    if getattr(rig.cfg, "enabled", True):
+                        try:
+                            await rig.check_and_refresh_caps()
+                        except Exception:
+                            pass
+                
                 if not self.enabled:
                     continue
 

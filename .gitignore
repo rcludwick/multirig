@@ -1,6 +1,7 @@
 .venv/
 multirig.config.yaml
 __pycache__/
+multirig/__pycache__/
 *.pyc
 node_modules/
 playwright-report/

@@ -221,6 +221,11 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
             app.state.sync_service._last = (None, None, None)
         except Exception:
             pass
+        
+        # Restart sync service to pick up new rigs
+        await app.state.sync_service.stop()
+        await app.state.sync_service.start()
+        
         await _restart_rigctl_server(start=restart_rigctl)
 
     def _profiles_dir() -> Path:
@@ -688,6 +693,20 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
         save_config(app.state.config, app.state.config_path)
         return {"status": "ok", "follow_main": follow_main}
 
+    @app.post("/api/rig/{idx}/caps")
+    async def refresh_rig_caps(idx: int):
+        if idx < 0 or idx >= len(app.state.rigs):
+            return {"status": "error", "error": "rig index out of range"}
+        rig = app.state.rigs[idx]
+        st = await rig.status()
+        if not st.connected:
+            return {"status": "error", "error": "rig not connected"}
+        try:
+            result = await rig.refresh_caps()
+            return {"status": "ok", **result}
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
+
     @app.post("/api/rig/enabled_all")
     async def set_all_rigs_enabled(payload: dict):
         enabled = bool(payload.get("enabled", True))
@@ -780,13 +799,19 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
         for idx, r in enumerate(rigs):
             r["index"] = idx
         all_rigs_enabled = bool(rigs) and all(r.get("enabled", True) is not False for r in rigs)
-        return {
+        result = {
             "rigs": rigs,
             "sync_enabled": app.state.sync_service.enabled,
             "sync_source_index": app.state.sync_service.source_index,
             "rigctl_to_main_enabled": getattr(app.state.config, "rigctl_to_main_enabled", True),
             "all_rigs_enabled": all_rigs_enabled,
         }
+        # Add diagnostic info if available (not present in test mocks)
+        if hasattr(app.state.sync_service, '_task'):
+            result["sync_service_running"] = app.state.sync_service._task is not None and not app.state.sync_service._task.done()
+        if hasattr(app.state.sync_service, 'rigs'):
+            result["sync_service_rigs_count"] = len(app.state.sync_service.rigs)
+        return result
 
     @app.post("/api/sync/{enabled}")
     async def set_sync_compat(enabled: bool):
@@ -909,6 +934,12 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
                 except Exception:
                     # If band detection fails, continue without it
                     pass
+
+                caps_result = None
+                try:
+                    caps_result = await test_rig.refresh_caps()
+                except Exception:
+                    caps_result = None
                 
                 await test_rig.close()
 
@@ -926,14 +957,18 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
                         "status": "success",
                         "message": f"Connected successfully! Frequency: {status['frequency_hz']} Hz, Mode: {status.get('mode', 'unknown')}.{band_msg}",
                         "details": status,
-                        "detected_bands": detected_bands
+                        "detected_bands": detected_bands,
+                        "caps": (caps_result or {}).get("caps", {}),
+                        "modes": (caps_result or {}).get("modes", []),
                     }
                 else:
                     return {
                         "status": "warning",
                         "message": "Connected but could not read rig status. Check your model ID and settings.",
                         "details": status,
-                        "detected_bands": detected_bands
+                        "detected_bands": detected_bands,
+                        "caps": (caps_result or {}).get("caps", {}),
+                        "modes": (caps_result or {}).get("modes", []),
                     }
             except Exception as e:
                 await test_rig.close()

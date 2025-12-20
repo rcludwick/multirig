@@ -1,22 +1,28 @@
 const { test, expect } = require('@playwright/test');
 const net = require('net');
+const { createProxy } = require('./profile_helpers');
 
 test.describe('Netmind Integration', () => {
   test('should forward dump_caps from Multirig to Netmind to Rig', async ({ request }) => {
-    // 1. Setup Netmind Proxy: Listen on 9001, Forward to 4532 (Dummy Rig)
-    const proxyRes = await request.post('http://127.0.0.1:9000/api/proxies', {
-      data: {
-        local_port: 9001,
-        target_host: '127.0.0.1',
-        target_port: 4532,
-        name: 'Multirig_Test_Path',
-        protocol: 'hamlib'
-      }
+    const proxyPort = 9001;
+    const targetPort = 4532;
+
+    const proxyRes = await createProxy(request, {
+      local_port: proxyPort,
+      target_host: '127.0.0.1',
+      target_port: targetPort,
+      name: 'Netmind_Integration_Proxy',
+      protocol: 'hamlib'
     });
+    
+    if (!proxyRes.ok()) {
+        const body = await proxyRes.text();
+        console.log('Netmind proxy creation failed:', proxyRes.status(), body);
+    }
     expect(proxyRes.ok()).toBeTruthy();
 
-    // 2. Configure Multirig to use the Netmind Proxy as "Rig 1"
-    const configRes = await request.get('/api/config');
+    try {
+      const configRes = await request.get('/api/config');
     expect(configRes.ok()).toBeTruthy();
     const config = await configRes.json();
 
@@ -37,10 +43,9 @@ test.describe('Netmind Integration', () => {
     });
     expect(updateRes.ok()).toBeTruthy();
 
-    // Allow some time for Multirig to reconnect
-    await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // 3. Connect to Multirig's Rigctl Server (Port 4534) and send \dump_caps
+      // Connect to Multirig's rigctl server and send dump_caps command
     const client = new net.Socket();
     const responsePromise = new Promise((resolve, reject) => {
       client.connect(4534, '127.0.0.1', () => {
@@ -76,8 +81,7 @@ test.describe('Netmind Integration', () => {
     console.log("Multirig response length:", rigctlResponse.length);
     // console.log("Multirig response snippet:", rigctlResponse.substring(0, 100));
 
-    // 4. Verify Netmind received the command
-    // Poll for history
+      // Verify Netmind captured the dump_caps command in history
     let found = undefined;
     for (let i = 0; i < 10; i++) {
         const historyRes = await request.get('http://127.0.0.1:9000/api/history', {
@@ -108,6 +112,10 @@ test.describe('Netmind Integration', () => {
         console.log(JSON.stringify(debugHistory, null, 2));
     }
 
-    expect(found).toBeDefined();
+      expect(found).toBeDefined();
+    } finally {
+      // Cleanup: Remove Netmind proxy
+      await request.delete('http://127.0.0.1:9000/api/proxies/9001').catch(() => {});
+    }
   });
 });

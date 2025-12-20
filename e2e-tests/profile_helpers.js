@@ -167,9 +167,28 @@ async function deleteProfile(request, name) {
   return true;
 }
 
+/**
+ * Create a NetMind proxy with pre-cleanup.
+ * 
+ * @param {import('@playwright/test').APIRequestContext} request 
+ * @param {object} proxyData Proxy configuration data
+ * @returns {Promise<import('@playwright/test').APIResponse>}
+ */
+async function createProxy(request, proxyData) {
+  const { local_port } = proxyData;
+  // Cleanup before start
+  await request.delete(`http://127.0.0.1:9000/api/proxies/${local_port}`).catch(() => {});
+  
+  const res = await request.post('http://127.0.0.1:9000/api/proxies', {
+    data: proxyData
+  });
+  return res;
+}
+
 module.exports = {
   ensureProfileExists,
   loadProfile,
   deleteProfile,
   listProfiles,
+  createProxy,
 };
