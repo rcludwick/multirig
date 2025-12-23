@@ -932,6 +932,7 @@ class RigClient:
             ],
             "allow_out_of_band": self.cfg.allow_out_of_band,
             "check_caps_call_count": self._check_caps_call_count,
+            "color": getattr(self.cfg, "color", "#a4c356"),
         }
         if self.cfg.connection_type == "rigctld":
             data.update({"host": self.cfg.host, "port": self.cfg.port})

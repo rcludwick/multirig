@@ -67,9 +67,10 @@ test.describe('Dashboard - Rig enabled toggle', () => {
     await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
 
     try {
-      await loadProfile(request, profileName);
-
       await page.goto('/');
+      // Use request context to load profile to avoid page reload race conditions
+      await loadProfile(page.request, profileName);
+      await page.reload();
 
       const card0 = page.locator('#rig-0');
       await expect(card0).toBeVisible();

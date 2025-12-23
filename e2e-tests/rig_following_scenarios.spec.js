@@ -7,7 +7,7 @@ test.describe.configure({ mode: 'serial' });
 
 test.describe('Rig Following Scenarios', () => {
   
-  test('follower with follow_main=true and band enabled should sync successfully', async ({ request }) => {
+  test('follower with follow_main=true and band enabled should sync successfully', async ({ request, page }) => {
     const mainRigProxyPort = 9010;
     const followerRigProxyPort = 9011;
     const targetRigctldPort = 4532;
@@ -60,6 +60,8 @@ test.describe('Rig Following Scenarios', () => {
     await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
     try {
       await loadProfile(request, profileName);
+      // Reload page if provided to ensure UI reflects new profile
+      if (page) await page.reload();
       await new Promise(r => setTimeout(r, 1500));
 
     const client = new net.Socket();
@@ -120,7 +122,7 @@ test.describe('Rig Following Scenarios', () => {
     ).rejects.toThrow(/profile not found/);
   });
 
-  test('follower with follow_main=false should NOT sync', async ({ request }) => {
+  test('follower with follow_main=false should NOT sync', async ({ request, page }) => {
     const mainRigProxyPort = 9012;
     const followerRigProxyPort = 9013;
     const targetRigctldPort = 4532;
@@ -173,6 +175,7 @@ test.describe('Rig Following Scenarios', () => {
     await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
     try {
       await loadProfile(request, profileName);
+      if (page) await page.reload();
       await new Promise(r => setTimeout(r, 1500));
 
     const client = new net.Socket();
@@ -233,7 +236,7 @@ test.describe('Rig Following Scenarios', () => {
     ).rejects.toThrow(/profile not found/);
   });
 
-  test('follower with band disabled should NOT sync and report error', async ({ request }) => {
+  test('follower with band disabled should NOT sync and report error', async ({ request, page }) => {
     const mainRigProxyPort = 9014;
     const followerRigProxyPort = 9015;
     const targetRigctldPort = 4532;
@@ -292,6 +295,7 @@ test.describe('Rig Following Scenarios', () => {
     await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
     try {
       await loadProfile(request, profileName);
+      if (page) await page.reload();
       await new Promise(r => setTimeout(r, 1500));
 
     const client = new net.Socket();
@@ -367,7 +371,7 @@ test.describe('Rig Following Scenarios', () => {
     ).rejects.toThrow(/profile not found/);
   });
 
-  test('follower with allow_out_of_band=true should sync even if band disabled', async ({ request }) => {
+  test('follower with allow_out_of_band=true should sync even if band disabled', async ({ request, page }) => {
     const mainRigProxyPort = 9016;
     const followerRigProxyPort = 9017;
     const targetRigctldPort = 4532;
@@ -426,6 +430,7 @@ test.describe('Rig Following Scenarios', () => {
     await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
     try {
       await loadProfile(request, profileName);
+      if (page) await page.reload();
       await new Promise(r => setTimeout(r, 1500));
 
     const client = new net.Socket();
@@ -486,7 +491,7 @@ test.describe('Rig Following Scenarios', () => {
     ).rejects.toThrow(/profile not found/);
   });
 
-  test('multiple followers with mixed configurations', async ({ request }) => {
+  test('multiple followers with mixed configurations', async ({ request, page }) => {
     const mainRigProxyPort = 9050;
     const follower1ProxyPort = 9051;
     const follower2ProxyPort = 9052;
@@ -558,6 +563,7 @@ test.describe('Rig Following Scenarios', () => {
     await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
     try {
       await loadProfile(request, profileName);
+      if (page) await page.reload();
 
       // Wait for config to be applied and rigs to connect
       await new Promise(r => setTimeout(r, 3000));

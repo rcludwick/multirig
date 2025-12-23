@@ -38,7 +38,10 @@ test.describe('Band Change Out-of-Band Validation', () => {
     const profileName = 'test_band_change_out_of_band_validation';
     try {
       await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
-      await loadProfile(request, profileName);
+      // Use request context to load profile to avoid page reload race conditions
+      await loadProfile(page.request, profileName);
+      await page.reload();
+
       await page.waitForTimeout(1000);
       await page.goto('/');
       

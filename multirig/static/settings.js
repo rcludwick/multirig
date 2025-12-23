@@ -131,6 +131,7 @@
           serial_opts: val('input[data-key="serial_opts"]') || null,
           extra_args: val('input[data-key="extra_args"]') || null,
           band_presets,
+          color: val('input[data-key="color"]') || '#a4c356',
         };
       });
       const poll = Number(form.querySelector('input[name="poll"]').value || 1000);
@@ -992,6 +993,12 @@
         fs.innerHTML = `
           <legend>Rig ${idx+1}</legend>
           <label>Name <input type="text" data-key="name" value="${rig.name ?? ''}" placeholder="Rig"></label>
+          <label>Color 
+            <span class="color-picker-wrapper">
+              <input type="color" data-key="color" value="${rig.color ?? '#a4c356'}">
+              <button type="button" class="color-reset-btn" data-action="reset-color">Default</button>
+            </span>
+          </label>
           <label>Poll interval (ms) <input type="number" min="100" step="50" data-key="poll_interval_ms" value="${rig.poll_interval_ms ?? 1000}"></label>
           <label class="allow-oob">
             <input type="checkbox" data-key="allow_out_of_band" ${rig.allow_out_of_band ? 'checked' : ''}>
@@ -1107,6 +1114,19 @@
 
         const bandsEl = fs.querySelector('[data-role="band-presets"]');
         renderBandPresets(bandsEl, ensureBandPresets(rig));
+
+        // Wire color reset button
+        const colorResetBtn = fs.querySelector('[data-action="reset-color"]');
+        if (colorResetBtn) {
+            colorResetBtn.addEventListener('click', () => {
+                const colorInput = fs.querySelector('input[data-key="color"]');
+                if (colorInput) {
+                    colorInput.value = '#a4c356';
+                    // Trigger input event to ensure autosave picks up the change
+                    colorInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            });
+        }
 
         rigList.appendChild(fs);
       });
@@ -1295,7 +1315,7 @@
 
     addRigBtn.addEventListener('click', () => {
       const nextIndex = rigs.length + 1;
-      rigs.push({ name: `Rig ${nextIndex}`, connection_type: 'hamlib', model_id: null, device: '', baud: 38400 });
+      rigs.push({ name: `Rig ${nextIndex}`, connection_type: 'hamlib', model_id: null, device: '', baud: 38400, color: '#a4c356' });
       render();
     });
 

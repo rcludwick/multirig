@@ -37,7 +37,10 @@ test.describe('Band Change Validation', () => {
 
     const profileName = 'test_band_change_validation';
     await ensureProfileExists(request, profileName, { allowCreate: true, configYaml });
-    await loadProfile(request, profileName);
+    // Use request context to load profile to avoid page reload race conditions
+    await loadProfile(page.request, profileName);
+    await page.reload();
+
     try {
       await page.waitForTimeout(1000);
       await page.goto('/');

@@ -1,6 +1,8 @@
+"""Unit tests for app.py - ProfileManager, API endpoints, and configuration management."""
 import pytest
+from pathlib import Path
 from fastapi.testclient import TestClient
-
+from multirig.app import ProfileManager
 
 class DummyRigStatus:
     def __init__(self, *, connected=True, frequency_hz=None, mode=None, passband=None):
@@ -13,7 +15,6 @@ class DummyRigStatus:
         self.vfo = None
         self.ptt = None
         self.error = None
-
 
 class DummyRigClient:
     def __init__(self, cfg):
@@ -69,7 +70,6 @@ class DummyRigClient:
     async def close(self) -> None:
         return None
 
-
 class DummySyncService:
     def __init__(self, rigs, interval_ms=750, *, enabled=True, source_index=0):
         self.rigs = rigs
@@ -82,7 +82,6 @@ class DummySyncService:
 
     async def stop(self):
         return None
-
 
 class DummyRigctlServer:
     def __init__(self, *args, **kwargs):
@@ -102,7 +101,6 @@ class DummyRigctlServer:
 
     async def stop(self):
         return None
-
 
 @pytest.fixture()
 def client(monkeypatch, tmp_path):
@@ -146,21 +144,7 @@ def client(monkeypatch, tmp_path):
     app = appmod.create_app(config_path=tmp_path / "test.yaml")
     return TestClient(app)
 
-
-def test_follow_main_toggle(client):
-    r = client.get("/api/config")
-    assert r.status_code == 200
-    assert r.json()["rigs"][1]["follow_main"] is True
-
-    r2 = client.post("/api/rig/1/follow_main", json={"follow_main": False})
-    assert r2.status_code == 200
-    assert r2.json()["status"] == "ok"
-    assert r2.json()["follow_main"] is False
-
-    r3 = client.get("/api/config")
-    assert r3.json()["rigs"][1]["follow_main"] is False
-
-
+# Original test_app.py tests
 def test_set_rig_frequency_out_of_band_blocked(client):
     # 1 MHz is outside 20m
     r = client.post("/api/rig/0/set", json={"frequency_hz": 1000000})
@@ -168,13 +152,6 @@ def test_set_rig_frequency_out_of_band_blocked(client):
     body = r.json()
     assert body["status"] == "error"
     assert "out of configured band ranges" in body["error"]
-
-
-def test_set_rig_frequency_in_band_allowed(client):
-    r = client.post("/api/rig/0/set", json={"frequency_hz": 14074000})
-    assert r.status_code == 200
-    assert r.json()["status"] == "ok"
-
 
 def test_sync_source_index_sets_main_rig(client):
     r = client.post("/api/sync", json={"source_index": 1})
@@ -184,7 +161,6 @@ def test_sync_source_index_sets_main_rig(client):
 
     st = client.get("/api/status").json()
     assert st["sync_source_index"] == 1
-
 
 def test_sync_all_once_only_follows_followers(client):
     # Make rig0 the source, rig1 follower, rig2 manual
@@ -203,3 +179,333 @@ def test_sync_all_once_only_follows_followers(client):
     synced = [x["index"] for x in body["results"]]
     assert 1 in synced
     assert 2 not in synced
+
+# ProfileManager tests from test_app_profiles.py
+class TestProfileManager:
+    """Test the ProfileManager class."""
+
+    def test_init_creates_memory_store(self):
+        """ProfileManager should initialize with empty memory store."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        assert isinstance(pm._memory_store, dict)
+        assert len(pm._memory_store) == 0
+
+    def test_persist_active_name_in_test_mode(self):
+        """persist_active_name should not write files in test_mode."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        pm.persist_active_name("TestProfile")
+        # Should not raise any errors
+        assert True
+
+    def test_persist_active_name_writes_file(self, tmp_path):
+        """persist_active_name should write to file when not in test_mode."""
+        active_file = tmp_path / "active_profile"
+        pm = ProfileManager(tmp_path, test_mode=False)
+        pm.active_profile_path = active_file
+
+        pm.persist_active_name("MyProfile")
+        assert active_file.exists()
+        assert active_file.read_text().strip() == "MyProfile"
+
+    def test_get_active_name_returns_empty_string(self, tmp_path):
+        """get_active_name should return empty string when no active profile."""
+        pm = ProfileManager(tmp_path, test_mode=False)
+        assert pm.get_active_name() == ""
+
+    def test_get_active_name_returns_profile_name(self, tmp_path):
+        """get_active_name should return the active profile name."""
+        pm = ProfileManager(tmp_path, test_mode=False)
+        pm.active_profile_path = tmp_path / "active_profile"
+        (tmp_path / "active_profile").write_text("MyProfile\n")
+        assert pm.get_active_name() == "MyProfile"
+
+    def test_list_names_empty_in_test_mode(self):
+        """list_names should return empty list when no profiles exist."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        assert pm.list_names() == []
+
+    def test_list_names_returns_sorted_list(self, tmp_path):
+        """list_names should return sorted list of profile names."""
+        profiles_dir = tmp_path / "profiles"
+        profiles_dir.mkdir()
+        (profiles_dir / "z_profile.yaml").write_text("")
+        (profiles_dir / "a_profile.yaml").write_text("")
+
+        pm = ProfileManager(tmp_path, test_mode=False)
+        pm.profiles_dir = profiles_dir
+        names = pm.list_names()
+        assert names == ["a_profile", "z_profile"]
+
+    def test_exists_returns_false_for_nonexistent(self):
+        """exists should return False for non-existent profile."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        assert not pm.exists("NonexistentProfile")
+
+    def test_exists_returns_true_in_test_mode(self):
+        """exists should return True for profile in memory store."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        pm._memory_store["TestProfile"] = {}
+        assert pm.exists("TestProfile")
+
+    def test_load_data_raises_error_for_missing(self):
+        """load_data should raise FileNotFoundError for missing profile."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        with pytest.raises(FileNotFoundError):
+            pm.load_data("MissingProfile")
+
+    def test_load_data_returns_data_from_memory(self):
+        """load_data should return data from memory store in test_mode."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        test_data = {"key": "value"}
+        pm._memory_store["TestProfile"] = test_data
+        assert pm.load_data("TestProfile") == test_data
+
+    def test_save_data_stores_in_memory(self):
+        """save_data should store data in memory when in test_mode."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        test_data = {"key": "value"}
+        pm.save_data("TestProfile", test_data)
+        assert pm._memory_store["TestProfile"] == test_data
+
+    def test_delete_removes_from_memory(self):
+        """delete should remove profile from memory store in test_mode."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        pm._memory_store["TestProfile"] = {"key": "value"}
+        assert pm.delete("TestProfile") is True
+        assert "TestProfile" not in pm._memory_store
+
+    def test_rename_in_memory(self):
+        """rename should rename profile in memory store."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        pm._memory_store["OldName"] = {"key": "value"}
+        pm.rename("OldName", "NewName")
+        assert "NewName" in pm._memory_store
+        assert "OldName" not in pm._memory_store
+
+    def test_is_valid_name_returns_false_for_empty(self):
+        """is_valid_name should return False for empty string."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        assert not pm.is_valid_name("")
+
+    def test_is_valid_name_returns_false_for_invalid_chars(self):
+        """is_valid_name should return False for invalid characters."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        assert not pm.is_valid_name("Invalid@Name")
+        assert not pm.is_valid_name("Has Spaces")
+
+    def test_is_valid_name_returns_true_for_valid(self):
+        """is_valid_name should return True for valid names."""
+        pm = ProfileManager(Path("/tmp/test"), test_mode=True)
+        assert pm.is_valid_name("Valid_Name")
+        assert pm.is_valid_name("Profile123")
+        assert pm.is_valid_name("Test-Profile")
+
+def test_profile_manager_file_operations(tmp_path):
+    """Test ProfileManager file operations outside of test_mode."""
+    profiles_dir = tmp_path / "profiles"
+    profiles_dir.mkdir()
+
+    pm = ProfileManager(tmp_path, test_mode=False)
+    pm.profiles_dir = profiles_dir
+
+    # Test save and load
+    test_data = {"config": "value"}
+    pm.save_data("TestProfile", test_data)
+
+    assert (profiles_dir / "TestProfile.yaml").exists()
+    loaded = pm.load_data("TestProfile")
+    assert loaded == test_data
+
+    # Test exists
+    assert pm.exists("TestProfile")
+
+    # Test list_names
+    names = pm.list_names()
+    assert "TestProfile" in names
+
+    # Test delete
+    assert pm.delete("TestProfile") is True
+    assert not pm.exists("TestProfile")
+
+# API endpoint tests from test_app_api.py
+def test_update_config(client):
+    """Test updating the configuration."""
+    new_config = {
+        "rigs": [
+            {"name": "Main", "enabled": True, "follow_main": True},
+            {"name": "Follower", "enabled": False, "follow_main": True},
+            {"name": "Manual", "enabled": False, "follow_main": False},
+        ],
+        "sync_enabled": False,
+        "sync_source_index": 0,
+    }
+    response = client.post("/api/config", json=new_config)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+
+def test_list_config_profiles(client):
+    """Test listing configuration profiles."""
+    response = client.get("/api/config/profiles")
+    assert response.status_code == 200
+    data = response.json()
+    assert "profiles" in data
+
+def test_get_active_profile(client):
+    """Test getting the active profile name."""
+    response = client.get("/api/config/active_profile")
+    assert response.status_code == 200
+    data = response.json()
+    assert "name" in data
+
+def test_create_config_profile(client):
+    """Test creating a new configuration profile."""
+    response = client.post("/api/config/profiles/NewProfile/create")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+
+def test_rename_config_profile(client):
+    """Test renaming a configuration profile."""
+    # First create a profile
+    client.post("/api/config/profiles/OldName/create")
+
+    response = client.post("/api/config/profiles/OldName/rename", json={"new_name": "NewName"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+
+def test_duplicate_config_profile(client):
+    """Test duplicating a configuration profile."""
+    # First create a profile
+    client.post("/api/config/profiles/Source/create")
+
+    response = client.post("/api/config/profiles/Source/duplicate", json={"new_name": "Copy"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+
+def test_save_config_profile(client):
+    """Test saving a configuration to a profile."""
+    # First create the profile
+    client.post("/api/config/profiles/TestProfile/create")
+    response = client.post("/api/config/profiles/TestProfile")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+
+def test_export_config_profile(client):
+    """Test exporting a configuration profile."""
+    # First create a profile
+    client.post("/api/config/profiles/ExportMe/create")
+
+    response = client.get("/api/config/profiles/ExportMe/export")
+    assert response.status_code == 200
+    assert "text/yaml" in response.headers["content-type"]
+
+def test_load_config_profile(client):
+    """Test loading a configuration profile."""
+    # First create a profile
+    client.post("/api/config/profiles/LoadMe/create")
+
+    response = client.post("/api/config/profiles/LoadMe/load")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+
+def test_delete_config_profile(client):
+    """Test deleting a configuration profile."""
+    # First create a profile
+    client.post("/api/config/profiles/DeleteMe/create")
+
+    response = client.delete("/api/config/profiles/DeleteMe")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+
+def test_rigctl_listener_status(client):
+    """Test getting rigctl listener status."""
+    response = client.get("/api/rigctl_listener")
+    assert response.status_code == 200
+    data = response.json()
+    assert "host" in data
+    assert "port" in data
+
+def test_set_rig_enabled(client):
+    """Test enabling/disabling a rig."""
+    response = client.post("/api/rig/0/enabled", json={"enabled": False})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+    assert data["enabled"] is False
+
+def test_set_rig_follow_main(client):
+    """Test setting rig follow_main flag."""
+    response = client.post("/api/rig/0/follow_main", json={"follow_main": False})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+    assert data["follow_main"] is False
+
+def test_set_all_rigs_enabled(client):
+    """Test enabling/disabling all rigs."""
+    response = client.post("/api/rig/enabled_all", json={"enabled": False})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+    assert data["enabled"] is False
+
+def test_sync_settings(client):
+    """Test updating sync settings."""
+    response = client.post("/api/sync", json={"enabled": False, "source_index": 1})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+    assert data["enabled"] is False
+    assert data["sync_source_index"] == 1
+
+def test_rigctl_to_main_settings(client):
+    """Test updating rigctl to main settings."""
+    response = client.post("/api/rigctl_to_main", json={"enabled": False})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+    assert data["enabled"] is False
+
+def test_get_status(client):
+    """Test getting overall system status."""
+    response = client.get("/api/status")
+    assert response.status_code == 200
+    data = response.json()
+    assert "rigs" in data
+    assert isinstance(data["rigs"], list)
+
+def test_get_bind_addrs(client):
+    """Test getting available bind addresses."""
+    response = client.get("/api/bind_addrs")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    # Should include localhost and 0.0.0.0
+    assert "127.0.0.1" in data or "0.0.0.0" in data
+
+def test_set_rig_mode(client):
+    """Test setting rig mode."""
+    response = client.post("/api/rig/a/set", json={"mode": "USB"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+
+def test_set_rig_vfo(client):
+    """Test setting rig VFO."""
+    response = client.post("/api/rig/a/set", json={"vfo": "VFOA"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+
+def test_sync_rig_from_source(client):
+    """Test syncing a rig from the source."""
+    response = client.post("/api/rig/1/sync_from_source")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"

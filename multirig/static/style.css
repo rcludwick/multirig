@@ -1299,6 +1299,26 @@ input[type="text"], input[type="number"] { background: #0c1016; border: 1px soli
   color: rgba(255,255,255,0.70);
 }
 
+.settings-page .color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-page .color-reset-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.settings-page .color-reset-btn:hover {
+  border-color: rgba(10, 132, 255, 0.65);
+}
+
 @media (max-width: 720px) {
   .settings-page label { grid-template-columns: 1fr; }
 }

@@ -560,6 +560,18 @@
       const card = document.getElementById(`rig-${idx}`);
       if (!card) return;
 
+      const lcd = card.querySelector('.lcd');
+      if (lcd && rig.color) {
+        lcd.style.background = `linear-gradient(135deg, ${rig.color}dd, ${rig.color}aa)`;
+        // Adjust text color based on brightness if needed, but for now assuming user picks reasonable colors
+        // or we can force a text color if we want.
+        // The original LCD had specific text colors.
+        // If we change background, we might need to ensure text is visible.
+        // The original LCD text color is rgba(0,0,0,0.88) on a light green background.
+        // If user picks dark color, we might need light text.
+        // For now, let's just apply the background.
+      }
+
       applySections(card, idx);
       card.classList.toggle('disconnected', !rig.connected);
       card.classList.toggle('ptt-on', !!rig.ptt);

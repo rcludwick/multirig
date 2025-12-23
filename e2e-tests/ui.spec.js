@@ -28,6 +28,9 @@ const { test, expect } = require('@playwright/test');
 test.describe('Dashboard UI', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    // Use request context to load profile to avoid page reload race conditions
+    await loadProfile(page.request, profileName);
+    await page.reload();
   });
 
   test('Sync all once button should be removed', async ({ page }) => {
