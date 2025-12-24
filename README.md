@@ -1,6 +1,8 @@
 # MultiRig
 
-Control and sync multiple ham radio rigs with a modern, dark‑mode web UI. Choose one rig as the source and MultiRig mirrors its frequency/mode to all the others. Runs on macOS, Linux, and Raspberry Pi.
+Control and sync multiple ham radio rigs with a modern, dark‑mode / retro-LCD web UI. Choose one rig as the source and MultiRig mirrors its frequency/mode to all the others. Runs on macOS, Linux, and Raspberry Pi.
+
+![Dashboard Preview](docs/assets/dashboard.png)
 
 ## Requirements
 - Python 3.9+
@@ -158,6 +160,10 @@ You can also set the sync poll interval (ms) and choose the source rig on the Da
 - `DELETE /api/config/profiles/{name}` — delete profile
 - `POST /api/rig/{index}/set` — set frequency/mode/passband on a specific rig by index; legacy `a|b` aliases map to 0/1
 - `WS /ws` — streaming updates for the SPA
+
+## License
+
+MIT License. See [LICENSE](LICENSE) for details.
 
 ## Notes
 - Config is saved to `multirig.config.yaml` in the working directory (git‑ignored by default). Existing configs with `rig_a`/`rig_b` are auto‑migrated to the new multi‑rig format on load.

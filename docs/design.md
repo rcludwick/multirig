@@ -208,58 +208,52 @@ Playwright helper functions live in `e2e-tests/profile_helpers.js`:
 - Tests should delete profiles during teardown.
 - Tests assert that after deletion the profile cannot be loaded (negative assertion).
 
-## Dashboard notes (original)
+## Dashboard UI Design
 
-For each radio in the config, we need to add those radios in the dashboard.
+The MultiRig dashboard provides a unified interface for monitoring and controlling multiple transceivers simultaneously. It is designed with a responsive grid layout to accommodate varying numbers of connected rigs.
 
-The dashboard should show the rig name, the current frequency, and the current mode along with the capabilities of the
-rig as badges similar to the config page.
+### 1. Top Bar & Global Controls
 
-Each radio should have a sync button that will sync the frequency, mode, etc to the rig.
+The top control bar manages the central coordination logic of MultiRig:
 
-Each radio should have a debug window that is hidden by default but will show the rigctl commands being sent and
-received by the radio.
+- **Rigctl Listener Status**: Displays connection state to the exposed TCP rigctl server.
+- **Main Rig Selection**: Dropdown to designate which connected rig acts as the "Main" rig (source of truth for syncing).
+- **Sync Toggles**:
+    - **TCP → MAIN**: When enabled, commands received via the TCP listener are forwarded to the Main Rig.
+    - **MAIN → FOLLOWERS**: When enabled, frequency/mode changes on the Main Rig are automatically replicated to all enabled Follower rigs.
+    - **ALL RIGS**: Global master switch to enable/disable communication with all rigs instantly.
+- **TCP Traffic Debug**: A collapsible console showing real-time `rigctl` command/response traffic on the TCP listener port.
 
-The dashboard should show the tcp address and port of the listening rigctl server. This should also have a debug section
-that is hidden by default but shows the packets being sent and received by the rigctl server.
+### 2. Rig Cards
 
-Each radio should have a sync all button that will sync the frequency, mode, etc to all radios. This is because an amp
-may be connected to a primary radio, but still needs cat control through rigctl.
+Each configured radio is represented by a "Rig Card" in the main grid.
 
-If PTT is supported, the radio should highlight itself when PTT is active.
+#### Visual Style
+The interface uses a high-contrast "Retro LCD" aesthetic (yellow/green backlight with black segment text) to mimic physical radio displays. This ensures high legibility and provides immediate visual feedback of rig status. A "Dark Mode" (Inverted LCD) preference is persisted in local storage.
 
-For radios that support multiple VFOS the dashboard should show a VFO selector to switch between the VFOs.
+#### Card Components
 
-For radios that support multiple VFOS, both freuencies should be shown in the dashboard.
+- **Header**:
+    - **Rig Name**: As defined in the configuration profile.
+    - **Status LED**: Green (Connected/Idle), Red (Error/Disconnected), Yellow (Polling).
+    - **Enable Toggle**: Individual switch to enable/disable polling and control for this specific rig.
 
-For radios that support multiple modes the dashboard should show a mode selector to switch between the modes.
+- **LCD Display**:
+    - **Frequency**: Large 7-segment display formatted in MHz (e.g., `14.074.000`) or kHz for VLF.
+    - **Mode/Passband**: Current operating mode (USB, LSB, CW, etc.) and passband width.
+    - **VFO/PTT**: Indicators for current VFO (A/B), Split status, and TX/RX state (PTT triggers visual highlight).
 
-The dashboard should show a list of rigs that are connected to the rigctl server, using red and green lights if they are connected or not. If they become disconnected or start erroring, they should have a red light.
+- **Controls**:
+    - **Band Selector**: Quick-access buttons for configured amateur bands (e.g., 20m, 40m).
+    - **Mode Selector**: Dropdown to change operating mode.
+    - **VFO Controls**: Buttons to swap VFO A/B (if supported).
+    - **Follow Main**: Per-rig toggle to opt-out of global syncing (e.g., to operate this rig independently while others follow).
 
-Each radio should have an enable/disable button. This will enable or disable the rigctl server for that radio.
+- **Debug Console**:
+    - Each card includes a hidden-by-default console showing the raw `rigctl` traffic specific to that rig backend.
 
-The dashboard should have a global enable/disable button that will enable or disable all rigctl servers. This will be useful if you want to disable all rigs at once.
+### 3. Responsiveness
 
-The dashboard should show which band the rig is on. This will be useful for quickly identifying which rig is on which band.
-
-The config should have a list of bands the rig can be on.
-
-The dashboard should be able to quickly switch between bands.
-
-All of the ham radio bands should be available in the config.
-
-The radio should show which band it is on up through UHF for now.
-
-The frequency should be shown in a digital like nature similar to what a radio might look like. I would like to see it in Mhz with a decimal point and 6 digits after the decimal point. It should look like 146.520000 MHz. For the very low frequency bands switch to kHz.
-
-The mode should be shown in a digital like nature similar to what a radio might look like.
-
-The style for the radio view should look like a backlit LCD display. The background should be a yellowish/green color and the text should be black.
-
-To support the LCD style, we should use a monospace font, maybe one that is similar to a LCD display or dot matrix display.
-
-There should be a queueing system for rigctl commands. Each radio will get its own queue. Each radio will need its own async task to process the queue and to receive rigctl responses.
-
-The server should query the rigs at a regular interval to get the current frequency, mode, etc. This will be used to update the dashboard.
-
-if the rig is not powered on, the LCD display should look like a dark LCD screen that's turned off.
+The dashboard uses a flexible grid system:
+- **Desktop**: Multiple columns.
+- **Mobile**: Single column stack for phone usage.
