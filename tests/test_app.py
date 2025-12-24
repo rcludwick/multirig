@@ -139,7 +139,7 @@ def client(monkeypatch, tmp_path):
     monkeypatch.setattr(appmod, "save_config", lambda cfg, path: None)
     monkeypatch.setattr(appmod, "RigClient", DummyRigClient)
     monkeypatch.setattr(appmod, "SyncService", DummySyncService)
-    monkeypatch.setattr(appmod, "RigctlTcpServer", DummyRigctlServer)
+    monkeypatch.setattr(appmod, "RigctlServer", DummyRigctlServer)
 
     app = appmod.create_app(config_path=tmp_path / "test.yaml")
     return TestClient(app)

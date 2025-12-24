@@ -1,7 +1,7 @@
 import pytest
 import asyncio
 from unittest.mock import MagicMock, AsyncMock
-from multirig.rigctl_tcp import RigctlTcpServer, RigctlServerConfig
+from multirig.rigctl_tcp import RigctlServer, RigctlServerConfig
 from multirig.rig import RigClient, RigConfig
 
 def parse_dump(path):
@@ -116,7 +116,7 @@ async def test_replay_traffic():
     mock_rig.get_mode = AsyncMock(return_value=("FM", 15000))
 
     rigs = [mock_rig]
-    server = RigctlTcpServer(
+    server = RigctlServer(
         get_rigs=lambda: rigs,
         get_source_index=lambda: 0,
         config=RigctlServerConfig(host="127.0.0.1", port=0)

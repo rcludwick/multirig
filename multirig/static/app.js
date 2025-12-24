@@ -1,6 +1,6 @@
 (() => {
-  const $ = (sel, root=document) => root.querySelector(sel);
-  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
   const followPending = new Map();
 
@@ -23,7 +23,7 @@
       debugSectionCollapsed.set(idx, !!collapsed);
       return;
     }
-    try { localStorage.setItem(sectionKey(idx, name), collapsed ? '1' : '0'); } catch {}
+    try { localStorage.setItem(sectionKey(idx, name), collapsed ? '1' : '0'); } catch { }
   };
   const applySections = (card, idx) => {
     const sections = $$('.rig-section[data-section]', card);
@@ -34,6 +34,20 @@
       const body = $('.rig-section-body', sec);
       if (body) body.style.display = collapsed ? 'none' : '';
     }
+  };
+
+
+  const getLcdInverted = (idx, defaultVal = false) => {
+    try {
+      const v = localStorage.getItem(`multirig.lcd.inverted.${idx}`);
+      if (v === '1') return true;
+      if (v === '0') return false;
+    } catch { }
+    return !!defaultVal;
+  };
+
+  const setLcdInverted = (idx, inverted) => {
+    try { localStorage.setItem(`multirig.lcd.inverted.${idx}`, inverted ? '1' : '0'); } catch { }
   };
 
   const toggleFollow = async (idx) => {
@@ -286,7 +300,7 @@
         card.innerHTML = `
           <div class="rig-header">
             <div class="rig-header-left">
-              <div class="rig-title">${rig.name || `Rig ${idx+1}`}</div>
+              <div class="rig-title">${rig.name || `Rig ${idx + 1}`}</div>
               <div class="rig-badges" data-role="rig-badges"></div>
             </div>
             <div class="rig-header-right">
@@ -487,9 +501,41 @@
           followPending.delete(idx);
         } catch (err) {
           followPending.delete(idx);
-          try { setRigUiError(idx, `Failed to update follow: ${err}`); } catch {}
+          try { setRigUiError(idx, `Failed to update follow: ${err}`); } catch { }
         } finally {
           sw.disabled = false;
+        }
+      });
+
+      grid.addEventListener('change', (e) => {
+        const sw = e.target.closest('input[data-action="invert-lcd"]');
+        if (!sw) return;
+        const idx = Number(sw.dataset.index);
+        const inverted = !!sw.checked;
+        setLcdInverted(idx, inverted);
+        // Re-apply styles immediately
+        const card = document.getElementById(`rig-${idx}`);
+        if (card) {
+          // We need to re-run the part of bindStatus that applies colors
+          // But we don't have the rig data here. 
+          // However, the card has the loop updating it every second.
+          // We can just wait for next tick or try to read color from somewhere?
+          // Actually bindStatus runs frequently. Just saving state is enough?
+          // Yes, let's just trigger a re-render if we can, or just wait for next update (1s max).
+          // To make it instant, we can try to re-read current color from style if needed, 
+          // but waiting 1s is probably fine or we force a refresh?
+          // Let's just update the class for now for instant feedback on the checkbox itself?
+          // Actually since bindStatus is called every 1s, we can just wait. 
+          // But usually UI should be snappy.
+          // Let's manually toggle class and style if we can find the LCD.
+          const lcd = card.querySelector('.lcd');
+          if (lcd) {
+            lcd.classList.toggle('inverted', inverted);
+            // We can't easily re-calculate the specific gradient without the rig color data.
+            // So we'll rely on next update or if we can read it?
+            // Let's just let the next update handle the heavy lifting of color change
+            // forcing the class is enough for CSS changes that don't depend on rig color variables.
+          }
         }
       });
 
@@ -518,7 +564,7 @@
         const card = $(`#rig-${idx}`);
         if (card) {
           const title = $('.rig-title', card);
-          if (title) title.textContent = rig.name || `Rig ${idx+1}`;
+          if (title) title.textContent = rig.name || `Rig ${idx + 1}`;
         }
       });
     }
@@ -549,7 +595,7 @@
         rigs.forEach((r, i) => {
           const opt = document.createElement('option');
           opt.value = String(i);
-          opt.textContent = r.name || `Rig ${i+1}`;
+          opt.textContent = r.name || `Rig ${i + 1}`;
           mainSel.appendChild(opt);
         });
       }
@@ -561,15 +607,24 @@
       if (!card) return;
 
       const lcd = card.querySelector('.lcd');
-      if (lcd && rig.color) {
-        lcd.style.background = `linear-gradient(135deg, ${rig.color}dd, ${rig.color}aa)`;
-        // Adjust text color based on brightness if needed, but for now assuming user picks reasonable colors
-        // or we can force a text color if we want.
-        // The original LCD had specific text colors.
-        // If we change background, we might need to ensure text is visible.
-        // The original LCD text color is rgba(0,0,0,0.88) on a light green background.
-        // If user picks dark color, we might need light text.
-        // For now, let's just apply the background.
+      if (lcd) {
+        lcd.classList.toggle('inverted', rig.inverted || false);
+        if (rig.color) {
+          if (rig.inverted) {
+            // Inverted: Dark background, Text is rig color (brightened/dimmed as needed)
+            // We use the CSS background for inverted (.lcd.inverted background) 
+            // but we need to set the TEXT color to the rig color.
+            lcd.style.background = ''; // Use CSS default for inverted
+            lcd.style.color = rig.color;
+            // Maybe add a text shadow/glow for effect?
+            lcd.style.textShadow = `0 0 5px ${rig.color}66`;
+          } else {
+            // Normal: Rig color background, Dark text (from CSS default or set explicitly)
+            lcd.style.background = `linear-gradient(135deg, ${rig.color}dd, ${rig.color}aa)`;
+            lcd.style.color = 'rgba(0,0,0,0.88)';
+            lcd.style.textShadow = 'none';
+          }
+        }
       }
 
       applySections(card, idx);
@@ -663,7 +718,7 @@
 
       // If there's a connection error, force the rig to appear powered off.
       card.classList.toggle('disabled', (rig.enabled === false) || connError);
-      
+
       const enabled = (rig.enabled !== false) && !connError;
       if (syncBtn) {
         syncBtn.disabled = !enabled;
@@ -699,7 +754,7 @@
   };
 
   const postJSON = async (url, payload) => {
-    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify(payload)});
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     return res.json();
   };
 
@@ -785,7 +840,7 @@
     const card = document.getElementById(`rig-${idx}`);
     if (card) {
       card.classList.add('pulse');
-      setTimeout(()=>card.classList.remove('pulse'), 300);
+      setTimeout(() => card.classList.remove('pulse'), 300);
     }
   };
 
@@ -848,7 +903,7 @@
         btn.textContent = label;
         btn.disabled = !enabled;
         btn.title = b
-          ? `${b.label} (${(b.lo/1e6).toFixed(b.lo<1e8?3:0)}–${(b.hi/1e6).toFixed(b.hi<1e8?3:0)} MHz)`
+          ? `${b.label} (${(b.lo / 1e6).toFixed(b.lo < 1e8 ? 3 : 0)}–${(b.hi / 1e6).toFixed(b.hi < 1e8 ? 3 : 0)} MHz)`
           : `${label} (${hzVal} Hz)`;
         el.appendChild(btn);
       }
@@ -866,7 +921,7 @@
       btn.dataset.hz = String(b.def);
       btn.textContent = b.label;
       btn.disabled = !enabled;
-      btn.title = `${b.label} (${(b.lo/1e6).toFixed(b.lo<1e8?3:0)}–${(b.hi/1e6).toFixed(b.hi<1e8?3:0)} MHz)`;
+      btn.title = `${b.label} (${(b.lo / 1e6).toFixed(b.lo < 1e8 ? 3 : 0)}–${(b.hi / 1e6).toFixed(b.hi < 1e8 ? 3 : 0)} MHz)`;
       el.appendChild(btn);
     }
   };
@@ -998,10 +1053,10 @@
           ? '<span class="dbg-arrow dbg-tx" title="TX">▶</span>'
           : (isRx ? '<span class="dbg-arrow dbg-rx" title="RX">◀</span>' : '<span class="dbg-arrow">•</span>');
         if (kind === 'rigctl_tx') return `${arrow}<span class="dbg-ts">${esc(ts)}</span> <span class="dbg-dir">TX</span> <span class="dbg-msg">${esc(e.cmd)}</span>`;
-        if (kind === 'rigctl_rx') return `${arrow}<span class="dbg-ts">${esc(ts)}</span> <span class="dbg-dir">RX</span> <span class="dbg-msg">${esc((e.lines||[]).join(' | '))}</span>`;
+        if (kind === 'rigctl_rx') return `${arrow}<span class="dbg-ts">${esc(ts)}</span> <span class="dbg-dir">RX</span> <span class="dbg-msg">${esc((e.lines || []).join(' | '))}</span>`;
         const sem = e.semantic ? `<span class="dbg-sem">${esc(e.semantic)}</span> ` : '';
         if (kind === 'rigctld_tx') return `${arrow}<span class="dbg-ts">${esc(ts)}</span> <span class="dbg-dir">TX</span> ${sem}<span class="dbg-msg">${esc(e.cmd)}</span>`;
-        if (kind === 'rigctld_rx') return `${arrow}<span class="dbg-ts">${esc(ts)}</span> <span class="dbg-dir">RX</span> ${sem}<span class="dbg-msg">${esc(`RPRT ${e.rprt} ${(e.lines||[]).join(' | ')}`)}</span>`;
+        if (kind === 'rigctld_rx') return `${arrow}<span class="dbg-ts">${esc(ts)}</span> <span class="dbg-dir">RX</span> ${sem}<span class="dbg-msg">${esc(`RPRT ${e.rprt} ${(e.lines || []).join(' | ')}`)}</span>`;
         return `${arrow}<span class="dbg-ts">${esc(ts)}</span> <span class="dbg-dir">${esc(kind)}</span>`;
       });
       logEl.innerHTML = lines.join('<br>');
@@ -1086,20 +1141,20 @@
   };
 
   const connectWS = () => {
-    const wsUrl = (()=>{
+    const wsUrl = (() => {
       const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-      return `${proto}://${location.host}${(window.MULTIRIG_CONFIG||{}).wsPath || '/ws'}`;
+      return `${proto}://${location.host}${(window.MULTIRIG_CONFIG || {}).wsPath || '/ws'}`;
     })();
 
     let ws;
     const open = () => {
       ws = new WebSocket(wsUrl);
-      ws.onopen = () => {};
+      ws.onopen = () => { };
       ws.onmessage = (ev) => {
-        try { bindStatus(JSON.parse(ev.data)); } catch {}
+        try { bindStatus(JSON.parse(ev.data)); } catch { }
       };
       ws.onclose = () => setTimeout(open, 1500);
-      ws.onerror = () => { try { ws.close(); } catch {} };
+      ws.onerror = () => { try { ws.close(); } catch { } };
     };
     open();
   };
