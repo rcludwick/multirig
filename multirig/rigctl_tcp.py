@@ -40,7 +40,16 @@ def _records_to_bytes(records: Sequence[str], sep: str) -> bytes:
 
 
 class BaseTcpServer:
+    """Base class for TCP servers using asyncio."""
+
     def __init__(self, host: str, port: int, debug: Any = None):
+        """Initialize the TCP server.
+
+        Args:
+            host: The host address to bind to.
+            port: The port number to bind to.
+            debug: Optional debug store for logging traffic.
+        """
         self.host = host
         self.port = port
         self._debug = debug
@@ -48,11 +57,19 @@ class BaseTcpServer:
         self._lock = asyncio.Lock()
 
     async def start(self) -> None:
+        """Start the TCP server.
+
+        This method is idempotent; calling it on an already running server does nothing.
+        """
         if self._server is not None:
             return
         self._server = await asyncio.start_server(self._handle_client, self.host, self.port)
 
     async def stop(self) -> None:
+        """Stop the TCP server and close all connections.
+
+        This method is idempotent.
+        """
         if self._server is None:
             return
         self._server.close()
@@ -60,6 +77,15 @@ class BaseTcpServer:
         self._server = None
 
     async def _handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+        """Handle an incoming client connection.
+
+        Args:
+            reader: The stream reader for the client.
+            writer: The stream writer for the client.
+        
+        Raises:
+            NotImplementedError: Must be implemented by subclasses.
+        """
         raise NotImplementedError 
 
 
@@ -231,6 +257,10 @@ class RigctlServer(BaseTcpServer):
         if hz is None:
             return self._format_error("get_freq", erp_prefix, -11)
         
+        if erp_prefix:
+            sep = _sep_for_erp(erp_prefix)
+            records = ["get_freq:", f"Frequency: {hz}", "RPRT 0"]
+            return _records_to_bytes(records, sep)
         return f"{hz}\n".encode()
 
     async def _cmd_set_mode(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
@@ -371,9 +401,12 @@ class RigctlServer(BaseTcpServer):
             ptt = None
 
         if ptt is None:
-            sep = _sep_for_erp(erp_prefix)
-            records = ["get_ptt:", f"PTT: {ptt}", "RPRT 0"]
-            return _records_to_bytes(records, sep)
+            if erp_prefix:
+                sep = _sep_for_erp(erp_prefix)
+                records = ["get_ptt:", f"PTT: {ptt}", "RPRT 0"]
+                return _records_to_bytes(records, sep)
+            return self._format_error("get_ptt", erp_prefix, -11)
+            
         return f"{ptt}\n".encode()
 
     async def _cmd_get_level(self, args: list[str], erp_prefix: Optional[str]) -> bytes:

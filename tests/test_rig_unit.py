@@ -267,3 +267,151 @@ async def test_rig_client_passthrough_errors(rig_client):
     assert await rig_client.set_mode("USB") is False
     assert rig_client._last_error == "Failed to set mode on rig backend"
 
+@pytest.mark.asyncio
+async def test_rig_client_status(rig_client):
+    rig_client._backend.status = AsyncMock(return_value="StatusOK")
+    st = await rig_client.status()
+    assert st == "StatusOK"
+    
+import multirig.rig as rig_mod
+
+def test_parse_helpers():
+    # _parse_bool_flag
+    assert rig_mod._parse_bool_flag("Y") is True
+    assert rig_mod._parse_bool_flag("E") is True
+    assert rig_mod._parse_bool_flag("N") is False
+    assert rig_mod._parse_bool_flag("") is False
+    assert rig_mod._parse_bool_flag(None) is False
+    
+    # _parse_mode_list
+    assert rig_mod._parse_mode_list("") == []
+    assert rig_mod._parse_mode_list("None") == []
+    assert rig_mod._parse_mode_list("USB LSB") == ["USB", "LSB"]
+    assert rig_mod._parse_mode_list("USB, LSB;") == ["USB", "LSB"]
+    assert rig_mod._parse_mode_list("USB .") == ["USB"] # Filter trailing dot?
+    
+    # parse_dump_caps
+    caps, modes = rig_mod.parse_dump_caps("")
+    assert caps == {}
+    assert modes == []
+    
+    txt = """
+    Can set Frequency: Y
+    Can get Frequency: Y
+    Mode list: USB LSB
+    """
+    caps, modes = rig_mod.parse_dump_caps(txt)
+    assert caps["freq_set"] is True
+    assert caps["freq_get"] is True
+    assert "USB" in modes
+    assert "LSB" in modes
+
+@pytest.mark.asyncio
+async def test_rig_backend_base():
+    # Test base class NotImplementedErrors
+    base = rig_mod.RigBackend()
+    
+    with pytest.raises(NotImplementedError):
+        await base.get_frequency()
+    with pytest.raises(NotImplementedError):
+        await base.set_frequency(100)
+    with pytest.raises(NotImplementedError):
+        await base.get_mode()
+    with pytest.raises(NotImplementedError):
+        await base.set_mode("USB")
+    with pytest.raises(NotImplementedError):
+        await base.get_vfo()
+    with pytest.raises(NotImplementedError):
+        await base.set_vfo("VFOA")
+    with pytest.raises(NotImplementedError):
+        await base.get_ptt()
+    with pytest.raises(NotImplementedError):
+        await base.set_ptt(1)
+    with pytest.raises(NotImplementedError):
+        await base.get_powerstat()
+    with pytest.raises(NotImplementedError):
+        await base.chk_vfo()
+    with pytest.raises(NotImplementedError):
+        await base.dump_state()
+    with pytest.raises(NotImplementedError):
+        await base.dump_caps()
+    with pytest.raises(NotImplementedError):
+        await base.status()
+    
+    assert await base.close() is None
+
+@pytest.mark.asyncio
+async def test_process_backend_dump():
+    backend = RigctlProcessBackend(1, "/dev/null")
+    
+    # Test dump_state with timeout simulation
+    # We mock stdout.readline to return lines then pause
+    mock_proc = AsyncMock()
+    mock_proc.stdin.write = MagicMock()
+    mock_proc.stdin.drain = AsyncMock()
+    mock_proc.returncode = None
+    
+    # Simulate lines then a timeout (to break the loop)
+    # wait_for raises TimeoutError when side effect is a coroutine that sleeps?
+    # Or we can just have readline return empty bytes after some lines?
+    # The code breaks on empty bytes too.
+    mock_proc.stdout.readline.side_effect = [b"Line1\n", b"Line2\n", b""] 
+    
+    with patch("multirig.rig.asp.create_subprocess_exec", return_value=mock_proc):
+         lines = await backend.dump_state()
+         assert lines == ["Line1", "Line2"]
+         mock_proc.stdin.write.assert_called_with(b"\\dump_state\n")
+    
+    # Test dump_caps
+    mock_proc.stdout.readline.side_effect = [b"Cap1\n", b""]
+    with patch("multirig.rig.asp.create_subprocess_exec", return_value=mock_proc):
+         lines = await backend.dump_caps()
+         assert lines == ["Cap1"]
+         mock_proc.stdin.write.assert_called_with(b"\\dump_caps\n")
+
+@pytest.mark.asyncio
+async def test_process_backend_build_cmd():
+    # Test command building with all options
+    backend = RigctlProcessBackend(
+        model_id=123, 
+        device="/dev/rig",
+        baud=9600,
+        serial_opts="dst=33",
+        extra_args="-v"
+    )
+    cmd = backend._build_cmd()
+    expected = ["rigctl", "-m", "123", "-r", "/dev/rig", 
+                "-s", "9600", "dst=33", "-v"] # shlex.split behavior
+    assert cmd == expected
+
+@pytest.mark.asyncio
+async def test_process_backend_send_n_retry():
+    # Test _send_n (used by get_mode) retry logic
+    backend = RigctlProcessBackend(1, "/dev/null")
+    
+    mock_proc1 = AsyncMock()
+    mock_proc1.stdin.write = MagicMock(side_effect=BrokenPipeError()) # Fail 1
+    mock_proc1.stdin.drain = AsyncMock()
+    mock_proc1.returncode = None
+    
+    mock_proc2 = AsyncMock()
+    mock_proc2.stdin.write = MagicMock()
+    mock_proc2.stdin.drain = AsyncMock()
+    mock_proc2.stdout.readline.side_effect = [b"USB\n", b"2400\n"] # Success 2
+    mock_proc2.returncode = None
+    
+    with patch("multirig.rig.asp.create_subprocess_exec", side_effect=[mock_proc1, mock_proc2]):
+         # get_mode calls _send_n("m", 2)
+         mode, pb = await backend.get_mode()
+         assert mode == "USB"
+         assert pb == 2400
+         # Should have tried twice
+
+def test_rigctl_error():
+    e = rig_mod.RigctlError(1, "ErrorMsg")
+    assert str(e) == "RPRT 1: ErrorMsg"
+    assert e.code == 1
+    
+    e2 = rig_mod.RigctlError(2)
+    assert str(e2) == "RPRT 2"
+

@@ -243,12 +243,31 @@ class RigctldBackend(RigBackend):
     """Backend implementation that connects to an external rigctld instance via TCP."""
     
     def __init__(self, host: str, port: int):
+        """Initialize the rigctld backend.
+
+        Args:
+            host: Hostname or IP address of rigctld.
+            port: Port number of rigctld.
+        """
         self.host = host
         self.port = port
         self._lock = asyncio.Lock()
         self._erp_supported = True
 
     async def _send_erp(self, cmd: str, timeout: float = 1.5) -> Tuple[int, List[str]]:
+        """Send a command using Extended Response Protocol (ERP).
+        
+        Args:
+            cmd: Common rigctl command string (e.g. 'f', 'm').
+            timeout: Timeout in seconds for operation.
+            
+        Returns:
+            Tuple of (RPRT code, list of response lines).
+            
+        Raises:
+            ConnectionError: If connection to rigctld fails.
+            asyncio.TimeoutError: If operation times out.
+        """
         reader: asyncio.StreamReader
         writer: asyncio.StreamWriter
         
@@ -546,6 +565,15 @@ class RigctlProcessBackend(RigBackend):
 
     def __init__(self, model_id: int, device: str, baud: Optional[int] = None,
                  serial_opts: Optional[str] = None, extra_args: Optional[str] = None):
+        """Initialize the process backend.
+
+        Args:
+            model_id: Hamlib model ID.
+            device: Serial device path or URI.
+            baud: Optional baud rate.
+            serial_opts: Optional serial configuration string.
+            extra_args: Optional extra arguments for rigctl.
+        """
         self.model_id = model_id
         self.device = device
         self.baud = baud
@@ -555,6 +583,11 @@ class RigctlProcessBackend(RigBackend):
         self._lock = asyncio.Lock()
 
     def _build_cmd(self) -> list[str]:
+        """Build the rigctl command line arguments.
+        
+        Returns:
+            List of command line arguments.
+        """
         cmd = ["rigctl", "-m", str(self.model_id), "-r", self.device]
         if self.baud:
             cmd += ["-s", str(self.baud)]
@@ -567,6 +600,11 @@ class RigctlProcessBackend(RigBackend):
         return cmd
 
     async def _ensure_proc(self) -> asp.Process:
+        """Ensure the subprocess is running.
+        
+        Returns:
+            The active asyncio Process object.
+        """
         if self._proc and self._proc.returncode is None:
             return self._proc
         # Start process

@@ -393,151 +393,154 @@
         grid.appendChild(card);
       });
       // Wire up buttons
-      grid.addEventListener('click', (e) => {
-        const secBtn = e.target.closest('button[data-action="toggle-section"]');
-        if (secBtn) {
-          const card = secBtn.closest('.rig-card');
-          const idx = Number(secBtn.dataset.index);
-          const name = String(secBtn.dataset.section || '').trim();
-          if (!card || !Number.isFinite(idx) || !name) return;
-          const sec = card.querySelector(`.rig-section[data-section="${name}"]`);
-          if (!sec) return;
-          const next = !sec.classList.contains('collapsed');
-          setSectionCollapsed(idx, name, next);
-          applySections(card, idx);
-          if (!next && name === 'debug') {
-            refreshRigDebug(idx);
+      if (!grid.dataset.listenersAttached) {
+        grid.dataset.listenersAttached = 'true';
+        grid.addEventListener('click', (e) => {
+          const secBtn = e.target.closest('button[data-action="toggle-section"]');
+          if (secBtn) {
+            const card = secBtn.closest('.rig-card');
+            const idx = Number(secBtn.dataset.index);
+            const name = String(secBtn.dataset.section || '').trim();
+            if (!card || !Number.isFinite(idx) || !name) return;
+            const sec = card.querySelector(`.rig-section[data-section="${name}"]`);
+            if (!sec) return;
+            const next = !sec.classList.contains('collapsed');
+            setSectionCollapsed(idx, name, next);
+            applySections(card, idx);
+            if (!next && name === 'debug') {
+              refreshRigDebug(idx);
+            }
+            return;
           }
-          return;
-        }
 
-        const bandBtn = e.target.closest('button[data-action="set-band"]');
-        if (bandBtn) {
-          const card = bandBtn.closest('.rig-card');
-          if (card?.classList.contains('disabled')) return;
-          const idx = Number(bandBtn.dataset.index);
-          const hz = Number(bandBtn.dataset.hz);
-          if (!Number.isFinite(idx) || !Number.isFinite(hz)) return;
-          setRigFrequency(idx, hz);
-          return;
-        }
-
-        const freqBtn = e.target.closest('button[data-action="edit-freq"]');
-        if (freqBtn) {
-          const card = freqBtn.closest('.rig-card');
-          if (card?.classList.contains('disabled')) return;
-          const idx = Number(freqBtn.dataset.index);
-          if (!Number.isFinite(idx)) return;
-          openFreqEditor(idx);
-          return;
-        }
-
-        const saveBtn = e.target.closest('button[data-action="freq-save"]');
-        if (saveBtn) {
-          const idx = Number(saveBtn.dataset.index);
-          if (!Number.isFinite(idx)) return;
-          saveFreqEditor(idx);
-          return;
-        }
-
-        const cancelBtn = e.target.closest('button[data-action="freq-cancel"]');
-        if (cancelBtn) {
-          const idx = Number(cancelBtn.dataset.index);
-          if (!Number.isFinite(idx)) return;
-          closeFreqEditor(idx);
-          return;
-        }
-
-        const vfoBtn = e.target.closest('button[data-action="set-vfo"]');
-        if (vfoBtn) {
-          const card = vfoBtn.closest('.rig-card');
-          if (card?.classList.contains('disabled')) return;
-          const idx = Number(vfoBtn.dataset.index);
-          const vfo = vfoBtn.dataset.vfo;
-          if (Number.isFinite(idx) && vfo) setRigVfo(idx, vfo);
-          return;
-        }
-
-        const modeBtn = e.target.closest('button[data-action="set-mode"]');
-        if (modeBtn) {
-          const card = modeBtn.closest('.rig-card');
-          if (card?.classList.contains('disabled')) return;
-          const idx = Number(card?.dataset?.index);
-          const mode = modeBtn.dataset.mode;
-          if (Number.isFinite(idx) && mode) setRigMode(idx, mode);
-          return;
-        }
-        const btn = e.target.closest('button[data-action]');
-        if (!btn) return;
-        const action = btn.dataset.action;
-        const idx = Number(btn.dataset.index);
-        if (action === 'set-mode') return;
-        const card = btn.closest('.rig-card');
-        if (card?.classList.contains('disabled')) return;
-        if (action === 'sync') return syncRig(idx);
-        if (action === 'follow-toggle') return toggleFollow(idx);
-      });
-
-      grid.addEventListener('change', (e) => {
-        const sw = e.target.closest('input[data-action="power"]');
-        if (!sw) return;
-        const idx = Number(sw.dataset.index);
-        const enabled = !!sw.checked;
-        setRigEnabled(idx, enabled);
-      });
-
-      grid.addEventListener('change', async (e) => {
-        const sw = e.target.closest('input[data-action="follow-main"]');
-        if (!sw) return;
-        const idx = Number(sw.dataset.index);
-        const follow_main = !!sw.checked;
-        followPending.set(idx, follow_main);
-        sw.disabled = true;
-        try {
-          const res = await postJSON(`/api/rig/${idx}/follow_main`, { follow_main });
-          if (!res || res.status !== 'ok') {
-            throw new Error((res && res.error) ? String(res.error) : 'failed');
+          const bandBtn = e.target.closest('button[data-action="set-band"]');
+          if (bandBtn) {
+            const card = bandBtn.closest('.rig-card');
+            if (card?.classList.contains('disabled')) return;
+            const idx = Number(bandBtn.dataset.index);
+            const hz = Number(bandBtn.dataset.hz);
+            if (!Number.isFinite(idx) || !Number.isFinite(hz)) return;
+            setRigFrequency(idx, hz);
+            return;
           }
-          followPending.delete(idx);
-        } catch (err) {
-          followPending.delete(idx);
-          try { setRigUiError(idx, `Failed to update follow: ${err}`); } catch { }
-        } finally {
-          sw.disabled = false;
-        }
-      });
 
-      grid.addEventListener('change', (e) => {
-        const sw = e.target.closest('input[data-action="invert-lcd"]');
-        if (!sw) return;
-        const idx = Number(sw.dataset.index);
-        const inverted = !!sw.checked;
-        setLcdInverted(idx, inverted);
-        // Re-apply styles immediately
-        const card = document.getElementById(`rig-${idx}`);
-        if (card) {
-          // We need to re-run the part of bindStatus that applies colors
-          // But we don't have the rig data here. 
-          // However, the card has the loop updating it every second.
-          // We can just wait for next tick or try to read color from somewhere?
-          // Actually bindStatus runs frequently. Just saving state is enough?
-          // Yes, let's just trigger a re-render if we can, or just wait for next update (1s max).
-          // To make it instant, we can try to re-read current color from style if needed, 
-          // but waiting 1s is probably fine or we force a refresh?
-          // Let's just update the class for now for instant feedback on the checkbox itself?
-          // Actually since bindStatus is called every 1s, we can just wait. 
-          // But usually UI should be snappy.
-          // Let's manually toggle class and style if we can find the LCD.
-          const lcd = card.querySelector('.lcd');
-          if (lcd) {
-            lcd.classList.toggle('inverted', inverted);
-            // We can't easily re-calculate the specific gradient without the rig color data.
-            // So we'll rely on next update or if we can read it?
-            // Let's just let the next update handle the heavy lifting of color change
-            // forcing the class is enough for CSS changes that don't depend on rig color variables.
+          const freqBtn = e.target.closest('button[data-action="edit-freq"]');
+          if (freqBtn) {
+            const card = freqBtn.closest('.rig-card');
+            if (card?.classList.contains('disabled')) return;
+            const idx = Number(freqBtn.dataset.index);
+            if (!Number.isFinite(idx)) return;
+            openFreqEditor(idx);
+            return;
           }
-        }
-      });
+
+          const saveBtn = e.target.closest('button[data-action="freq-save"]');
+          if (saveBtn) {
+            const idx = Number(saveBtn.dataset.index);
+            if (!Number.isFinite(idx)) return;
+            saveFreqEditor(idx);
+            return;
+          }
+
+          const cancelBtn = e.target.closest('button[data-action="freq-cancel"]');
+          if (cancelBtn) {
+            const idx = Number(cancelBtn.dataset.index);
+            if (!Number.isFinite(idx)) return;
+            closeFreqEditor(idx);
+            return;
+          }
+
+          const vfoBtn = e.target.closest('button[data-action="set-vfo"]');
+          if (vfoBtn) {
+            const card = vfoBtn.closest('.rig-card');
+            if (card?.classList.contains('disabled')) return;
+            const idx = Number(vfoBtn.dataset.index);
+            const vfo = vfoBtn.dataset.vfo;
+            if (Number.isFinite(idx) && vfo) setRigVfo(idx, vfo);
+            return;
+          }
+
+          const modeBtn = e.target.closest('button[data-action="set-mode"]');
+          if (modeBtn) {
+            const card = modeBtn.closest('.rig-card');
+            if (card?.classList.contains('disabled')) return;
+            const idx = Number(card?.dataset?.index);
+            const mode = modeBtn.dataset.mode;
+            if (Number.isFinite(idx) && mode) setRigMode(idx, mode);
+            return;
+          }
+          const btn = e.target.closest('button[data-action]');
+          if (!btn) return;
+          const action = btn.dataset.action;
+          const idx = Number(btn.dataset.index);
+          if (action === 'set-mode') return;
+          const card = btn.closest('.rig-card');
+          if (card?.classList.contains('disabled')) return;
+          if (action === 'sync') return syncRig(idx);
+          if (action === 'follow-toggle') return toggleFollow(idx);
+        });
+
+        grid.addEventListener('change', (e) => {
+          const sw = e.target.closest('input[data-action="power"]');
+          if (!sw) return;
+          const idx = Number(sw.dataset.index);
+          const enabled = !!sw.checked;
+          setRigEnabled(idx, enabled);
+        });
+
+        grid.addEventListener('change', async (e) => {
+          const sw = e.target.closest('input[data-action="follow-main"]');
+          if (!sw) return;
+          const idx = Number(sw.dataset.index);
+          const follow_main = !!sw.checked;
+          followPending.set(idx, follow_main);
+          sw.disabled = true;
+          try {
+            const res = await postJSON(`/api/rig/${idx}/follow_main`, { follow_main });
+            if (!res || res.status !== 'ok') {
+              throw new Error((res && res.error) ? String(res.error) : 'failed');
+            }
+            followPending.delete(idx);
+          } catch (err) {
+            followPending.delete(idx);
+            try { setRigUiError(idx, `Failed to update follow: ${err}`); } catch { }
+          } finally {
+            sw.disabled = false;
+          }
+        });
+
+        grid.addEventListener('change', (e) => {
+          const sw = e.target.closest('input[data-action="invert-lcd"]');
+          if (!sw) return;
+          const idx = Number(sw.dataset.index);
+          const inverted = !!sw.checked;
+          setLcdInverted(idx, inverted);
+          // Re-apply styles immediately
+          const card = document.getElementById(`rig-${idx}`);
+          if (card) {
+            // We need to re-run the part of bindStatus that applies colors
+            // But we don't have the rig data here. 
+            // However, the card has the loop updating it every second.
+            // We can just wait for next tick or try to read color from somewhere?
+            // Actually bindStatus runs frequently. Just saving state is enough?
+            // Yes, let's just trigger a re-render if we can, or just wait for next update (1s max).
+            // To make it instant, we can try to re-read current color from style if needed, 
+            // but waiting 1s is probably fine or we force a refresh?
+            // Let's just update the class for now for instant feedback on the checkbox itself?
+            // Actually since bindStatus is called every 1s, we can just wait. 
+            // But usually UI should be snappy.
+            // Let's manually toggle class and style if we can find the LCD.
+            const lcd = card.querySelector('.lcd');
+            if (lcd) {
+              lcd.classList.toggle('inverted', inverted);
+              // We can't easily re-calculate the specific gradient without the rig color data.
+              // So we'll rely on next update or if we can read it?
+              // Let's just let the next update handle the heavy lifting of color change
+              // forcing the class is enough for CSS changes that don't depend on rig color variables.
+            }
+          }
+        });
+      }
 
       if (!globalEditorListenersAdded) {
         globalEditorListenersAdded = true;
@@ -1206,6 +1209,10 @@
           if (m && m.id != null) rigModelById.set(String(m.id), m);
         }
       },
+      bindStatus,
+      refreshServerMeta,
+      refreshServerDebug,
+      __connectWS: connectWS,
     };
   }
 })();
