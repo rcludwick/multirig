@@ -60,7 +60,7 @@ def test_app_works_without_orjson(monkeypatch, tmp_path):
 
         monkeypatch.setattr(appmod, "RigClient", DummyRigClient)
         monkeypatch.setattr(appmod, "SyncService", DummySyncService)
-        monkeypatch.setattr(appmod, "RigctlTcpServer", DummyRigctlServer)
+        monkeypatch.setattr(appmod, "RigctlServer", DummyRigctlServer)
         
         # Create app with dummy config
         app = create_app(config_path=tmp_path / "test.yaml")

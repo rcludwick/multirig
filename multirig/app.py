@@ -25,7 +25,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from .config import AppConfig, load_config, save_config
 from .rig import RigClient
 from .service import SyncService
-from .rigctl_tcp import RigctlTcpServer, RigctlServerConfig
+from .rigctl_tcp import RigctlServer, RigctlServerConfig
 from .debug_log import DebugStore
 
 
@@ -197,7 +197,7 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
         try: return int(port_s) if port_s else app.state.config.rigctl_listen_port
         except Exception: return app.state.config.rigctl_listen_port
 
-    app.state.rigctl_server = RigctlTcpServer(
+    app.state.rigctl_server = RigctlServer(
         get_rigs=lambda: app.state.rigs,
         get_source_index=lambda: app.state.sync_service.source_index,
         get_rigctl_to_main_enabled=lambda: app.state.config.rigctl_to_main_enabled,
@@ -209,7 +209,7 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
     async def _restart_rigctl_server(start: bool = True) -> None:
         try: await app.state.rigctl_server.stop()
         except Exception: pass
-        app.state.rigctl_server = RigctlTcpServer(
+        app.state.rigctl_server = RigctlServer(
             get_rigs=lambda: app.state.rigs,
             get_source_index=lambda: app.state.sync_service.source_index,
             get_rigctl_to_main_enabled=lambda: app.state.config.rigctl_to_main_enabled,

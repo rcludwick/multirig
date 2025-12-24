@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock
-from multirig.rigctl_tcp import RigctlTcpServer, RigctlServerConfig
+from multirig.rigctl_tcp import RigctlServer, RigctlServerConfig
 from multirig.rig import RigClient, RigConfig
 
 @pytest.fixture
@@ -14,7 +14,7 @@ def mock_rig():
 
 @pytest.fixture
 def server(mock_rig):
-    return RigctlTcpServer(
+    return RigctlServer(
         get_rigs=lambda: [mock_rig],
         get_source_index=lambda: 0,
         config=RigctlServerConfig(host="127.0.0.1", port=4534)

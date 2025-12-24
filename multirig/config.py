@@ -192,6 +192,8 @@ class RigConfig(BaseModel):
         description="If true, this rig follows the main rig (mirrors freq/mode). If false, manual only.",
     )
     band_presets: List[BandPreset] = Field(default_factory=_default_band_presets)
+    color: str = Field(default="#a4c356", description="Primary color for the rig UI")
+    inverted: bool = Field(default=False, description="Invert LCD colors (dark mode style)")
 
 
 class AppConfig(BaseModel):

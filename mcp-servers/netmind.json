@@ -1,23 +1,14 @@
 {
-  "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
-  "source": {
-    "type": "filesystem",
-    "path": "ext/netmind/netmind/app.py",
-    "entrypoint": "mcp"
-  },
-  "environment": {
-    "type": "uv",
-    "dependencies": [
-      "fastmcp>=2.0,<3",
-      "fastapi",
-      "uvicorn"
-    ]
-  },
-  "deployment": {
-    "transport": "sse",
-    "host": "127.0.0.1",
-    "port": 8001,
-    "path": "/mcp",
-    "cwd": "/Users/rob/dev/netmind"
+  "mcpServers": {
+    "netmind": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--project",
+        "/Users/rob/dev/netmind",
+        "netmind-sse"
+      ],
+      "url": "http://localhost:10001/sse"
+    }
   }
 }

@@ -42,6 +42,8 @@ test.describe('Settings - autosave to active profile', () => {
 
       const newPort = 9990;
       await rigPortInput.fill(String(newPort));
+      // Trigger change event explicitly to ensure autosave starts
+      await rigPortInput.dispatchEvent('change');
 
       // Wait for debounced autosave to trigger (700ms) and complete the network requests.
       await page.waitForTimeout(1500);

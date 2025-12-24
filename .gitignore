@@ -15,3 +15,6 @@ multirig.config.active_profile
 multirig.config.profiles/
 multirig/static/*.min.js
 multirig/static/*.min.css
+/multirig.egg-info/
+
+.vscode/

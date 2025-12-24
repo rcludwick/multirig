@@ -38,7 +38,32 @@ def _records_to_bytes(records: Sequence[str], sep: str) -> bytes:
     return (sep.join(records) + sep).encode()
 
 
-class RigctlTcpServer:
+
+class BaseTcpServer:
+    def __init__(self, host: str, port: int, debug: Any = None):
+        self.host = host
+        self.port = port
+        self._debug = debug
+        self._server: Optional[asyncio.base_events.Server] = None
+        self._lock = asyncio.Lock()
+
+    async def start(self) -> None:
+        if self._server is not None:
+            return
+        self._server = await asyncio.start_server(self._handle_client, self.host, self.port)
+
+    async def stop(self) -> None:
+        if self._server is None:
+            return
+        self._server.close()
+        await self._server.wait_closed()
+        self._server = None
+
+    async def _handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+        raise NotImplementedError 
+
+
+class RigctlServer(BaseTcpServer):
     def __init__(
         self,
         get_rigs: Callable[[], Sequence[RigClient]],
@@ -48,14 +73,13 @@ class RigctlTcpServer:
         config: Optional[RigctlServerConfig] = None,
         debug: Any = None,
     ):
+        self._cfg = config or _default_server_config()
+        super().__init__(self._cfg.host, self._cfg.port, debug)
+        
         self._get_rigs = get_rigs
         self._get_source_index = get_source_index
         self._get_rigctl_to_main_enabled = get_rigctl_to_main_enabled
         self._get_sync_enabled = get_sync_enabled
-        self._cfg = config or _default_server_config()
-        self._debug = debug
-        self._server: Optional[asyncio.base_events.Server] = None
-        self._lock = asyncio.Lock()
         
         self._command_map = {
             "F": self._cmd_set_freq, "set_freq": self._cmd_set_freq,
@@ -73,25 +97,7 @@ class RigctlTcpServer:
             "dump_caps": self._cmd_dump_caps,
         }
 
-    @property
-    def host(self) -> str:
-        return self._cfg.host
 
-    @property
-    def port(self) -> int:
-        return self._cfg.port
-
-    async def start(self) -> None:
-        if self._server is not None:
-            return
-        self._server = await asyncio.start_server(self._handle_client, self._cfg.host, self._cfg.port)
-
-    async def stop(self) -> None:
-        if self._server is None:
-            return
-        self._server.close()
-        await self._server.wait_closed()
-        self._server = None
 
     def _source_rig(self) -> Optional[RigClient]:
         rigs = list(self._get_rigs())
