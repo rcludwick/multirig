@@ -53,3 +53,4 @@ All changes must be verified with the appropriate test suite.
 - **UI/CSS**: Global styles (fonts, vars) belong in `style.css`.
 - **UI/CSS**: Use `box-sizing: border-box` on elements with padding to prevent overflow in constrained containers (like previews).
 - **UI/CSS**: Use CSS Grid for consistent form field alignment, matching the project's existing label layout (`180px 1fr`).
+- **Documentation**: Update `docs/design.md` with any relevant changes to the architecture or design.  Also update README.md with any relevant changes to the codebase.
