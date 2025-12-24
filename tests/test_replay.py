@@ -116,9 +116,15 @@ async def test_replay_traffic():
     mock_rig.get_mode = AsyncMock(return_value=("FM", 15000))
 
     rigs = [mock_rig]
-    server = RigctlServer(
-        get_rigs=lambda: rigs,
-        get_source_index=lambda: 0,
+    rigs = [mock_rig]
+    
+    class TestRigctlServer(RigctlServer):
+        def get_rigs(self):
+            return rigs
+        def get_source_index(self):
+            return 0
+
+    server = TestRigctlServer(
         config=RigctlServerConfig(host="127.0.0.1", port=0)
     )
     

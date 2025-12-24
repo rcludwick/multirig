@@ -3,6 +3,7 @@ This is the **MultiRig** project. It controls multiple hamlib rigs (via `rigctld
 
 ## Architecture
 - **Backend**: Python (FastAPI, Uvicorn).
+    - The project uses `uv` for Python dependency management.
 - **Frontend**: JavaScript (Vanilla JS, Jinja2 templates for initial rendering).
 - **External Components**:
     - **Hamlib**: Submodule in `ext/hamlib` for rig control protocols.
@@ -29,6 +30,9 @@ All changes must be verified with the appropriate test suite.
 - **JavaScript Changes**: MUST have a **Jest** test.
     - Run: `make test-js`
     - Location: `js-tests/`
+- **Testing**: For network protocol verification use the `Netmind` proxy if needed.
+- **Configuration**: Configuration profiles are used extensively in E2E tests to avoid polluting the global config.
+- **General**: All changes must be verified with the appropriate test suite.
 
 ### 2. Style Guidelines
 - **General**: Follow PEP 8 for Python, and standard modern JS practices.
@@ -43,12 +47,9 @@ All changes must be verified with the appropriate test suite.
     - `make test`: Run all tests.
 
 ## Important Context for AI Agents
-- When writing Playwright tests, leverage the `Netmind` proxy if network validation is needed.
-- Configuration profiles are used extensively in E2E tests to avoid polluting the global config.
-- The project uses `uv` for Python dependency management.
+- **Python**: Python code should be pythonic, and not use any golang, javascript, java, or c++ patterns.  Avoid using callables when initializing classes.
 - **Config Persistence**: New rig settings must be added to the `RigConfig` model in `config.py` to be persistent. Frontend-only `localStorage` should be avoided for core rig settings.
 - **Data Flow**: `RigClient.safe_status` in `rig.py` is the source of truth for the frontend dashboard. Ensure new config fields are exposed there.
 - **UI/CSS**: Global styles (fonts, vars) belong in `style.css`.
 - **UI/CSS**: Use `box-sizing: border-box` on elements with padding to prevent overflow in constrained containers (like previews).
 - **UI/CSS**: Use CSS Grid for consistent form field alignment, matching the project's existing label layout (`180px 1fr`).
-- **Testing**: For network protocol verification use the `Netmind` proxy if needed.

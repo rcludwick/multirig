@@ -13,9 +13,15 @@ async def test_dump_state_command():
     mock_rig.dump_state = AsyncMock(return_value=["Some State"])
 
     rigs = [mock_rig]
-    server = RigctlServer(
-        get_rigs=lambda: rigs,
-        get_source_index=lambda: 0,
+    rigs = [mock_rig]
+    
+    class TestRigctlServer(RigctlServer):
+        def get_rigs(self):
+            return rigs
+        def get_source_index(self):
+            return 0
+
+    server = TestRigctlServer(
         config=RigctlServerConfig(host="127.0.0.1", port=4534)
     )
 

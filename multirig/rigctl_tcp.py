@@ -73,20 +73,11 @@ class RigctlServer(BaseTcpServer):
     
     def __init__(
         self,
-        get_rigs: Callable[[], Sequence[RigClient]],
-        get_source_index: Callable[[], int],
-        get_rigctl_to_main_enabled: Callable[[], bool] = lambda: True,
-        get_sync_enabled: Callable[[], bool] = lambda: True,
         config: Optional[RigctlServerConfig] = None,
         debug: Any = None,
     ):
         self._cfg = config or _default_server_config()
         super().__init__(self._cfg.host, self._cfg.port, debug)
-        
-        self._get_rigs = get_rigs
-        self._get_source_index = get_source_index
-        self._get_rigctl_to_main_enabled = get_rigctl_to_main_enabled
-        self._get_sync_enabled = get_sync_enabled
         
         self._command_map = {
             "F": self._cmd_set_freq, "set_freq": self._cmd_set_freq,
@@ -104,55 +95,29 @@ class RigctlServer(BaseTcpServer):
             "dump_caps": self._cmd_dump_caps,
         }
 
+    # Data access methods to be overridden by subclasses
+    def get_rigs(self) -> Sequence[RigClient]:
+        """Return the list of active RigClients."""
+        raise NotImplementedError
 
+    def get_source_index(self) -> int:
+        """Return the current sync source index."""
+        return 0
+
+    def get_rigctl_to_main_enabled(self) -> bool:
+        """Return whether rigctl changes should propagate to main rigs."""
+        return True
+
+    def get_sync_enabled(self) -> bool:
+        """Return whether sync is enabled."""
+        return True
 
     def _source_rig(self) -> Optional[RigClient]:
-        rigs = list(self._get_rigs())
-        if not rigs:
+        rigs = self.get_rigs()
+        idx = self.get_source_index()
+        if not rigs or idx < 0 or idx >= len(rigs):
             return None
-        idx = self._get_source_index()
-        if idx < 0:
-            idx = 0
-        if idx >= len(rigs):
-            idx = len(rigs) - 1
         return rigs[idx]
-
-    async def _fanout(self, fn: Callable[[RigClient], Awaitable[bool]]) -> bool:
-        rigs = self._get_rigs()
-        if not rigs:
-            return False
-            
-        src_idx = self._get_source_index()
-        if src_idx < 0: src_idx = 0
-        if src_idx >= len(rigs): src_idx = len(rigs) - 1
-        
-        ok = True
-        sync_on = self._get_sync_enabled()
-        
-        for i, rig in enumerate(rigs):
-            # Always apply to source rig
-            if i == src_idx:
-                try:
-                    res = await fn(rig)
-                    ok = ok and bool(res)
-                except Exception:
-                    ok = False
-                continue
-            
-            # For others, check sync settings
-            # If sync is disabled, do NOT forward.
-            # If rig has follow_main=False, do NOT forward.
-            if not sync_on:
-                continue
-            if not getattr(rig.cfg, "follow_main", True):
-                continue
-                
-            try:
-                res = await fn(rig)
-                ok = ok and bool(res)
-            except Exception:
-                ok = False
-        return ok
 
     async def _handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         try:
@@ -216,12 +181,9 @@ class RigctlServer(BaseTcpServer):
 
         return self._format_error("unknown", erp_prefix, -4)
 
-    def _format_error(self, long_name: str, erp_prefix: Optional[str], code: int) -> bytes:
+    def _format_error(self, cmd: str, erp_prefix: Optional[str], code: int) -> bytes:
         if erp_prefix:
-            sep = _sep_for_erp(erp_prefix)
-            records = [f"{long_name}:" if long_name else "", f"RPRT {code}"]
-            records = [r for r in records if r]
-            return _records_to_bytes(records, sep)
+            return f"{erp_prefix}RPRT {code}\n".encode()
         return f"RPRT {code}\n".encode()
 
     async def _cmd_set_freq(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
@@ -230,20 +192,33 @@ class RigctlServer(BaseTcpServer):
             return self._format_error("set_freq", erp_prefix, -1)
         try:
             hz = int(float(args[0]))
-        except Exception:
+        except ValueError:
             return self._format_error("set_freq", erp_prefix, -1)
 
-        rig = self._source_rig()
-        if rig is None:
-            return self._format_error("set_freq", erp_prefix, -1)
+        rigs = self.get_rigs()
+        if not rigs:
+            return self._format_error("set_freq", erp_prefix, -11)
+
+        # If sync enabled, set on all relevant rigs
+        if self.get_rigctl_to_main_enabled() and self.get_sync_enabled():
+            tasks = []
+            for r in rigs:
+                if getattr(r.cfg, "enabled", True) and getattr(r.cfg, "follow_main", True):
+                    tasks.append(r.set_frequency(hz))
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            # Naive success check: if any succeeded, we're good? Or if source succeeded?
+            # Let's check source rig specifically if possible, otherwise generic success.
+            is_ok = any(r is True for r in results)
+            code = 0 if is_ok else -11
+        else:
+            # Only set on source rig
+            rig = self._source_rig()
+            if rig:
+                ok = await rig.set_frequency(hz)
+                code = 0 if ok else -11
+            else:
+                code = -11
         
-        ok = await rig.set_frequency(hz)
-        code = 0 if ok else -1
-
-        if erp_prefix:
-            sep = _sep_for_erp(erp_prefix)
-            records = [f"set_freq: {hz}", f"RPRT {code}"]
-            return _records_to_bytes(records, sep)
         return f"RPRT {code}\n".encode()
 
     async def _cmd_get_freq(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
@@ -251,17 +226,11 @@ class RigctlServer(BaseTcpServer):
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_freq", erp_prefix, -1)
-        try:
-            hz = await rig.get_frequency()
-        except Exception:
-            hz = None
+        
+        hz = await rig.get_frequency()
         if hz is None:
-            return self._format_error("get_freq", erp_prefix, -1)
-
-        if erp_prefix:
-            sep = _sep_for_erp(erp_prefix)
-            records = ["get_freq:", f"Frequency: {hz}", "RPRT 0"]
-            return _records_to_bytes(records, sep)
+            return self._format_error("get_freq", erp_prefix, -11)
+        
         return f"{hz}\n".encode()
 
     async def _cmd_set_mode(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
@@ -269,27 +238,36 @@ class RigctlServer(BaseTcpServer):
         if not args:
             return self._format_error("set_mode", erp_prefix, -1)
         mode = args[0]
-        pb: Optional[int]
+        passband: Optional[int]
         if len(args) >= 2:
             try:
-                pb = int(float(args[1]))
+                passband = int(float(args[1]))
             except Exception:
-                pb = None
+                passband = None
         else:
-            pb = None
+            passband = None
+        
+        # Similar logic to set_freq for sync
+        rigs = self.get_rigs()
+        if not rigs:
+            return self._format_error("set_mode", erp_prefix, -11)
 
-        rig = self._source_rig()
-        if rig is None:
-            return self._format_error("set_mode", erp_prefix, -1)
-            
-        ok = await rig.set_mode(mode, pb)
-        code = 0 if ok else -1
+        if self.get_rigctl_to_main_enabled() and self.get_sync_enabled():
+            tasks = []
+            for r in rigs:
+                if getattr(r.cfg, "enabled", True) and getattr(r.cfg, "follow_main", True):
+                    tasks.append(r.set_mode(mode, passband))
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            is_ok = any(r is True for r in results)
+            code = 0 if is_ok else -11
+        else:
+            rig = self._source_rig()
+            if rig:
+                ok = await rig.set_mode(mode, passband)
+                code = 0 if ok else -11
+            else:
+                code = -11
 
-        if erp_prefix:
-            sep = _sep_for_erp(erp_prefix)
-            header = f"set_mode: {mode}" + (f" {pb}" if pb is not None else "")
-            records = [header, f"RPRT {code}"]
-            return _records_to_bytes(records, sep)
         return f"RPRT {code}\n".encode()
 
     async def _cmd_get_mode(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
@@ -297,19 +275,18 @@ class RigctlServer(BaseTcpServer):
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_mode", erp_prefix, -1)
+        
         try:
-            mode, pb = await rig.get_mode()
+            ret = await rig.get_mode()
         except Exception:
-            mode, pb = None, None
+            ret = None, None
 
-        if not mode:
-            return self._format_error("get_mode", erp_prefix, -1)
-        pb_out = pb if pb is not None else 0
-
-        if erp_prefix:
-            sep = _sep_for_erp(erp_prefix)
-            records = ["get_mode:", f"Mode: {mode}", f"Passband: {pb_out}", "RPRT 0"]
-            return _records_to_bytes(records, sep)
+        if not ret or ret[0] is None:
+            return self._format_error("get_mode", erp_prefix, -11)
+        
+        mode, passband = ret
+        # Convert None passband to 0
+        pb_out = passband if passband is not None else 0
         return f"{mode}\n{pb_out}\n".encode()
 
     async def _cmd_set_vfo(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
@@ -318,17 +295,17 @@ class RigctlServer(BaseTcpServer):
             return self._format_error("set_vfo", erp_prefix, -1)
         vfo = args[0]
         
+        # Determine if we should broadcast VFO change. Usually VFO is specific to oper,
+        # but let's assume we just pass it valid rigs.
+        # Actually VFO set is often just 'VFOA' or 'VFOB' to switch focus.
+        # For multirig, maybe we switch source index? For now, standard Hamlib pass-through.
         rig = self._source_rig()
-        if rig is None:
-            return self._format_error("set_vfo", erp_prefix, -1)
-
-        ok = await rig.set_vfo(vfo)
-        code = 0 if ok else -1
-
-        if erp_prefix:
-            sep = _sep_for_erp(erp_prefix)
-            records = [f"set_vfo: {vfo}", f"RPRT {code}"]
-            return _records_to_bytes(records, sep)
+        if rig:
+            ok = await rig.set_vfo(vfo)
+            code = 0 if ok else -11
+        else:
+            code = -11
+            
         return f"RPRT {code}\n".encode()
 
     async def _cmd_get_vfo(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
@@ -336,17 +313,15 @@ class RigctlServer(BaseTcpServer):
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_vfo", erp_prefix, -1)
+        
         try:
             vfo = await rig.get_vfo()
         except Exception:
             vfo = None
-        if not vfo:
-            return self._format_error("get_vfo", erp_prefix, -1)
 
-        if erp_prefix:
-            sep = _sep_for_erp(erp_prefix)
-            records = ["get_vfo:", f"VFO: {vfo}", "RPRT 0"]
-            return _records_to_bytes(records, sep)
+        if vfo is None:
+            return self._format_error("get_vfo", erp_prefix, -11)
+            
         return f"{vfo}\n".encode()
 
     async def _cmd_set_ptt(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
@@ -355,20 +330,30 @@ class RigctlServer(BaseTcpServer):
             return self._format_error("set_ptt", erp_prefix, -1)
         try:
             ptt = int(args[0])
-        except Exception:
+        except ValueError:
             return self._format_error("set_ptt", erp_prefix, -1)
 
-        rig = self._source_rig()
-        if rig is None:
-            return self._format_error("set_ptt", erp_prefix, -1)
+        # PTT should probably be sync'd if enabled?
+        rigs = self.get_rigs()
+        if not rigs:
+             return self._format_error("set_ptt", erp_prefix, -11)
+             
+        if self.get_rigctl_to_main_enabled() and self.get_sync_enabled():
+            tasks = []
+            for r in rigs:
+                 if getattr(r.cfg, "enabled", True) and getattr(r.cfg, "follow_main", True):
+                    tasks.append(r.set_ptt(ptt))
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            is_ok = any(r is True for r in results)
+            code = 0 if is_ok else -11
+        else:
+            rig = self._source_rig()
+            if rig:
+                ok = await rig.set_ptt(ptt)
+                code = 0 if ok else -11
+            else:
+                code = -11
 
-        ok = await rig.set_ptt(ptt)
-        code = 0 if ok else -1
-
-        if erp_prefix:
-            sep = _sep_for_erp(erp_prefix)
-            records = [f"set_ptt: {ptt}", f"RPRT {code}"]
-            return _records_to_bytes(records, sep)
         return f"RPRT {code}\n".encode()
 
     async def _cmd_get_ptt(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
@@ -376,6 +361,7 @@ class RigctlServer(BaseTcpServer):
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_ptt", erp_prefix, -1)
+        
         try:
             ptt = await rig.get_ptt()
         except RigctlError as e:
@@ -383,10 +369,8 @@ class RigctlServer(BaseTcpServer):
             return self._format_error("get_ptt", erp_prefix, e.code)
         except Exception:
             ptt = None
-        if ptt is None:
-            return self._format_error("get_ptt", erp_prefix, -1)
 
-        if erp_prefix:
+        if ptt is None:
             sep = _sep_for_erp(erp_prefix)
             records = ["get_ptt:", f"PTT: {ptt}", "RPRT 0"]
             return _records_to_bytes(records, sep)

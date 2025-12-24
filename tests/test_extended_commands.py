@@ -14,9 +14,13 @@ def mock_rig():
 
 @pytest.fixture
 def server(mock_rig):
-    return RigctlServer(
-        get_rigs=lambda: [mock_rig],
-        get_source_index=lambda: 0,
+    class TestRigctlServer(RigctlServer):
+        def get_rigs(self):
+            return [mock_rig]
+        def get_source_index(self):
+            return 0
+            
+    return TestRigctlServer(
         config=RigctlServerConfig(host="127.0.0.1", port=4534)
     )
 
