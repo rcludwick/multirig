@@ -115,50 +115,133 @@ class RigStatus:
 
 
 class RigBackend:
+    """Abstract base class for a rig control backend.
+    
+    This class defines the interface that all rig control backends (e.g. rigctld,
+    direct subprocess) must implement.
+    """
     async def get_frequency(self) -> Optional[int]:
+        """Get the current frequency in Hz."""
         raise NotImplementedError
 
     async def set_frequency(self, hz: int) -> bool:
+        """Set the frequency in Hz.
+        
+        Args:
+            hz: Frequency in Hertz.
+            
+        Returns:
+            True if successful, False otherwise.
+        """
         raise NotImplementedError
 
     async def get_mode(self) -> Tuple[Optional[str], Optional[int]]:
+        """Get the current mode and passband.
+        
+        Returns:
+            Tuple of (mode string, passband width in Hz).
+            Returns (None, None) on failure.
+        """
         raise NotImplementedError
 
     async def set_mode(self, mode: str, passband: Optional[int] = None) -> bool:
+        """Set the mode and optional passband.
+        
+        Args:
+            mode: Mode string (e.g. 'USB', 'LSB').
+            passband: Optional passband width in Hz.
+            
+        Returns:
+            True if successful, False otherwise.
+        """
         raise NotImplementedError
 
     async def set_vfo(self, vfo: str) -> bool:
+        """Set the current VFO.
+        
+        Args:
+            vfo: VFO string (e.g. 'VFOA', 'VFOB').
+            
+        Returns:
+            True if successful, False otherwise.
+        """
         raise NotImplementedError
 
     async def get_vfo(self) -> Optional[str]:
+        """Get the current VFO.
+        
+        Returns:
+            VFO string or None on failure.
+        """
         raise NotImplementedError
 
     async def set_ptt(self, ptt: int) -> bool:
+        """Set PTT (Push-to-Talk) state.
+        
+        Args:
+            ptt: 1 for TX, 0 for RX.
+            
+        Returns:
+            True if successful, False otherwise.
+        """
         raise NotImplementedError
 
     async def get_ptt(self) -> Optional[int]:
+        """Get PTT state.
+        
+        Returns:
+            1 for TX, 0 for RX, or None on failure.
+        """
         raise NotImplementedError
 
     async def get_powerstat(self) -> Optional[int]:
+        """Get power status.
+        
+        Returns:
+            1 for On, 0 for Off/Standby, or None on failure.
+        """
         raise NotImplementedError
 
     async def chk_vfo(self) -> Optional[int]:
+        """Check for VFO changes (hamlib chk_vfo).
+        
+        Returns:
+            1 if VFO changed, 0 if not, or None on failure.
+        """
         raise NotImplementedError
 
     async def dump_state(self) -> Sequence[str]:
+        """Dump comprehensive rig state.
+        
+        Returns:
+            List of strings representing the rig state lines.
+        """
         raise NotImplementedError
 
     async def dump_caps(self) -> Sequence[str]:
+        """Dump rig capabilities.
+        
+        Returns:
+            List of strings representing capabilities.
+        """
         raise NotImplementedError
 
     async def status(self) -> RigStatus:
+        """Get a summary status of the rig for UI dashboard.
+        
+        Returns:
+            RigStatus object containing connection state, freq, mode, etc.
+        """
         raise NotImplementedError
 
     async def close(self) -> None:
+        """Close the backend connection and release resources."""
         return None
 
 
 class RigctldBackend(RigBackend):
+    """Backend implementation that connects to an external rigctld instance via TCP."""
+    
     def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
@@ -455,7 +538,11 @@ class RigctldBackend(RigBackend):
 
 
 class RigctlProcessBackend(RigBackend):
-    """Direct hamlib control using a persistent 'rigctl' subprocess in interactive mode."""
+    """Direct hamlib control using a persistent 'rigctl' subprocess in interactive mode.
+    
+    This backend launches `rigctl` as a subprocess and communicates with it via
+    stdin/stdout using the interactive commands.
+    """
 
     def __init__(self, model_id: int, device: str, baud: Optional[int] = None,
                  serial_opts: Optional[str] = None, extra_args: Optional[str] = None):
@@ -732,6 +819,13 @@ class RigctlProcessBackend(RigBackend):
 
 
 class RigClient:
+    """High-level client for controlling a rig.
+    
+    This class wraps a RigBackend (either TCP or process-based) and adds logic
+    for configuration management, caching capabilities, and enforcing constraints
+    like band limits.
+    """
+    
     def __init__(self, cfg: RigConfig):
         self.cfg = cfg
         self._backend: RigBackend = self._make_backend(cfg)
@@ -758,6 +852,11 @@ class RigClient:
         return RigctldBackend(cfg.host, cfg.port)
 
     def update_config(self, cfg: RigConfig) -> None:
+        """Update the rig configuration and recreate the backend.
+        
+        Args:
+            cfg: New RigConfig object.
+        """
         self.cfg = cfg
         self._backend = self._make_backend(cfg)
 
@@ -765,6 +864,15 @@ class RigClient:
         return await self._backend.get_frequency()
 
     async def set_frequency(self, hz: int) -> bool:
+        """Set frequency, respecting band limits configuration.
+        
+        Args:
+            hz: Target frequency in Hz.
+            
+        Returns:
+            True if successful. Returns False if frequency is out of allowed bands
+            or backend fails.
+        """
         allow_oob = bool(getattr(self.cfg, "allow_out_of_band", False))
         if not allow_oob:
             presets = getattr(self.cfg, "band_presets", [])
@@ -799,6 +907,97 @@ class RigClient:
         
         # Don't clear _last_error here - let caller manage error state
         return True
+
+    async def get_frequency(self) -> Optional[int]:
+        """Get current frequency.
+        
+        Returns:
+            Frequency in Hz or None.
+        """
+        return await self._backend.get_frequency()
+
+    async def get_mode(self) -> Tuple[Optional[str], Optional[int]]:
+        """Get current mode.
+        
+        Returns:
+            Tuple of (mode, passband).
+        """
+        return await self._backend.get_mode()
+
+    async def set_mode(self, mode: str, passband: Optional[int] = None) -> bool:
+        """Set mode.
+        
+        Args:
+            mode: Mode string.
+            passband: Optional passband.
+            
+        Returns:
+            True if successful.
+        """
+        return await self._backend.set_mode(mode, passband)
+
+    async def set_vfo(self, vfo: str) -> bool:
+        """Set VFO.
+        
+        Args:
+            vfo: VFO name.
+            
+        Returns:
+            True if successful.
+        """
+        return await self._backend.set_vfo(vfo)
+
+    async def get_vfo(self) -> Optional[str]:
+        """Get VFO.
+        
+        Returns:
+            VFO name or None.
+        """
+        return await self._backend.get_vfo()
+
+    async def set_ptt(self, ptt: int) -> bool:
+        """Set PTT.
+        
+        Args:
+            ptt: 1=On, 0=Off.
+            
+        Returns:
+            True if successful.
+        """
+        return await self._backend.set_ptt(ptt)
+
+    async def get_ptt(self) -> Optional[int]:
+        """Get PTT.
+        
+        Returns:
+            PTT state or None.
+        """
+        return await self._backend.get_ptt()
+
+    async def get_powerstat(self) -> Optional[int]:
+        """Get power status.
+        
+        Returns:
+            Power status or None.
+        """
+        return await self._backend.get_powerstat()
+
+    async def chk_vfo(self) -> Optional[int]:
+        """Check VFO changes.
+        
+        Returns:
+            1 if changed, 0 if not, None if error.
+        """
+        return await self._backend.chk_vfo()
+
+    async def dump_state(self) -> Sequence[str]:
+        """Dump state.
+        
+        Returns:
+            List of state lines.
+        """
+        return await self._backend.dump_state()
+
 
     async def get_mode(self) -> Tuple[Optional[str], Optional[int]]:
         return await self._backend.get_mode()

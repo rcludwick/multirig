@@ -64,6 +64,13 @@ class BaseTcpServer:
 
 
 class RigctlServer(BaseTcpServer):
+    """TCP server that implements the hamlib `rigctl` protocol.
+    
+    This server allows external applications (like WSJT-X) to control the rig
+    via the standard hamlib TCP protocol. It supports both standard and extended
+    (ERP) response formats.
+    """
+    
     def __init__(
         self,
         get_rigs: Callable[[], Sequence[RigClient]],
@@ -218,6 +225,7 @@ class RigctlServer(BaseTcpServer):
         return f"RPRT {code}\n".encode()
 
     async def _cmd_set_freq(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'set_freq' (F) command."""
         if not args:
             return self._format_error("set_freq", erp_prefix, -1)
         try:
@@ -239,6 +247,7 @@ class RigctlServer(BaseTcpServer):
         return f"RPRT {code}\n".encode()
 
     async def _cmd_get_freq(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'get_freq' (f) command."""
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_freq", erp_prefix, -1)
@@ -256,6 +265,7 @@ class RigctlServer(BaseTcpServer):
         return f"{hz}\n".encode()
 
     async def _cmd_set_mode(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'set_mode' (M) command."""
         if not args:
             return self._format_error("set_mode", erp_prefix, -1)
         mode = args[0]
@@ -283,6 +293,7 @@ class RigctlServer(BaseTcpServer):
         return f"RPRT {code}\n".encode()
 
     async def _cmd_get_mode(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'get_mode' (m) command."""
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_mode", erp_prefix, -1)
@@ -302,6 +313,7 @@ class RigctlServer(BaseTcpServer):
         return f"{mode}\n{pb_out}\n".encode()
 
     async def _cmd_set_vfo(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'set_vfo' (V) command."""
         if not args:
             return self._format_error("set_vfo", erp_prefix, -1)
         vfo = args[0]
@@ -320,6 +332,7 @@ class RigctlServer(BaseTcpServer):
         return f"RPRT {code}\n".encode()
 
     async def _cmd_get_vfo(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'get_vfo' (v) command."""
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_vfo", erp_prefix, -1)
@@ -337,6 +350,7 @@ class RigctlServer(BaseTcpServer):
         return f"{vfo}\n".encode()
 
     async def _cmd_set_ptt(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'set_ptt' (T) command."""
         if not args:
             return self._format_error("set_ptt", erp_prefix, -1)
         try:
@@ -358,6 +372,7 @@ class RigctlServer(BaseTcpServer):
         return f"RPRT {code}\n".encode()
 
     async def _cmd_get_ptt(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'get_ptt' (t) command."""
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_ptt", erp_prefix, -1)
@@ -378,6 +393,7 @@ class RigctlServer(BaseTcpServer):
         return f"{ptt}\n".encode()
 
     async def _cmd_get_level(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'get_level' (l) command."""
         # get_level command - for now, return 0 for any level request
         # This is a stub implementation that satisfies WSJT-X's KEYSPD query
         if not args:
@@ -394,6 +410,7 @@ class RigctlServer(BaseTcpServer):
         return f"{value}\n".encode()
 
     async def _cmd_get_split_vfo(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'get_split_vfo' (s) command."""
         # get_split_vfo command - returns split status and TX VFO
         # For now, return split=0 (off) and current VFO
         rig = self._source_rig()
@@ -415,6 +432,7 @@ class RigctlServer(BaseTcpServer):
         return f"{split}\n{tx_vfo}\n".encode()
 
     async def _cmd_get_powerstat(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'get_powerstat' command."""
         rig = self._source_rig()
         if rig is None:
             return self._format_error("get_powerstat", erp_prefix, -1)
@@ -432,6 +450,7 @@ class RigctlServer(BaseTcpServer):
         return f"{stat}\n".encode()
 
     async def _cmd_chk_vfo(self, erp_prefix: Optional[str], is_raw: bool = False) -> bytes:
+        """Handle 'chk_vfo' command."""
         rig = self._source_rig()
         if rig is None:
             return self._format_error("chk_vfo", erp_prefix, -1)
@@ -454,6 +473,7 @@ class RigctlServer(BaseTcpServer):
         return f"CHKVFO {ret}\n".encode()
 
     async def _cmd_dump_state(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'dump_state' command."""
         rig = self._source_rig()
         if rig is None:
             return self._format_error("dump_state", erp_prefix, -1)
@@ -481,6 +501,7 @@ class RigctlServer(BaseTcpServer):
         return content.encode()
 
     async def _cmd_dump_caps(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Handle 'dump_caps' command."""
         rig = self._source_rig()
         if rig is None:
             return self._format_error("dump_caps", erp_prefix, -1)

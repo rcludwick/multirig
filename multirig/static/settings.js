@@ -54,6 +54,11 @@ let autosaveInFlight = false;
 let autosavePending = false;
 let activeProfileName = '';
 
+/**
+ * Get the frequency limits for a given band label.
+ * @param {string} label - The band label (e.g. '20m').
+ * @returns {number[]|null} Array of [lower_hz, upper_hz] or null if unknown.
+ */
 function bandLimits(label) {
   const key = String(label || '').trim().toLowerCase();
   const table = {
@@ -77,6 +82,11 @@ function bandLimits(label) {
   return table[key] || null;
 }
 
+/**
+ * Display a result message to the user.
+ * @param {string} msg - Message to display.
+ * @param {boolean} ok - Whether the operation was successful.
+ */
 function setProfileResult(msg, ok) {
   if (!profileResult) return;
   profileResult.textContent = msg || '';
@@ -88,15 +98,27 @@ function setProfileResult(msg, ok) {
   }
 }
 
+/**
+ * Check if there is currently an active profile selected.
+ * @returns {boolean} True if active profile name is set.
+ */
 function hasActiveProfile() {
   return !!String(activeProfileName || '').trim();
 }
 
+/**
+ * Set the active profile name in UI state.
+ * @param {string} name - Name of the active profile.
+ */
 function setActiveProfileName(name) {
   activeProfileName = String(name || '').trim();
   if (activeProfileNameEl) activeProfileNameEl.textContent = activeProfileName || '(none)';
 }
 
+/**
+ * specific DOM elements to build the complete configuration object.
+ * @returns {Object} The complete configuration object for the backend.
+ */
 function buildConfigFromDom() {
   const fsList = Array.from(rigList.querySelectorAll('fieldset'));
   const newRigs = fsList.map((fs) => {
@@ -147,6 +169,10 @@ function buildConfigFromDom() {
   };
 }
 
+/**
+ * Collect config from DOM and POST it to the backend.
+ * @returns {Promise<Object>} The response JSON.
+ */
 async function applyConfigFromDom() {
   const body = buildConfigFromDom();
   const res = await fetch('/api/config', {
@@ -160,6 +186,10 @@ async function applyConfigFromDom() {
   return json;
 }
 
+/**
+ * Save the current configuration to the active profile on disk.
+ * @returns {Promise<Object>} The response JSON.
+ */
 async function saveSelectedProfile() {
   const name = String(activeProfileName || '').trim();
   if (!name) return { status: 'skipped' };
@@ -168,6 +198,11 @@ async function saveSelectedProfile() {
   return json;
 }
 
+/**
+ * Trigger an immediate autosave of the configuration.
+ * Handles debouncing and pending saves.
+ * @returns {Promise<void>}
+ */
 async function autosaveNow() {
   if (autosaveInFlight) {
     autosavePending = true;
@@ -198,6 +233,9 @@ async function autosaveNow() {
   }
 }
 
+/**
+ * Schedule an autosave to occur after a short delay.
+ */
 function scheduleAutosave() {
   if (suppressAutosave) return;
   if (!hasActiveProfile()) return;
@@ -208,12 +246,23 @@ function scheduleAutosave() {
   }, 700);
 }
 
+/**
+ * Fetch the list of available profile names from the backend.
+ * @returns {Promise<string[]>} List of profile names.
+ */
 async function fetchProfileNames() {
   const res = await fetch('/api/config/profiles', { cache: 'no-store' });
   const json = await res.json();
   return (json && Array.isArray(json.profiles)) ? json.profiles.map((n) => String(n)) : [];
 }
 
+/**
+ * Populate a <select> element with options.
+ * @param {HTMLSelectElement} selectEl - The select element.
+ * @param {string[]} list - List of option values.
+ * @param {string} selectedName - Currently selected value.
+ * @param {boolean} includeEmpty - Whether to include an empty 'Select...' option.
+ */
 function populateSelect(selectEl, list, selectedName, includeEmpty) {
   if (!selectEl) return;
   selectEl.innerHTML = '';
@@ -232,6 +281,10 @@ function populateSelect(selectEl, list, selectedName, includeEmpty) {
   });
 }
 
+/**
+ * Refresh all profile choice dropdowns in the UI.
+ * @returns {Promise<void>}
+ */
 async function refreshProfileChoices() {
   try {
     const list = await fetchProfileNames();
@@ -247,6 +300,10 @@ async function refreshProfileChoices() {
   }
 }
 
+/**
+ * Refresh the active profile name display from the backend.
+ * @returns {Promise<void>}
+ */
 async function refreshActiveProfileName() {
   try {
     const res = await fetch('/api/config/active_profile', { cache: 'no-store' });
@@ -257,6 +314,11 @@ async function refreshActiveProfileName() {
   } catch { }
 }
 
+/**
+ * Load a profile by name.
+ * @param {string} name - Profile name.
+ * @returns {Promise<void>}
+ */
 async function loadProfileByName(name) {
   const n = String(name || '').trim();
   if (!n) return;
@@ -273,6 +335,11 @@ async function loadProfileByName(name) {
   }
 }
 
+/**
+ * Create a new profile.
+ * @param {string} name - New profile name.
+ * @returns {Promise<boolean>} True if successful.
+ */
 async function createProfileByName(name) {
   const n = String(name || '').trim();
   if (!n) {
@@ -288,6 +355,12 @@ async function createProfileByName(name) {
   return false;
 }
 
+/**
+ * Rename an existing profile.
+ * @param {string} oldName - Old profile name.
+ * @param {string} newName - New profile name.
+ * @returns {Promise<boolean>} True if successful.
+ */
 async function renameProfile(oldName, newName) {
   const oldN = String(oldName || '').trim();
   const newN = String(newName || '').trim();
@@ -311,6 +384,12 @@ async function renameProfile(oldName, newName) {
   return false;
 }
 
+/**
+ * Duplicate an existing profile.
+ * @param {string} fromName - Source profile name.
+ * @param {string} newName - New profile name.
+ * @returns {Promise<boolean>} True if successful.
+ */
 async function duplicateProfile(fromName, newName) {
   const fromN = String(fromName || '').trim();
   const newN = String(newName || '').trim();
@@ -332,6 +411,11 @@ async function duplicateProfile(fromName, newName) {
   return false;
 }
 
+/**
+ * Delete a profile by name.
+ * @param {string} name - Profile name to delete.
+ * @returns {Promise<boolean>} True if successful.
+ */
 async function deleteProfileByName(name) {
   const n = String(name || '').trim();
   if (!n) {
@@ -353,6 +437,10 @@ async function deleteProfileByName(name) {
   return false;
 }
 
+/**
+ * Export the current configuration as a file.
+ * @returns {Promise<void>}
+ */
 async function exportCurrentConfig() {
   try {
     const res = await fetch('/api/config/export', { cache: 'no-store' });
@@ -371,6 +459,11 @@ async function exportCurrentConfig() {
   }
 }
 
+/**
+ * Import configuration from a file.
+ * @param {File} file - The file to import.
+ * @returns {Promise<void>}
+ */
 async function importConfigFile(file) {
   if (!file) return;
   try {
@@ -396,10 +489,19 @@ async function importConfigFile(file) {
   }
 }
 
+/**
+ * Get list of known band labels.
+ * @returns {string[]} List of band labels.
+ */
 function knownBandLabels() {
   return ['160m', '80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '10m', '6m', '2m', '1.25m', '70cm', '33cm', '23cm'];
 }
 
+/**
+ * Collect rig configuration from a fieldset element.
+ * @param {HTMLFieldSetElement} fieldset - The fieldset containing rig controls.
+ * @returns {Object} The rig configuration object.
+ */
 function collectRigConfig(fieldset) {
   const get = (sel) => fieldset.querySelector(sel);
   const val = (sel) => (get(sel)?.value ?? '').trim();
@@ -424,6 +526,11 @@ function collectRigConfig(fieldset) {
   };
 }
 
+/**
+ * Get default frequency for a band.
+ * @param {string} label - Band label.
+ * @returns {number} Default frequency in Hz.
+ */
 function defaultBandFrequency(label) {
   const key = String(label || '').trim().toLowerCase();
   const table = {
@@ -447,6 +554,10 @@ function defaultBandFrequency(label) {
   return table[key] || 0;
 }
 
+/**
+ * Create default band presets.
+ * @returns {Object[]} List of default band preset objects.
+ */
 function defaultBandPresets() {
   const mk = (label, frequency_hz) => {
     const lim = bandLimits(label);
@@ -457,16 +568,31 @@ function defaultBandPresets() {
   return knownBandLabels().map((label) => mk(label, defaultBandFrequency(label)));
 }
 
+/**
+ * Ensure a rig config has band presets, defaulting if missing.
+ * @param {Object} rig - Rig config object.
+ * @returns {Object[]} Band presets list.
+ */
 function ensureBandPresets(rig) {
   if (!rig) return defaultBandPresets();
   if (Array.isArray(rig.band_presets) && rig.band_presets.length) return rig.band_presets;
   return defaultBandPresets();
 }
 
+/**
+ * Get localStorage key for band presets state.
+ * @param {number} idx - Rig index.
+ * @returns {string} LocalStorage key.
+ */
 function bandPresetsSectionKey(idx) {
   return `multirig.settings.rig.${idx}.band_presets.collapsed`;
 }
 
+/**
+ * Check if band presets section should be collapsed.
+ * @param {number} idx - Rig index.
+ * @returns {boolean} True if collapsed.
+ */
 function getBandPresetsCollapsed(idx) {
   try {
     const v = localStorage.getItem(bandPresetsSectionKey(idx));
@@ -477,12 +603,22 @@ function getBandPresetsCollapsed(idx) {
   }
 }
 
+/**
+ * Set band presets collapsed state.
+ * @param {number} idx - Rig index.
+ * @param {boolean} collapsed - True if collapsed.
+ */
 function setBandPresetsCollapsed(idx, collapsed) {
   try {
     localStorage.setItem(bandPresetsSectionKey(idx), collapsed ? '1' : '0');
   } catch { }
 }
 
+/**
+ * Render band presets editor.
+ * @param {HTMLElement} container - Container element.
+ * @param {Object[]} presets - List of presets.
+ */
 function renderBandPresets(container, presets) {
   if (!container) return;
   const list = Array.isArray(presets) && presets.length ? presets : defaultBandPresets();
@@ -797,6 +933,10 @@ async function loadBindAddrs() {
 }
 
 // Load rig models from JSON
+/**
+ * Load rig models from the JSON file.
+ * @returns {Promise<void>}
+ */
 async function loadRigModels() {
   try {
     const res = await fetch('/static/rig_models.json?ts=' + Date.now(), { cache: 'no-store' });
@@ -806,6 +946,11 @@ async function loadRigModels() {
   }
 }
 
+/**
+ * Create a dropdown for selecting rig models.
+ * @param {number|string} currentModelId - The currently selected model ID.
+ * @returns {HTMLSelectElement} The select element.
+ */
 function createModelSelect(currentModelId) {
   const select = document.createElement('select');
   select.setAttribute('data-key', 'model_id');
@@ -830,6 +975,11 @@ function createModelSelect(currentModelId) {
   return select;
 }
 
+/**
+ * Test the connection to a rig using current form values.
+ * @param {HTMLFieldSetElement} fieldset - The fieldset containing rig controls.
+ * @returns {Promise<void>}
+ */
 async function testRigConnection(fieldset) {
   const resultDiv = fieldset.querySelector('.test-result');
   const testBtn = fieldset.querySelector('[data-action="test"]');
@@ -882,6 +1032,11 @@ async function testRigConnection(fieldset) {
   }
 }
 
+/**
+ * Refresh capabilities for the rig in the given fieldset.
+ * @param {HTMLFieldSetElement} fieldset - The fieldset containing rig controls.
+ * @returns {Promise<void>}
+ */
 async function refreshRigCaps(fieldset) {
   const btn = fieldset.querySelector('[data-action="caps"]');
   const resultDiv = fieldset.querySelector('.test-result');
@@ -947,6 +1102,11 @@ async function refreshRigCaps(fieldset) {
   }
 }
 
+/**
+ * Show available serial ports in the UI.
+ * @param {HTMLFieldSetElement} fieldset - The fieldset containing display area.
+ * @returns {Promise<void>}
+ */
 async function showSerialPorts(fieldset) {
   const portsDiv = fieldset.querySelector('.ports-list');
   const deviceInput = fieldset.querySelector('input[data-key="device"]');
@@ -988,6 +1148,12 @@ async function showSerialPorts(fieldset) {
   }
 }
 
+/**
+ * Render the LCD preview.
+ * @param {HTMLElement} container - Container element.
+ * @param {string} color - LCD color hex code.
+ * @param {boolean} inverted - Whether to invert colors.
+ */
 function renderLcdPreview(container, color, inverted) {
   if (!container) return;
   container.innerHTML = '';
@@ -1053,6 +1219,9 @@ function renderLcdPreview(container, color, inverted) {
   container.appendChild(lcd);
 }
 
+/**
+ * Render the entire settings UI.
+ */
 function render() {
   rigList.innerHTML = '';
   rigs.forEach((rig, idx) => {
@@ -1223,6 +1392,10 @@ function render() {
   });
 }
 
+/**
+ * Load the initial configuration from the backend.
+ * @returns {Promise<void>}
+ */
 async function loadConfig() {
   // Load rig models first
   await loadRigModels();
