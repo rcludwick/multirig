@@ -82,7 +82,16 @@ def test_config_endpoint_update_error(mock_cfg):
     # TestClient raises server exceptions by default. Disable it to get 500 response.
     client = TestClient(app, raise_server_exceptions=False)
     
-    with patch("multirig.app.save_config", side_effect=Exception("Save fail")):
+    # The endpoint calls apply_config in routes.py
+    # We need to patch where it is verified/imported.
+    # It's imported in multirig.routes from .core -> .config
+    # So patching multirig.config.save_config should catch it globally if not imported as 'from ... import save_config'
+    # Actually routes.py does `from .config import ... save_config`
+    # So we must patch `multirig.routes.save_config` or `multirig.core.save_config` depending on usage.
+    # Update config endpoint uses apply_config from core. core uses save_config from config.
+    # core.py: `from .config import AppConfig, save_config`
+    # So patch multirig.core.save_config
+    with patch("multirig.core.save_config", side_effect=Exception("Save fail")):
         # The endpoint calls _apply_config which calls save_config
         resp = client.post("/api/config", json={"rigs": []})
         assert resp.status_code == 500

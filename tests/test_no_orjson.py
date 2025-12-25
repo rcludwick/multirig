@@ -58,9 +58,16 @@ def test_app_works_without_orjson(monkeypatch, tmp_path):
             async def start(self): pass
             async def stop(self): pass
 
-        monkeypatch.setattr(appmod, "RigClient", DummyRigClient)
+        # Core module uses these
+        import multirig.core as coremod
+        monkeypatch.setattr(coremod, "RigClient", DummyRigClient)
         monkeypatch.setattr(appmod, "SyncService", DummySyncService)
-        monkeypatch.setattr(appmod, "RigctlServer", DummyRigctlServer)
+        # Core imports RigctlServer for typing/inheritance?
+        # Actually app.py imports AppRigctlServer from core.
+        # core imports RigctlServer from rigctl_tcp.
+        # app.py instantiates AppRigctlServer which is in core.
+        # core.py imports RigctlServer
+        monkeypatch.setattr(coremod, "RigctlServer", DummyRigctlServer)
         
         # Create app with dummy config
         app = create_app(config_path=tmp_path / "test.yaml")

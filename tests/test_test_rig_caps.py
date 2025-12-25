@@ -107,9 +107,11 @@ def client(monkeypatch, tmp_path):
 
     monkeypatch.setattr(appmod, "load_config", lambda path: cfg)
     monkeypatch.setattr(appmod, "save_config", lambda cfg, path: None)
+    import multirig.rig as rigmod
+    monkeypatch.setattr(rigmod, "RigClient", DummyRigClient)
     monkeypatch.setattr(appmod, "RigClient", DummyRigClient)
     monkeypatch.setattr(appmod, "SyncService", DummySyncService)
-    monkeypatch.setattr(appmod, "RigctlServer", DummyRigctlServer)
+    monkeypatch.setattr(appmod, "AppRigctlServer", DummyRigctlServer)
 
     app = appmod.create_app(config_path=tmp_path / "test.yaml")
     return TestClient(app)

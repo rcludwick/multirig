@@ -105,6 +105,7 @@ class DummyRigctlServer:
 @pytest.fixture()
 def client(monkeypatch, tmp_path):
     import multirig.app as appmod
+    import multirig.core as coremod
     from multirig.config import AppConfig, RigConfig, BandPreset
 
     cfg = AppConfig(
@@ -137,9 +138,10 @@ def client(monkeypatch, tmp_path):
 
     monkeypatch.setattr(appmod, "load_config", lambda path: cfg)
     monkeypatch.setattr(appmod, "save_config", lambda cfg, path: None)
+    monkeypatch.setattr(coremod, "RigClient", DummyRigClient)
     monkeypatch.setattr(appmod, "RigClient", DummyRigClient)
     monkeypatch.setattr(appmod, "SyncService", DummySyncService)
-    monkeypatch.setattr(appmod, "RigctlServer", DummyRigctlServer)
+    monkeypatch.setattr(appmod, "AppRigctlServer", DummyRigctlServer)
 
     app = appmod.create_app(config_path=tmp_path / "test.yaml")
     return TestClient(app)
