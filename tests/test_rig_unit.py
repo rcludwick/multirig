@@ -355,9 +355,6 @@ async def test_process_backend_dump():
     mock_proc.returncode = None
     
     # Simulate lines then a timeout (to break the loop)
-    # wait_for raises TimeoutError when side effect is a coroutine that sleeps?
-    # Or we can just have readline return empty bytes after some lines?
-    # The code breaks on empty bytes too.
     mock_proc.stdout.readline.side_effect = [b"Line1\n", b"Line2\n", b""] 
     
     with patch("multirig.rig.asp.create_subprocess_exec", return_value=mock_proc):

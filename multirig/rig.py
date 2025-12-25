@@ -754,28 +754,6 @@ class RigctlProcessBackend(RigBackend):
             return None
 
     async def dump_state(self) -> Sequence[str]:
-        # dump_state returns many lines, ending with RPRT? 
-        # In interactive mode, we send \dump_state
-        # It returns many lines.
-        # We need to read until we think it's done.
-        # Standard rigctl dump_state ends with a specific pattern? 
-        # Or just read until no more data?
-        # RigctlProcessBackend._send only reads one line.
-        # We need a new method for multi-line read that doesn't rely on count.
-        # But dump_state structure is fixed?
-        # For now, let's implement a specific reader for dump_state or just use a large N?
-        # Using _send_n might work if we know N. But N varies.
-        
-        # Let's defer implementation slightly or use a large timeout read loop.
-        # Actually, for dump_state, we can probably just read until the output stops?
-        # But that's slow.
-        # The last line of dump_state is usually checking for RPRT if extended?
-        # But we are using interactive mode without extended responses usually?
-        # Wait, RigctlProcessBackend sends commands directly.
-        # dump_state output ends.
-        
-        # Let's implement a read_until_timeout or something.
-        # Or maybe just read a large chunk.
         
         proc = await self._ensure_proc()
         assert proc.stdin and proc.stdout

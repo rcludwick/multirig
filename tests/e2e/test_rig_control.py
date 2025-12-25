@@ -241,19 +241,8 @@ def test_ui_forwarding_inhibition(page: Page, profile_manager: ProfileManager):
         profile_manager.load_profile(profile_name)
         page.reload()
         
-        # Connect client to rigctld (4532 - wait, config uses 4532, but it's a dummy managed by backend?)
-        # 4532 is the dummy rigctld started by test_env.
-        # But if the Rig connects to a device, does it expose a server?
-        # Typically MultiRig exposes its own server on 4534 (config dependent).
-        # The JS test connected to 4532: `client.connect(4532, ...)`
-        # This means it connected directly to the Backend (the dummy rig)!
-        # And it clicked the UI.
-        # If UI sets frequency, it sends command to Backend.
-        # So "Should NOT forward UI band clicks to TCP client [also connected to Backend]"??
-        # Rigctld (hamlib) generally broadcasts updates if using async mode.
-        # But maybe dummy rigctld doesn't?
-        # Or maybe test expects it NOT to broadcast?
-        # The test asserts receivedData.length is 0.
+        # Connect to the dummy rigctld (4532) directly.
+        # Verify that clicking the UI band button does not result in forwarded commands to this client.
         
         received_data = []
         

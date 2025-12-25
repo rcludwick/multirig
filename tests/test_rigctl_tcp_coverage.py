@@ -92,9 +92,7 @@ async def test_handle_command_line_edge_cases():
     # Mock _cmd_chk_vfo
     server._cmd_chk_vfo = AsyncMock(return_value=b"chk_vfo_resp")
     
-    # Standard call (not raw) - typically chk_vfo is internal or via correct dispatch?
-    # Logic: if cmd_key == "chk_vfo": return await self._cmd_chk_vfo
-    # But cmd_key defaults to cmd.
+    # Standard call (internal dispatch)
     assert await server._handle_command_line("chk_vfo 1") == b"chk_vfo_resp"
     server._cmd_chk_vfo.assert_called_with(None, False)
     
@@ -104,9 +102,7 @@ async def test_handle_command_line_edge_cases():
 
 @pytest.mark.asyncio
 async def test_abstract_methods_raise():
-    # Base class direct instantiation (if possible or via subclass super calls)
-    # RigctlServer inherits BaseTcpServer
-    # BaseTcpServer._handle_client raises NotImplementedError
+    # Base class direct instantiation
     
     from multirig.rigctl_tcp import BaseTcpServer
     base = BaseTcpServer("h", 1)

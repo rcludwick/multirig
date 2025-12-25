@@ -66,20 +66,7 @@ async def test_rigctld_send_erp_success(rigctld_backend):
 
 @pytest.mark.asyncio
 async def test_rigctld_send_fallback(rigctld_backend):
-    # Test _send with ERP supported (default) -> ERP fails -> fallback raw
-    # But wait, logic is: try ERP, if code == 0 return. 
-    # If code != 0? Logic says: if code!=0, return it?
-    # No, check logic:
-    # code, lines = _send_erp(...)
-    # if code == 0: return code, lines
-    # raw_code, raw_lines = _send_raw(...)
-    # if raw_code == 0: 
-    #    self._erp_supported = False
-    #    return raw_code, raw_lines
-    # return code, lines
-    
-    # So to trigger fallback, _send_erp must return non-zero code.
-    # And _send_raw must return 0.
+    # To trigger fallback: _send_erp must return non-zero code, and _send_raw must return 0.
     
     rigctld_backend._erp_supported = True
     

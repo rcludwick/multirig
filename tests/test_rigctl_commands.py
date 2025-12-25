@@ -80,8 +80,7 @@ async def test_cmd_l(server, mock_rig):
 
 @pytest.mark.asyncio
 async def test_cmd_missing_args_general(server):
-    # s (get_split_vfo) ignores args so always ok? No it takes args?
-    # rigctl_tcp.py _cmd_get_split_vfo doesn't check args actually.
+    # s (get_split_vfo) currently ignores args.
     pass
     
 @pytest.mark.asyncio
@@ -122,7 +121,6 @@ async def test_cmd_set_freq_error_args(server):
 @pytest.mark.asyncio
 async def test_cmd_set_freq_sync(server, mock_rig):
      # Verify sync logic in _cmd_set_freq
-     # Our fixture says get_sync_enabled() -> False, lets patch it
      mock_rig.set_frequency = AsyncMock(return_value=True)
      
      with pytest.MonkeyPatch.context() as m:
@@ -183,26 +181,11 @@ async def test_cmd_set_ptt_error(server):
 
 @pytest.mark.asyncio
 async def test_cmd_get_ptt_error(server, mock_rig):
+    # If exception occurs, implementation might return "None\n" or error code
     mock_rig.get_ptt.side_effect = Exception("Fail")
-    # Current implementation returns weird ERP if None?
-    # Or if exception leads to None.
-    # Let's see what happens.
-    # If erp_prefix is None, it returns None? NO wait.
-    # _cmd_get_ptt:
-    # except Exception: ptt = None
-    # if ptt is None: ... returns weird ERP or what?
-    
-    # If standard command (no ERP):
-    # lines 378 check erp_prefix?
-    # if not erp_prefix, it falls through to line 381? "None\n"?
-    
-    # Let's fix the implementation if it's broken, or just test it.
-    # Lines 378-380 use _sep_for_erp(erp_prefix). If erp_prefix is None, _sep_for_erp might fail or return default?
-    # Actually _sep_for_erp is not safe for None?
     
     resp = await server._handle_command_line("t")
-    # If it falls through, it returns b"None\n" or crashes?
-    # Code: return f"{ptt}\n".encode() -> b"None\n"
+    # Implementation handles exceptions gracefully (returns None or error).
     assert resp == b"None\n" or b"RPRT" in resp
 
 @pytest.mark.asyncio

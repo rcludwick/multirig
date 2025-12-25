@@ -44,12 +44,7 @@ def test_settings_band_reset(page: Page, profile_manager: ProfileManager):
         
         rig_fieldset.locator('button[data-action="band-reset"]').click()
         
-        # After reset, we expect all bands (usually 16 or depending on caps)
-        # FakeRigctld sends HF + 2m.
-        # detect_bands_from_ranges(lines) -> will detect many amateur bands.
-        # The exact count depends on the logic in config.py for 1MHz-30MHz and 144-148.
-        # The JS test expected 16. Python logic should be same.
-        # We wait for UI update
+        # After reset, we expect all bands (usually ~16 from FakeRigctld's HF + 2m capabilities).
         expect(rows).not_to_have_count(2)
         
         expect(rig_fieldset.locator('.band-row', has_text='160m')).to_be_visible()
@@ -60,10 +55,7 @@ def test_settings_band_reset(page: Page, profile_manager: ProfileManager):
         profile_manager.delete_profile(profile_name)
 
 def test_settings_get_caps_netmind(page: Page, profile_manager: ProfileManager, api_manager: ProfileManager):
-    # api_manager used for non-browser requests (Netmind interactions)?
-    # profile_manager has api context.
-    
-    # Reset Netmind (Not really easy via API, but we use unique proxy name)
+    # Reset Netmind (using a unique proxy name).
     timestamp = int(time.time())
     proxy_name = f"Multirig_Caps_UI_Py_{timestamp}"
     proxy_port = 9001

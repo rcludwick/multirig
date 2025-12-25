@@ -13,6 +13,20 @@ def base_url():
 @pytest.fixture(scope="session", autouse=True)
 def test_env(base_url):
     """Start all required services for E2E testing."""
+    import shutil
+    import tempfile
+    
+    # Create a temporary directory for config isolation
+    test_config_dir = tempfile.mkdtemp(prefix="multirig_e2e_")
+    config_path = os.path.join(test_config_dir, "multirig.config.yaml")
+
+    # Kill any stale rigctld/uvicorn processes
+    subprocess.run(["pkill", "rigctld"], stderr=subprocess.DEVNULL)
+    subprocess.run(["pkill", "uvicorn"], stderr=subprocess.DEVNULL)
+    
+    # Wait for OS to release resources
+    time.sleep(1)
+            
     processes = []
     
     # 1. Start Netmind (9000)
@@ -22,7 +36,7 @@ def test_env(base_url):
         netmind_cmd,
         cwd="ext/netmind",
         stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE # Capture stderr for debugging if needed
+        stderr=subprocess.PIPE
     )
     processes.append(netmind)
 
@@ -40,18 +54,9 @@ def test_env(base_url):
     # 3. Start MultiRig (8001)
     env = os.environ.copy()
     env.update({
-        "MULTIRIG_TEST_MODE": "1",
-        "MULTIRIG_RIGCTL_PORT": "4534", # Why 4534? JS config said 4534, but rigctld is on 4532?
-                                        # Ah, maybe MultiRig connects to 4532?
-                                        # Config default is 4532.
-                                        # JS Config env: MULTIRIG_RIGCTL_PORT: '4534'
-                                        # BUT JS Config rigctld: port 4532.
-                                        # This implies MultiRig might NOT be connecting to this dummy rig by default?
-                                        # Or mismatch? 
-                                        # I'll stick to 4532 for rigctld and remove the env var override unless needed.
-                                        # Wait, ui.spec.js configures rig on 4532.
-                                        # So MultiRig server default rigctl params matter less if we configure explicitly.
-                                        # But let's copy the ENV vars just in case.
+        "MULTIRIG_TEST_MODE": "0", # Enable persistence for autosave tests
+        "MULTIRIG_CONFIG": config_path, # Config file within temp dir
+        "MULTIRIG_RIGCTL_PORT": "4534", 
         "MULTIRIG_RIGCTL_HOST": "127.0.0.1",
         "OPEN_BROWSER": "0",
         "PORT": "8001",
@@ -97,12 +102,20 @@ def test_env(base_url):
 
     # Cleanup
     print("Stopping test services...")
-    for p in processes:
-        p.terminate()
+    if multirig.poll() is None:
+        multirig.terminate()
         try:
-            p.wait(timeout=2)
+            multirig.wait(timeout=2)
         except subprocess.TimeoutExpired:
-            p.kill()
+            multirig.kill()
+    
+    for p in processes:
+        if p == multirig: continue
+        p.terminate()
+            
+    # Cleanup temp config
+    if os.path.exists(test_config_dir):
+        shutil.rmtree(test_config_dir)
 
 
 @pytest.fixture

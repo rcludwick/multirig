@@ -436,14 +436,13 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
             return ORJSONResponse({"status": "error", "error": "invalid profile name"}, status_code=400)
         try:
             data = app.state.profiles.load_data(name)
-            from .config import _migrate_config
-            cfg = AppConfig.model_validate(_migrate_config(data))
+            cfg = AppConfig(**data)
             await _apply_config(cfg)
             app.state.active_profile_name = name
-            app.state.profiles.persist_active_name(app.state.active_profile_name)
+            app.state.profiles.persist_active_name(name)
             return {"status": "ok"}
-        except FileNotFoundError: return ORJSONResponse({"status": "error", "error": "profile not found"}, status_code=404)
-        except Exception as e: return ORJSONResponse({"status": "error", "error": str(e)}, status_code=400)
+        except Exception as e:
+            return ORJSONResponse({"status": "error", "error": str(e)}, status_code=400)
 
     @app.delete("/api/config/profiles/{name}")
     async def delete_config_profile(name: str):
@@ -576,6 +575,7 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
         for idx, r in enumerate(rigs): r["index"] = idx
         result = {
             "rigs": rigs,
+            "active_profile": getattr(app.state, "active_profile_name", ""),
             "sync_enabled": app.state.sync_service.enabled,
             "sync_source_index": app.state.sync_service.source_index,
             "rigctl_to_main_enabled": getattr(app.state.config, "rigctl_to_main_enabled", True),

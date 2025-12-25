@@ -22,10 +22,8 @@ def mock_cfg():
 
 def test_create_app_with_config(mock_cfg):
     # Test create_app with explicit config
-    app = create_app(config_path=None) # Argument is config_path, not config object usually?
-    # Checking app.py: create_app(config_path: Optional[Path] = None)
-    # But later it loads config. 
-    # Logic: if config_path is None, find default.
+    # Test create_app with explicit config.
+    # Note: create_app arguments might change, but this tests logic flow.
     # Then load_config(app.state.config_path).
     
     # We can mock load_config
@@ -48,17 +46,7 @@ async def test_lifespan_startup_shutdown(mock_cfg):
     app.state.sync_service = AsyncMock()
     app.state.rigctl_server = AsyncMock()
     
-    # _bootstrap_active_profile is defined inside create_app!
-    # We cannot patch it easily if it's a local function.
-    # However, it calls app.state.profiles.persist_active_name or similar?
-    # Or we can just let it run if it's harmless?
-    # Or mock what it calls.
-    # Let's see what it does.
-    # If it's local, we can't patch multirig.app._bootstrap_active_profile.
-    
-    # Assuming we can't patch it directly if local.
-    # But we can mock what it uses.
-    # It probably uses app.state.profiles.
+    # Mock profiles
     app.state.profiles = MagicMock()
     app.state.profiles.get_active_name.return_value = "default"
     

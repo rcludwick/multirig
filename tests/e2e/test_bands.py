@@ -233,11 +233,8 @@ def test_band_disabled_validation(page: Page, profile_manager: ProfileManager):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect(("127.0.0.1", 4534))
             s.sendall(cmd.encode())
-            # We don't really care about response here, but protocol says RPRT 0 or error.
-            # If rejected, it might return error or just not forward.
-            # MultiRig currently returns success even if forwarding blocked? 
-            # Or maybe RPRT -1?
-            # JS test didn't check response, only history.
+            # Send command. Protocol dictates response behavior, but for this test
+            # we primarily verify behavior via Netmind history (absence of forwarding).
             
         found = _check_netmind_history(
             profile_manager.request,

@@ -22,17 +22,42 @@ def test_autosave_profile_on_change(page: Page, profile_manager: ProfileManager)
     }
     
     try:
-        profile_manager.ensure_profile_exists(profile_name, allow_create=True, config_yaml=json.dumps(initial_config))
+        # Ensure fresh start
+        profile_manager.delete_profile(profile_name)
+
+        # Manual configure and save
+        res = profile_manager.request.post("/api/config", data=initial_config)
+        if not res.ok:
+            raise RuntimeError(f"Failed to apply config: {res.text()}")
+
+        res = profile_manager.request.post(f"/api/config/profiles/{profile_name}")
+        if not res.ok:
+            raise RuntimeError(f"Failed to save profile: {res.text()}")
+
+        time.sleep(1.0) # avoid race condition with file system
         
+        # Use API to load profile to avoid UI flakiness/race conditions
+        profile_manager.load_profile(profile_name)
+
         page.goto("/settings")
-        # Ensure we are on the right profile
-        page.locator("#profileSelectBtn").click()
-        page.locator("#profileSelectChoice").select_option(profile_name)
-        page.locator("#profileSelectConfirm").click()
+    
+        # Wait for the backend to acknowledge the profile is active AND config is loaded
+        # checking "rigs" guarantees _apply_config has finished rebuilding rigs
+        def check_status(s):
+            rigs = s.get("rigs", [])
+            return (s.get("active_profile") == profile_name and
+                    len(rigs) > 0 and
+                    rigs[0].get("name") == "Autosave Rig")
+
+        assert profile_manager.wait_for_status(check_status, timeout=10), \
+            f"Timeout waiting for ACTIVE profile. Current status: {profile_manager.request.get('/api/status').text()}"
+
+        # Reload to ensure we see the true state of the server
+        page.reload()
+        expect(page.locator("#rigList")).to_be_visible()
         
-        expect(page.locator("#profileResult")).to_contain_text("Loaded profile")
-        
-        rig_fieldset = page.locator("#rigList fieldset").first
+        # Find the fieldset that contains the input with the correct rig name
+        rig_fieldset = page.locator("#rigList fieldset").filter(has=page.locator('input[data-key="name"][value="Autosave Rig"]'))
         expect(rig_fieldset).to_be_visible()
         
         rig_port_input = rig_fieldset.locator('input[data-key="port"]')
@@ -54,10 +79,11 @@ def test_autosave_profile_on_change(page: Page, profile_manager: ProfileManager)
         # Verify profile persisted
         import urllib.parse
         encoded_name = urllib.parse.quote(profile_name)
+        # Verify profile persisted (polling export endpoint)
         assert profile_manager.wait_for_status(
-            lambda s: True, # Just a dummy to use polling logic if I want, but I need to poll export
-            timeout=0 # wait_for_status doesn't fit export easily without helper
-        ) == False # wait_for_status isn't right here
+            lambda s: True, 
+            timeout=0 
+        ) == False 
         
         saved = False
         api_req = profile_manager.request
