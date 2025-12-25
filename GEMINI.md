@@ -48,6 +48,7 @@ All changes must be verified with the appropriate test suite.
 
 ## Important Context for AI Agents
 - **Python**: Python code should be pythonic, and not use any golang, javascript, java, or c++ patterns.  Avoid using callables when initializing classes.
+- **Python**: Prefer to use raw strings for rigctl commands (e.g. `r"\get_powerstat"`).
 - **Config Persistence**: New rig settings must be added to the `RigConfig` model in `config.py` to be persistent. Frontend-only `localStorage` should be avoided for core rig settings.
 - **Data Flow**: `RigClient.safe_status` in `rig.py` is the source of truth for the frontend dashboard. Ensure new config fields are exposed there.
 - **UI/CSS**: Global styles (fonts, vars) belong in `style.css`.

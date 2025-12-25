@@ -80,7 +80,7 @@ test-py: venv
 	@echo "[Info] Installing dev dependencies"
 	@"$(UV)" pip install --python "$(UV_PY)" -e ".[dev]"
 	@echo "[Info] Running pytest"
-	@PYTHONTRACEMALLOC=1 "$(UV_PY)" -m pytest -n auto --ignore=tests/e2e
+	@PYTHONTRACEMALLOC=1 "$(UV_PY)" -m pytest --ignore=tests/e2e
 
 coverage: coverage-py coverage-js
 

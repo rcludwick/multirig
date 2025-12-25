@@ -114,7 +114,7 @@ async def test_process_ensure_proc(process_backend):
     mock_proc.returncode = None
     
     # Patch the reference used in the module
-    with patch("multirig.rig.asp.create_subprocess_exec", return_value=mock_proc) as mock_exec:
+    with patch("multirig.rig.process.asp.create_subprocess_exec", return_value=mock_proc) as mock_exec:
         proc = await process_backend._ensure_proc()
         assert proc is mock_proc
         mock_exec.assert_called()
@@ -134,7 +134,7 @@ async def test_process_send(process_backend):
     mock_proc.stdout.readline.return_value = b"RPRT 0\n"
     mock_proc.returncode = None
     
-    with patch("multirig.rig.asp.create_subprocess_exec", return_value=mock_proc):
+    with patch("multirig.rig.process.asp.create_subprocess_exec", return_value=mock_proc):
         # We need to ensure proc is created
         resp = await process_backend._send("chk_vfo")
         assert resp == "RPRT 0"
@@ -155,7 +155,7 @@ async def test_process_restart_on_failure(process_backend):
     mock_proc2.stdout.readline.return_value = b"RESTARTED\n"
     mock_proc2.returncode = None
     
-    with patch("multirig.rig.asp.create_subprocess_exec", side_effect=[mock_proc1, mock_proc2]) as mock_exec:
+    with patch("multirig.rig.process.asp.create_subprocess_exec", side_effect=[mock_proc1, mock_proc2]) as mock_exec:
         # First call fails on write, triggers restart
         resp = await process_backend._send("cmd")
         assert resp == "RESTARTED"

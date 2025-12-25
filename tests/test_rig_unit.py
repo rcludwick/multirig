@@ -1,4 +1,3 @@
-
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from multirig.rig import RigClient, RigctldBackend, RigctlProcessBackend, RigConfig
@@ -92,7 +91,7 @@ async def test_rig_client_factory_hamlib(mock_rig_config):
     mock_rig_config.model_id = 1
     mock_rig_config.device = "/dev/rig"
     
-    with patch("multirig.rig.RigctlProcessBackend") as MockBackend:
+    with patch("multirig.rig.client.RigctlProcessBackend") as MockBackend:
         client = RigClient(mock_rig_config)
         MockBackend.assert_called_once_with(
             model_id=1,
@@ -109,7 +108,7 @@ async def test_rig_client_factory_rigctld(mock_rig_config):
     mock_rig_config.host = "1.2.3.4"
     mock_rig_config.port = 1234
     
-    with patch("multirig.rig.RigctldBackend") as MockBackend:
+    with patch("multirig.rig.client.RigctldBackend") as MockBackend:
         client = RigClient(mock_rig_config)
         MockBackend.assert_called_once_with("1.2.3.4", 1234)
         assert isinstance(client._backend, MagicMock)
@@ -248,12 +247,12 @@ async def test_process_backend_extras():
         # powerstat
         mock_send.return_value = "1"
         assert await backend.get_powerstat() == 1
-        mock_send.assert_called_with("\\get_powerstat")
+        mock_send.assert_called_with(r"\get_powerstat")
         
         # chk_vfo
         mock_send.return_value = "1"
         assert await backend.chk_vfo() == 1
-        mock_send.assert_called_with("\\chk_vfo")
+        mock_send.assert_called_with(r"\chk_vfo")
 
 @pytest.mark.asyncio
 async def test_rig_client_passthrough_errors(rig_client):
@@ -275,25 +274,25 @@ async def test_rig_client_status(rig_client):
     st = await rig_client.status()
     assert st == "StatusOK"
     
-import multirig.rig as rig_mod
+import multirig.rig.common as rig_common
 
 def test_parse_helpers():
     # _parse_bool_flag
-    assert rig_mod._parse_bool_flag("Y") is True
-    assert rig_mod._parse_bool_flag("E") is True
-    assert rig_mod._parse_bool_flag("N") is False
-    assert rig_mod._parse_bool_flag("") is False
-    assert rig_mod._parse_bool_flag(None) is False
+    assert rig_common._parse_bool_flag("Y") is True
+    assert rig_common._parse_bool_flag("E") is True
+    assert rig_common._parse_bool_flag("N") is False
+    assert rig_common._parse_bool_flag("") is False
+    assert rig_common._parse_bool_flag(None) is False
     
     # _parse_mode_list
-    assert rig_mod._parse_mode_list("") == []
-    assert rig_mod._parse_mode_list("None") == []
-    assert rig_mod._parse_mode_list("USB LSB") == ["USB", "LSB"]
-    assert rig_mod._parse_mode_list("USB, LSB;") == ["USB", "LSB"]
-    assert rig_mod._parse_mode_list("USB .") == ["USB"] # Filter trailing dot?
+    assert rig_common._parse_mode_list("") == []
+    assert rig_common._parse_mode_list("None") == []
+    assert rig_common._parse_mode_list("USB LSB") == ["USB", "LSB"]
+    assert rig_common._parse_mode_list("USB, LSB;") == ["USB", "LSB"]
+    assert rig_common._parse_mode_list("USB .") == ["USB"] # Filter trailing dot?
     
     # parse_dump_caps
-    caps, modes = rig_mod.parse_dump_caps("")
+    caps, modes = rig_common.parse_dump_caps("")
     assert caps == {}
     assert modes == []
     
@@ -302,7 +301,7 @@ def test_parse_helpers():
     Can get Frequency: Y
     Mode list: USB LSB
     """
-    caps, modes = rig_mod.parse_dump_caps(txt)
+    caps, modes = rig_common.parse_dump_caps(txt)
     assert caps["freq_set"] is True
     assert caps["freq_get"] is True
     assert "USB" in modes
@@ -311,7 +310,9 @@ def test_parse_helpers():
 @pytest.mark.asyncio
 async def test_rig_backend_base():
     # Test base class NotImplementedErrors
-    base = rig_mod.RigBackend()
+    # RigBackend is in backend.
+    from multirig.rig.backend import RigBackend
+    base = RigBackend()
     
     with pytest.raises(NotImplementedError):
         await base.get_frequency()
@@ -357,14 +358,14 @@ async def test_process_backend_dump():
     # Simulate lines then a timeout (to break the loop)
     mock_proc.stdout.readline.side_effect = [b"Line1\n", b"Line2\n", b""] 
     
-    with patch("multirig.rig.asp.create_subprocess_exec", return_value=mock_proc):
+    with patch("multirig.rig.process.asp.create_subprocess_exec", return_value=mock_proc):
          lines = await backend.dump_state()
          assert lines == ["Line1", "Line2"]
          mock_proc.stdin.write.assert_called_with(b"\\dump_state\n")
     
     # Test dump_caps
     mock_proc.stdout.readline.side_effect = [b"Cap1\n", b""]
-    with patch("multirig.rig.asp.create_subprocess_exec", return_value=mock_proc):
+    with patch("multirig.rig.process.asp.create_subprocess_exec", return_value=mock_proc):
          lines = await backend.dump_caps()
          assert lines == ["Cap1"]
          mock_proc.stdin.write.assert_called_with(b"\\dump_caps\n")
@@ -402,7 +403,7 @@ async def test_process_backend_send_n_retry():
     mock_proc2.stdout.readline.side_effect = [b"USB\n", b"2400\n"] # Success 2
     mock_proc2.returncode = None
     
-    with patch("multirig.rig.asp.create_subprocess_exec", side_effect=[mock_proc1, mock_proc2]):
+    with patch("multirig.rig.process.asp.create_subprocess_exec", side_effect=[mock_proc1, mock_proc2]):
          # get_mode calls _send_n("m", 2)
          mode, pb = await backend.get_mode()
          assert mode == "USB"
@@ -410,10 +411,9 @@ async def test_process_backend_send_n_retry():
          # Should have tried twice
 
 def test_rigctl_error():
-    e = rig_mod.RigctlError(1, "ErrorMsg")
+    e = rig_common.RigctlError(1, "ErrorMsg")
     assert str(e) == "RPRT 1: ErrorMsg"
     assert e.code == 1
     
-    e2 = rig_mod.RigctlError(2)
+    e2 = rig_common.RigctlError(2)
     assert str(e2) == "RPRT 2"
-
