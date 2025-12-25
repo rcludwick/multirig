@@ -486,7 +486,10 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
             return {"status": "error", "error": "rig index out of range"}
         enabled = bool(payload.get("enabled", True))
         app.state.config.rigs[idx].enabled = enabled
-        try: app.state.rigs[idx].cfg.enabled = enabled
+        try: 
+            app.state.rigs[idx].cfg.enabled = enabled
+            if not enabled:
+                asyncio.create_task(app.state.rigs[idx].close())
         except Exception: pass
         save_config(app.state.config, app.state.config_path)
         return {"status": "ok", "enabled": enabled}

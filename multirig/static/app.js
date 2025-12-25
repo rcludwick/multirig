@@ -667,8 +667,8 @@
       });
 
       if (power) {
-        power.disabled = connError;
-        power.checked = (rig.enabled !== false) && !connError;
+        power.disabled = false;
+        power.checked = (rig.enabled !== false);
         power.title = connError
           ? 'Connection error'
           : ((rig.enabled !== false)

@@ -174,6 +174,8 @@ class RigConfig(BaseModel):
     host: str = Field(default="127.0.0.1", description="rigctld host")
     port: int = Field(default=4532, description="rigctld TCP port")
     # Optional: command to launch rigctld if desired (not used initially)
+    # If managed=True, backend spawns rigctld and connects via TCP (ignoring host/port above)
+    managed: bool = Field(default=False, description="If true, spawn/manage rigctld process locally")
     rigctld_cmd: Optional[str] = None
 
     # hamlib direct (rigctl) settings

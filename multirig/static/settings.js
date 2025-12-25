@@ -522,6 +522,10 @@ function collectRigConfig(fieldset) {
     baud: asNum('input[data-key="baud"]'),
     serial_opts: val('input[data-key="serial_opts"]') || null,
     extra_args: val('input[data-key="extra_args"]') || null,
+    serial_opts: val('input[data-key="serial_opts"]') || null,
+    extra_args: val('input[data-key="extra_args"]') || null,
+    // If connection type is 'hamlib' (Serial/USB), we now imply managed=True
+    managed: connectionType === 'hamlib',
     inverted: !!get('input[data-key="inverted"]')?.checked,
   };
 }
@@ -1249,7 +1253,7 @@ function render() {
             Allow out-of-band frequencies
           </label>
           <label>Connection <select data-key="connection_type">
-            <option value="hamlib">Hamlib (Direct)</option>
+            <option value="hamlib">Managed rigctld (Serial/USB)</option>
             <option value="rigctld">rigctld (TCP)</option>
           </select></label>
           <div class="rig-meta">
@@ -1302,7 +1306,36 @@ function render() {
       renderCapsBadges(capsEl, modelSelect.value);
       renderModesBadges(modesEl, modelSelect.value);
     };
-    modelSelect.addEventListener('change', updateCaps);
+
+    const updatePortState = () => {
+      // 1 = Dummy, 6 = DummyNET (deprecated but valid), others might exist but 1 is main
+      const modelId = Number(modelSelect.value);
+      const isDummy = [1, 6].includes(modelId);
+
+      const deviceInput = fs.querySelector('input[data-key="device"]');
+      const showPortsBtn = fs.querySelector('[data-action="show-ports"]');
+
+      if (deviceInput) {
+        if (isDummy) {
+          deviceInput.disabled = true;
+          deviceInput.dataset.originalPlaceholder = deviceInput.placeholder || '';
+          deviceInput.placeholder = 'Not required for Dummy model';
+        } else {
+          deviceInput.disabled = false;
+          if (deviceInput.dataset.originalPlaceholder) {
+            deviceInput.placeholder = deviceInput.dataset.originalPlaceholder;
+          }
+        }
+      }
+      if (showPortsBtn) {
+        showPortsBtn.disabled = isDummy;
+      }
+    };
+
+    modelSelect.addEventListener('change', () => {
+      updateCaps();
+      updatePortState();
+    });
 
     // Initialize selects and visibility
     const sel = fs.querySelector('select[data-key="connection_type"]');
@@ -1314,6 +1347,7 @@ function render() {
     };
     sel.addEventListener('change', updateVis);
     updateVis();
+    updatePortState();
 
     // Wire test button
     fs.querySelector('[data-action="test"]').addEventListener('click', async () => {
