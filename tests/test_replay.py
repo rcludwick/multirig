@@ -1,7 +1,7 @@
 import pytest
 import asyncio
 from unittest.mock import MagicMock, AsyncMock
-from multirig.rigctl_tcp import RigctlServer, RigctlServerConfig
+from multirig.rig import RigctlServer, RigctlServerConfig
 from multirig.rig import RigClient, RigConfig
 
 def parse_dump(path):

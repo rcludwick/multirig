@@ -6,8 +6,7 @@ from typing import Optional, List, Any, Sequence
 
 from fastapi import FastAPI
 from .config import AppConfig, save_config
-from .rig import RigClient
-from .rigctl_tcp import RigctlServer, RigctlServerConfig
+from .rig import RigClient, RigctlServer, RigctlServerConfig
 from .profiles import ProfileManager
 
 class AppRigctlServer(RigctlServer):

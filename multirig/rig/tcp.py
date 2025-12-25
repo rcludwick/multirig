@@ -2,7 +2,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 from typing import Tuple, List, Dict, Optional, Sequence
-from ..protocols import HamlibParser
+from .protocols import HamlibParser
 from .common import RigStatus, RigctlError
 from .backend import RigBackend
 
@@ -281,7 +281,7 @@ class RigctldBackend(RigBackend):
                     asyncio.open_connection(self.host, self.port), timeout=1.5
                 )
                 try:
-                    writer.write(b"\\chk_vfo\n")
+                    writer.write(rb"\chk_vfo" + b"\n")
                     await writer.drain()
                     data = await asyncio.wait_for(reader.readline(), timeout=1.5)
                     resp = data.decode(errors="ignore").strip()

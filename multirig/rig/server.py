@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
-from typing import Callable, Awaitable, Optional, Sequence
+from typing import Any, Optional, Sequence
 
-from .rig import RigClient, RigctlError
+from .client import RigClient
+from .common import RigctlError
 from .protocols import HamlibParser
 
 
@@ -23,7 +24,7 @@ def _is_erp_prefix(ch: str) -> bool:
         return False
     if ch.isalnum() or ch.isspace():
         return False
-    if ch in ("\\", "?", "_"):
+    if ch in r"\?_":
         return False
     return True
 
@@ -190,7 +191,7 @@ class RigctlServer(BaseTcpServer):
         cmd = parts[0]
         args = parts[1:]
 
-        is_raw = cmd.startswith("\\")
+        is_raw = cmd.startswith(r"\\"[0])
         if is_raw:
             cmd_key = cmd[1:]
         else:

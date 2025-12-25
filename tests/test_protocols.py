@@ -1,6 +1,6 @@
 import pytest
 
-from multirig.protocols import HamlibParser
+from multirig.rig.protocols import HamlibParser
 
 
 def test_hamlib_parser_decode_bytes_and_unicode_error():

@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from multirig.rigctl_tcp import RigctlServer, RigctlServerConfig
+from multirig.rig import RigctlServer, RigctlServerConfig
 
 @pytest.fixture
 def mock_rig():

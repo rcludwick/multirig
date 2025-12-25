@@ -2,12 +2,15 @@
 import asyncio
 import pytest
 from unittest.mock import MagicMock, AsyncMock
-from multirig.rigctl_tcp import (
+from multirig.rig import (
     RigctlServer, 
+    RigctlServerConfig
+)
+from multirig.rig.server import (
+    BaseTcpServer,
     _default_server_config, 
     _is_erp_prefix, 
-    _records_to_bytes,
-    RigctlServerConfig
+    _records_to_bytes
 )
 
 class ConcreteRigctlServer(RigctlServer):
@@ -104,7 +107,7 @@ async def test_handle_command_line_edge_cases():
 async def test_abstract_methods_raise():
     # Base class direct instantiation
     
-    from multirig.rigctl_tcp import BaseTcpServer
+    from multirig.rig.server import BaseTcpServer
     base = BaseTcpServer("h", 1)
     with pytest.raises(NotImplementedError):
         await base._handle_client(None, None)

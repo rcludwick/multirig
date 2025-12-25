@@ -23,7 +23,7 @@ from .debug_log import DebugStore
 from .profiles import ProfileManager
 from .routes import router
 from .core import bootstrap_active_profile, rebuild_rigs, _rigctl_bind_host, _rigctl_bind_port, AppRigctlServer
-from .rigctl_tcp import RigctlServerConfig
+from .rig import RigctlServerConfig
 
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = BASE_DIR / "templates"

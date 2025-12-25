@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock
-from multirig.rigctl_tcp import RigctlServer, RigctlServerConfig, _sep_for_erp
-from multirig.rig import RigClient, RigConfig
+from multirig.rig import RigctlServer, RigctlServerConfig, RigClient, RigConfig
+from multirig.rig.server import _sep_for_erp
 
 @pytest.mark.asyncio
 async def test_dump_state_command():

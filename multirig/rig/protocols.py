@@ -12,7 +12,7 @@ class HamlibParser:
     """Parses Hamlib 'rigctld' TCP protocol commands into human-readable descriptions.
     
     This parser uses regex patterns to identify common Hamlib commands and responses,
-    translating them into semantic strings (e.g., "SET FREQ" instead of "F ...").
+translating them into semantic strings (e.g., "SET FREQ" instead of "F ...").
     """
     
     # Regex patterns for common Hamlib commands

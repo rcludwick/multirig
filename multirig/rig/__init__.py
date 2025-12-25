@@ -5,6 +5,8 @@ from .tcp import RigctldBackend
 from .process import RigctlProcessBackend
 from .managed import RigctlManagedBackend
 from .client import RigClient
+from .server import RigctlServer, RigctlServerConfig
+from .protocols import HamlibParser
 
 __all__ = [
     "RigConfig",
@@ -16,4 +18,7 @@ __all__ = [
     "RigctlProcessBackend",
     "RigctlManagedBackend",
     "RigClient",
+    "RigctlServer",
+    "RigctlServerConfig",
+    "HamlibParser",
 ]
