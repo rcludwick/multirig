@@ -26,6 +26,7 @@ class HamlibParser:
         (r"^T\s+([01])", "SET PTT"),
         (r"^t", "GET PTT"),
         (r"^\\dump_state", "DUMP STATE"),
+        (r"^\\dump_caps", "DUMP CAPS"),
         (r"^\\get_powerstat", "GET POWERSTAT"),
         (r"^\\chk_vfo", "CHECK VFO"),
         (r"^\\set_vfo\s+(\w+)", "SET VFO"),

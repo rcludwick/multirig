@@ -80,7 +80,7 @@ test-py: venv
 	@echo "[Info] Installing dev dependencies"
 	@"$(UV)" pip install --python "$(UV_PY)" -e ".[dev]"
 	@echo "[Info] Running pytest"
-	@"$(UV_PY)" -m pytest
+	@PYTHONTRACEMALLOC=1 "$(UV_PY)" -m pytest -n auto --ignore=tests/e2e
 
 coverage: coverage-py coverage-js
 
@@ -88,7 +88,7 @@ coverage-py: venv
 	@echo "[Info] Installing dev dependencies"
 	@"$(UV)" pip install --python "$(UV_PY)" -e ".[dev]"
 	@echo "[Info] Running pytest with coverage"
-	@"$(UV_PY)" -m pytest --cov=multirig --cov-report=term-missing --cov-report=html --cov-report=xml
+	@PYTHONTRACEMALLOC=1 "$(UV_PY)" -m pytest --cov=multirig --cov-report=term-missing --cov-report=html --cov-report=xml --ignore=tests/e2e
 
 test-js:
 	@echo "[Info] Installing JS dependencies"
@@ -112,7 +112,7 @@ test-e2e:
 	@echo "[Info] Installing Playwright browsers"
 	@npx playwright install --with-deps chromium
 	@echo "[Info] Running Python Playwright E2E tests"
-	@"$(UV_PY)" -m pytest tests/e2e
+	@PYTHONTRACEMALLOC=1 "$(UV_PY)" -m pytest tests/e2e
 
 clean:
 	@echo "Cleaning artifacts"

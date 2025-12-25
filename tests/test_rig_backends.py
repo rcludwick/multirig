@@ -142,6 +142,7 @@ async def test_process_send(process_backend):
     mock_proc = AsyncMock()
     # stdin.write is sync
     mock_proc.stdin.write = MagicMock()
+    mock_proc.stdin.close = MagicMock()
     mock_proc.stdin.drain = AsyncMock()
     mock_proc.stdout.readline.return_value = b"RPRT 0\n"
     mock_proc.returncode = None
@@ -156,11 +157,13 @@ async def test_process_send(process_backend):
 async def test_process_restart_on_failure(process_backend):
     mock_proc1 = AsyncMock()
     mock_proc1.stdin.write = MagicMock(side_effect=BrokenPipeError())
+    mock_proc1.stdin.close = MagicMock()
     mock_proc1.stdin.drain = AsyncMock()
     mock_proc1.returncode = None # Initially alive
     
     mock_proc2 = AsyncMock()
     mock_proc2.stdin.write = MagicMock()
+    mock_proc2.stdin.close = MagicMock()
     mock_proc2.stdin.drain = AsyncMock()
     mock_proc2.stdout.readline.return_value = b"RESTARTED\n"
     mock_proc2.returncode = None

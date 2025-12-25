@@ -1322,6 +1322,7 @@ class RigClient:
             "model_id": self.cfg.model_id,
             "caps": self._caps,
             "modes": self._modes,
+            "caps_detected": self._caps_detected,
             "band_presets": [
                 {
                     "label": p.label,

@@ -11,6 +11,9 @@ from multirig.rigctl_tcp import (
 )
 
 class ConcreteRigctlServer(RigctlServer):
+    def __init__(self, port=0):
+        super().__init__(RigctlServerConfig(host="127.0.0.1", port=port))
+
     def get_rigs(self):
         return []
 

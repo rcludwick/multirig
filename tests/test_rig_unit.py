@@ -20,6 +20,8 @@ def mock_rig_config():
     cfg.baud = 9600
     cfg.serial_opts = ""
     cfg.extra_args = ""
+    cfg.managed = False
+    cfg.rigctld_cmd = None
     return cfg
 
 @pytest.fixture
@@ -348,6 +350,7 @@ async def test_process_backend_dump():
     # We mock stdout.readline to return lines then pause
     mock_proc = AsyncMock()
     mock_proc.stdin.write = MagicMock()
+    mock_proc.stdin.close = MagicMock()
     mock_proc.stdin.drain = AsyncMock()
     mock_proc.returncode = None
     
@@ -391,11 +394,13 @@ async def test_process_backend_send_n_retry():
     
     mock_proc1 = AsyncMock()
     mock_proc1.stdin.write = MagicMock(side_effect=BrokenPipeError()) # Fail 1
+    mock_proc1.stdin.close = MagicMock()
     mock_proc1.stdin.drain = AsyncMock()
     mock_proc1.returncode = None
     
     mock_proc2 = AsyncMock()
     mock_proc2.stdin.write = MagicMock()
+    mock_proc2.stdin.close = MagicMock()
     mock_proc2.stdin.drain = AsyncMock()
     mock_proc2.stdout.readline.side_effect = [b"USB\n", b"2400\n"] # Success 2
     mock_proc2.returncode = None

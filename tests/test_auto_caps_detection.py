@@ -46,6 +46,7 @@ async def test_refresh_caps_parses_and_caches_capabilities(mock_rigctld_config, 
     
     # Mock the dump_caps method
     rig._backend.dump_caps = AsyncMock(return_value=mock_dump_caps_output)
+    rig._backend.close = MagicMock()
     
     # Call refresh_caps
     result = await rig.refresh_caps()
