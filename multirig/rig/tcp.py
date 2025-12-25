@@ -297,7 +297,7 @@ class RigctldBackend(RigBackend):
 
     async def dump_state(self) -> Sequence[str]:
         async with self._lock:
-            code, lines = await self._send(r"\\dump_state", timeout=5.0)
+            code, lines = await self._send(r"\dump_state", timeout=5.0)
         if code != 0:
             return []
         # Strip header if present (extended protocol returns "dump_state:" as first line)
@@ -307,7 +307,7 @@ class RigctldBackend(RigBackend):
 
     async def dump_caps(self) -> Sequence[str]:
         async with self._lock:
-            code, lines = await self._send(r"\\dump_caps", timeout=5.0)
+            code, lines = await self._send(r"\dump_caps", timeout=5.0)
         if code != 0:
             return []
         if lines and lines[0].strip() == "dump_caps:":

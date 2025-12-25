@@ -227,8 +227,7 @@ class RigctlProcessBackend(RigBackend):
                     except asyncio.TimeoutError:
                         break
                 return lines
-             except Exception as e:
-                 print(f"DEBUG: dump_state error: {e}")
+             except Exception:
                  await self.close()
                  return []
 
