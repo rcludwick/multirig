@@ -11,7 +11,7 @@ Control and sync multiple ham radio rigs with a modern, dark‑mode / retro-LCD 
   - Debian/Ubuntu/RPi: `sudo apt-get install hamlib` (or `hamlib-utils`)
 
 ## Development tools
-- Node.js + npm (for Jest + Playwright)
+- Node.js + npm (for Jest)
 - `uv` (recommended when using `make` targets)
 
 ## Quick start
@@ -83,32 +83,20 @@ make test-e2e
 ```
 
 Notes:
-- The Playwright config (`playwright.config.js`) starts:
-  - MultiRig via `./run.sh`
-  - A dummy `rigctld` for Hamlib on port `4532`. Tests assume `rigctld` is in your PATH.
-  - The Netmind test proxy service on port `9000` (from `ext/netmind`)
 - E2E tests run MultiRig with `MULTIRIG_TEST_MODE=1` to avoid writing `multirig.config.yaml`.
 
 ## Writing Playwright tests
 
-E2E tests live in `e2e-tests/`.
+E2E tests live in `tests/e2e/`.
 
-### Config setup via profiles
+### Config setup via configuration fixtures
 
-Tests should use configuration profiles instead of calling `/api/config/import` directly.
+Tests should use the `profile_manager` fixture to manipulate configuration profiles.
 
 - Create a unique profile name prefixed with `test_`.
-- Use `ensureProfileExists()` with `allowCreate: true` to create the profile if missing.
-- Load it with `loadProfile()`.
-- Delete it in `finally` using `deleteProfile()`.
-- Assert that `ensureProfileExists(..., { allowCreate: false })` throws after deletion.
-
-Helpers:
-
-- `e2e-tests/profile_helpers.js`
-  - `ensureProfileExists(request, name, { allowCreate, configYaml })`
-  - `loadProfile(request, name)`
-  - `deleteProfile(request, name)`
+- Use `profile_manager.ensure_profile_exists(..., allow_create=True)` to create the profile.
+- Load it with `profile_manager.load_profile()`.
+- Delete it in `finally` block using `profile_manager.delete_profile()`.
 
 ### Why profiles?
 

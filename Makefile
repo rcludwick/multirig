@@ -110,7 +110,7 @@ build-app-js:
 
 test-e2e:
 	@echo "[Info] Installing Playwright browsers"
-	@npx playwright install --with-deps chromium
+	@"$(UV_PY)" -m playwright install chromium
 	@echo "[Info] Running Python Playwright E2E tests"
 	@PYTHONTRACEMALLOC=1 "$(UV_PY)" -m pytest tests/e2e
 
