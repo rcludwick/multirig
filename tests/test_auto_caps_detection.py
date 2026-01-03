@@ -180,6 +180,9 @@ async def test_caps_refreshed_after_reconnection(mock_rigctld_config, mock_dump_
         connected=False,
         error="Connection lost"
     ))
+    # Invalidate cache to ensure fresh status fetch
+    rig._cached_status = None
+    
     await rig.check_and_refresh_caps()
     
     # The disconnection should reset the caps_detected flag

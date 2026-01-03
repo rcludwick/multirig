@@ -67,7 +67,7 @@ class RigctlProcessBackend(RigBackend):
         )
         return self._proc
 
-    async def _send_n(self, cmd: str, n: int, timeout: float = 1.8) -> List[str]:
+    async def _send_n(self, cmd: str, n: int, timeout: float = 5.0) -> List[str]:
         proc = await self._ensure_proc()
         assert proc.stdin and proc.stdout
 
@@ -88,35 +88,55 @@ class RigctlProcessBackend(RigBackend):
             proc = await self._ensure_proc()
             return await _do_send(proc)
 
-    async def _send(self, cmd: str, timeout: float = 1.8) -> str:
+    async def _send(self, cmd: str, timeout: float = 5.0) -> str:
         proc = await self._ensure_proc()
         assert proc.stdin and proc.stdout
         try:
+            print(f"[DEBUG] Sending: {cmd}")
             proc.stdin.write((cmd + "\n").encode())
             await proc.stdin.drain()
+            print("[DEBUG] Awaiting response...")
             data = await asyncio.wait_for(proc.stdout.readline(), timeout=timeout)
-            return data.decode().strip()
-        except Exception:
+            decoded = data.decode().strip()
+            print(f"[DEBUG] Received: {repr(decoded)}")
+            if not decoded:
+                 # Empty string from readline usually means EOF or serious stream issue in interactive mode
+                 # It definitely isn't a valid response for most commands (except maybe set commands but they return RPRT usually?)
+                 # Use Exception to trigger retry logic below
+                 raise ValueError("Empty response from rigctl")
+            return decoded
+        except Exception as e:
+            print(f"[DEBUG] Error/Timeout: {e}")
             # Attempt one restart
             await self.close()
             proc = await self._ensure_proc()
             assert proc.stdin and proc.stdout
+            print(f"[DEBUG] Retry Sending: {cmd}")
             proc.stdin.write((cmd + "\n").encode())
             await proc.stdin.drain()
             data = await asyncio.wait_for(proc.stdout.readline(), timeout=timeout)
-            return data.decode().strip()
+            decoded = data.decode().strip()
+            print(f"[DEBUG] Retry Received: {repr(decoded)}")
+            return decoded
 
     async def get_frequency(self) -> Optional[int]:
         async with self._lock:
             resp = await self._send("f")
         try:
+            # Handle "Frequency: 14074000" responses
+            if "frequency:" in resp.lower():
+                _, val = resp.lower().split("frequency:", 1)
+                return int(float(val.strip()))
             return int(float(resp))
         except Exception:
             return None
 
     async def set_frequency(self, hz: int) -> bool:
         async with self._lock:
-            resp = await self._send(f"F {hz}")
+            try:
+                resp = await self._send(f"F {hz}")
+            except Exception:
+                return False
         return resp == "RPRT 0" or resp == ""
 
     async def get_mode(self) -> Tuple[Optional[str], Optional[int]]:
@@ -129,9 +149,30 @@ class RigctlProcessBackend(RigBackend):
             return None, None
         parts = first.split()
         if len(parts) >= 2:
-            mode = parts[0]
+            # Handle "Mode: USB ..."
+            line_str = lines[0].strip()
+            if "mode:" in line_str.lower():
+                # Split whole line by 'Mode:', take the part after it
+                after = line_str.lower().split("mode:", 1)[1].strip()
+                # The next token is our mode
+                mode = after.split()[0].upper()
+            else:
+                mode = parts[0]
+
             try:
-                pb = int(float(parts[1]))
+                # If we parsed mode via label, passband might be later
+                # For safety, let's keep the existing passband logic if possible
+                # But if we shifted things, parts[1] might not be passband
+                # Let's try to find numeric passband in parts
+                pb = None
+                for p in parts:
+                    try:
+                        val = int(float(p))
+                        if val > 0: # Assume positive passband
+                            pb = val
+                            break
+                    except Exception:
+                        continue
             except Exception:
                 pb = None
             return mode, pb
@@ -260,6 +301,8 @@ class RigctlProcessBackend(RigBackend):
     async def status(self) -> RigStatus:
         try:
             freq = await self.get_frequency()
+            if freq is None:
+                return RigStatus(connected=False, error="Failed to get frequency")
             mode, pb = await self.get_mode()
             return RigStatus(connected=True, frequency_hz=freq, mode=mode, passband=pb)
         except Exception as e:  # noqa: BLE001

@@ -144,7 +144,8 @@ def client(monkeypatch, tmp_path):
     monkeypatch.setattr(appmod, "AppRigctlServer", DummyRigctlServer)
 
     app = appmod.create_app(config_path=tmp_path / "test.yaml")
-    return TestClient(app)
+    with TestClient(app) as client:
+        yield client
 
 # Original test_app.py tests
 def test_set_rig_frequency_out_of_band_blocked(client):

@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from multirig.rig import RigClient, RigctldBackend, RigctlProcessBackend, RigConfig
+from multirig.rig.common import RigStatus
 from multirig.config import BandPreset
 
 @pytest.fixture
@@ -270,9 +271,9 @@ async def test_rig_client_passthrough_errors(rig_client):
 
 @pytest.mark.asyncio
 async def test_rig_client_status(rig_client):
-    rig_client._backend.status = AsyncMock(return_value="StatusOK")
+    rig_client._backend.status = AsyncMock(return_value=RigStatus(connected=True))
     st = await rig_client.status()
-    assert st == "StatusOK"
+    assert st.connected is True
     
 import multirig.rig.common as rig_common
 

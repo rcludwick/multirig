@@ -270,3 +270,47 @@ def test_ui_forwarding_inhibition(page: Page, profile_manager: ProfileManager):
 
     finally:
         profile_manager.delete_profile(profile_name)
+
+def test_lcd_display_values(page: Page, profile_manager: ProfileManager):
+    """Verify that the LCD displays the correct frequency and mode."""
+    # Use a fake rigctld with known values
+    freq = 14074000
+    mode = "USB"
+    rig = FakeRigctld(frequency=freq, mode=mode)
+    
+    profile_name = "test_lcd_data_py"
+    config = {
+        "rigs": [{
+            "name": "LCD Test Rig",
+            "connection_type": "rigctld",
+            "host": "127.0.0.1",
+            "port": rig.port,
+            "poll_interval_ms": 200,
+            "model_id": 2
+        }],
+        "poll_interval_ms": 200
+    }
+    
+    try:
+        profile_manager.ensure_profile_exists(profile_name, allow_create=True, config_yaml=json.dumps(config))
+        profile_manager.load_profile(profile_name)
+        page.goto("/")
+        page.reload()
+        
+        rig_card = page.locator("#rig-0")
+        expect(rig_card).to_be_visible()
+        
+        # Check Frequency
+        # The LCD formats frequency, e.g. "14.074.000" or similar
+        # We look for the main digits
+        lcd = rig_card.locator(".lcd")
+        expect(lcd).to_contain_text("14.074000")
+        
+        # Check Mode
+        # The mode might be in a separate element or part of the LCD text
+        # Based on previous issues, it should show "USB" clearly
+        expect(lcd).to_contain_text("USB")
+        
+    finally:
+        rig.stop()
+        profile_manager.delete_profile(profile_name)

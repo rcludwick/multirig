@@ -35,10 +35,13 @@ def _rigctl_bind_port(app: FastAPI) -> int:
     try: return int(port_s) if port_s else app.state.config.rigctl_listen_port
     except Exception: return app.state.config.rigctl_listen_port
 
-def rebuild_rigs(app: FastAPI, cfg: AppConfig):
+async def rebuild_rigs(app: FastAPI, cfg: AppConfig):
     # Close existing
     for rig in getattr(app.state, "rigs", []):
-        asyncio.create_task(rig.close()) # Best effort background close
+        try:
+            await rig.close()
+        except Exception:
+            pass
     
     app.state.rigs = [RigClient(rc) for rc in cfg.rigs]
     app.state.debug.ensure_rigs(len(app.state.rigs))
@@ -66,7 +69,7 @@ async def apply_config(app: FastAPI, cfg: AppConfig, restart_rigctl: bool = True
     app.state.config = cfg
     save_config(cfg, app.state.config_path)
 
-    rebuild_rigs(app, cfg)
+    await rebuild_rigs(app, cfg)
     
     app.state.sync_service.rigs = app.state.rigs
     app.state.sync_service.interval_ms = cfg.poll_interval_ms

@@ -34,6 +34,12 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         try:
+            # Initial async build of rigs
+            await rebuild_rigs(app, app.state.config)
+            
+            # Now that rigs exist, bind them to sync service (it was init with empty list)
+            app.state.sync_service.rigs = app.state.rigs
+
             await bootstrap_active_profile(app)
         except Exception: pass
 
@@ -68,12 +74,10 @@ def create_app(config_path: Optional[Path] = None) -> FastAPI:
     app.state.profiles = ProfileManager(config_path, test_mode=app.state.config.test_mode)
     app.state.active_profile_name = app.state.profiles.get_active_name()
     
+    
     app.state.rigs: List[RigClient] = []
     app.state.debug = DebugStore(0)
     
-    # Initial rig build
-    rebuild_rigs(app, app.state.config)
-
     app.state.sync_service = SyncService(
         app.state.rigs,
         interval_ms=app.state.config.poll_interval_ms,

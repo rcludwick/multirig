@@ -120,6 +120,12 @@ class RigctlServer(BaseTcpServer):
             "get_powerstat": self._cmd_get_powerstat,
             "dump_state": self._cmd_dump_state,
             "dump_caps": self._cmd_dump_caps,
+            "get_info": self._cmd_get_info,
+            "model": self._cmd_model,
+            "version": self._cmd_version,
+            "token": self._cmd_token,
+            "set_conf": self._cmd_set_conf,
+            "get_conf": self._cmd_get_conf,
         }
 
     # Data access methods to be overridden by subclasses
@@ -518,6 +524,7 @@ class RigctlServer(BaseTcpServer):
 
         return content.encode()
 
+
     async def _cmd_dump_caps(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
         """Handle 'dump_caps' command."""
         rig = self._source_rig()
@@ -539,3 +546,58 @@ class RigctlServer(BaseTcpServer):
             return _records_to_bytes(records, sep)
 
         return content.encode()
+
+    async def _cmd_get_info(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Return static info string for WSJT-X."""
+        info = "MultiRig"
+        if erp_prefix:
+            sep = _sep_for_erp(erp_prefix)
+            records = ["get_info:", info, "RPRT 0"]
+            return _records_to_bytes(records, sep)
+        return f"{info}\nRPRT 0\n".encode()
+
+    async def _cmd_model(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Return model name of source rig or placeholder."""
+        rig = self._source_rig()
+        model = getattr(rig, "model", "Unknown") if rig else "Unknown"
+        if erp_prefix:
+            sep = _sep_for_erp(erp_prefix)
+            records = ["model:", model, "RPRT 0"]
+            return _records_to_bytes(records, sep)
+        return f"{model}\nRPRT 0\n".encode()
+
+    async def _cmd_version(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Return Hamlib version string."""
+        version = "Hamlib 4.6.5"
+        if erp_prefix:
+            sep = _sep_for_erp(erp_prefix)
+            records = ["version:", version, "RPRT 0"]
+            return _records_to_bytes(records, sep)
+        return f"{version}\nRPRT 0\n".encode()
+
+    async def _cmd_token(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Return token list (stub)."""
+        # WSJT-X may request token list; return empty list.
+        if erp_prefix:
+            sep = _sep_for_erp(erp_prefix)
+            records = ["token:", "", "RPRT 0"]
+            return _records_to_bytes(records, sep)
+        return b"\nRPRT 0\n"
+
+    async def _cmd_set_conf(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Accept configuration parameters; stub returns success."""
+        # Ignore args, just acknowledge.
+        if erp_prefix:
+            sep = _sep_for_erp(erp_prefix)
+            records = ["set_conf:", "OK", "RPRT 0"]
+            return _records_to_bytes(records, sep)
+        return b"RPRT 0\n"
+
+    async def _cmd_get_conf(self, args: list[str], erp_prefix: Optional[str]) -> bytes:
+        """Return configuration values; stub returns empty."""
+        if erp_prefix:
+            sep = _sep_for_erp(erp_prefix)
+            records = ["get_conf:", "", "RPRT 0"]
+            return _records_to_bytes(records, sep)
+        return b"\nRPRT 0\n"
+

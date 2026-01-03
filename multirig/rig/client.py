@@ -24,6 +24,8 @@ class RigClient:
         self._caps_detected: bool = False
         self._last_connected_state: bool = False
         self._check_caps_call_count: int = 0
+        self._cached_status: Optional[RigStatus] = None
+        self._last_status_time: float = 0.0
 
     def _make_backend(self, cfg: RigConfig) -> RigBackend:
         if cfg.managed:
@@ -275,7 +277,27 @@ class RigClient:
             pass
 
     async def status(self) -> RigStatus:
-        return await self._backend.status()
+        """Get rig status with caching.
+        
+        The status is cached for 'poll_interval_ms' to reduce load on the physical rig.
+        """
+        now = __import__("time").time()
+        ttl = getattr(self.cfg, "poll_interval_ms", 1000) / 1000.0
+        
+        # Check cache
+        if self._cached_status and (now - self._last_status_time) < ttl:
+            return self._cached_status
+            
+        # Fetch fresh
+        status = await self._backend.status()
+        
+        # Update cache only if connected (success)
+        # We don't want to cache transient errors for the full poll interval
+        if status.connected:
+            self._cached_status = status
+            self._last_status_time = now
+        
+        return status
 
     async def close(self) -> None:
         if self._backend:

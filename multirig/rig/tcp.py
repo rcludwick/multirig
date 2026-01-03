@@ -87,7 +87,7 @@ class RigctldBackend(RigBackend):
         finally:
             writer.close()
             with contextlib.suppress(Exception):
-                await writer.wait_closed()
+                await asyncio.wait_for(writer.wait_closed(), timeout=1.0)
 
     async def _send_raw(self, cmd: str, timeout: float = 1.5) -> Tuple[int, List[str]]:
         reader: asyncio.StreamReader
@@ -143,7 +143,7 @@ class RigctldBackend(RigBackend):
         finally:
             writer.close()
             with contextlib.suppress(Exception):
-                await writer.wait_closed()
+                await asyncio.wait_for(writer.wait_closed(), timeout=1.0)
 
     async def _send(self, cmd: str, timeout: float = 1.5) -> Tuple[int, List[str]]:
         if not getattr(self, "_erp_supported", True):
@@ -291,7 +291,7 @@ class RigctldBackend(RigBackend):
                 finally:
                     writer.close()
                     with contextlib.suppress(Exception):
-                        await writer.wait_closed()
+                        await asyncio.wait_for(writer.wait_closed(), timeout=1.0)
             except Exception:
                 return None
 
@@ -317,6 +317,8 @@ class RigctldBackend(RigBackend):
     async def status(self) -> RigStatus:
         try:
             freq = await self.get_frequency()
+            if freq is None:
+                return RigStatus(connected=False, error="Failed to get frequency")
             mode, pb = await self.get_mode()
             return RigStatus(connected=True, frequency_hz=freq, mode=mode, passband=pb)
         except Exception as e:  # noqa: BLE001

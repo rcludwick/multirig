@@ -392,6 +392,7 @@ async def ws_endpoint(ws: WebSocket):
 
         await ws.send_json(await get_app_status())
         while True:
-            await asyncio.sleep(1.0)
+            interval = max(0.1, ws.app.state.config.poll_interval_ms / 1000.0)
+            await asyncio.sleep(interval)
             await ws.send_json(await get_app_status())
     except (WebSocketDisconnect, Exception): pass
