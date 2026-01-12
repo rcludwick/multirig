@@ -59,19 +59,19 @@ class BaseRigAdapter(ABC):
         
         # Safety configuration (to be set by config)
         self._allow_out_of_band = True
-        self._band_limits: Optional[dict] = None
+        self._band_presets: list = []
     
     def set_safety_config(self, allow_out_of_band: bool = True, 
-                         band_limits: Optional[dict] = None):
+                         band_presets: Optional[list] = None):
         """
         Configure safety checks for this adapter.
         
         Args:
             allow_out_of_band: Whether to allow frequencies outside configured bands
-            band_limits: Dictionary of band limits (if any)
+            band_presets: List of BandPreset objects with frequency limits
         """
         self._allow_out_of_band = allow_out_of_band
-        self._band_limits = band_limits
+        self._band_presets = band_presets or []
     
     async def start(self):
         """Start the adapter: connect, subscribe, and begin polling."""
@@ -211,13 +211,16 @@ class BaseRigAdapter(ABC):
         # Check frequency limits
         if command.command_type == "set_frequency":
             freq = command.params.get("frequency")
-            if freq and not self._allow_out_of_band and self._band_limits:
-                # Check if frequency is within any configured band
+            if freq and not self._allow_out_of_band and self._band_presets:
+                # Check if frequency is within any configured band preset
                 in_band = False
-                for band_name, limits in self._band_limits.items():
-                    if limits["min"] <= freq <= limits["max"]:
-                        in_band = True
-                        break
+                for preset in self._band_presets:
+                    if not preset.enabled:
+                        continue
+                    if preset.lower_hz and preset.upper_hz:
+                        if preset.lower_hz <= freq <= preset.upper_hz:
+                            in_band = True
+                            break
                 
                 if not in_band:
                     logger.warning(

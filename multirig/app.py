@@ -12,7 +12,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from multirig.zenoh.session import session_lifespan
+
 from multirig.gateway.routes import router
 from multirig.gateway.websocket import websocket_endpoint, ws_manager
 
@@ -29,21 +29,28 @@ async def lifespan(app: FastAPI):
     """
     Lifespan context manager for the application.
     
-    Manages startup and shutdown of Zenoh session and WebSocket manager.
+    Manages startup and shutdown of all MultiRig components:
+    - Application manager (Zenoh, adapters, engines, servers)
+    - WebSocket manager
     """
-    logger.info("Starting MultiRig application")
+    from multirig.application import start_application, stop_application
+    import os
     
-    # Start Zenoh session
-    async with session_lifespan():
-        # Start WebSocket manager
-        await ws_manager.start()
-        
-        try:
-            yield
-        finally:
-            # Cleanup on shutdown
-            await ws_manager.stop()
-            logger.info("MultiRig application stopped")
+    # Get profile from environment variable
+    profile_name = os.getenv("MULTIRIG_PROFILE", "default")
+    
+    # Start application
+    await start_application(profile_name=profile_name)
+    
+    # Start WebSocket manager
+    await ws_manager.start()
+    
+    try:
+        yield
+    finally:
+        # Cleanup on shutdown
+        await ws_manager.stop()
+        await stop_application()
 
 
 # Create FastAPI application

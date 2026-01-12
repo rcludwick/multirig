@@ -811,10 +811,12 @@ When receiving a `set_freq` command via TCP, the server should publish the comma
 **Goal:** Bring everything together.
 
 ### Key Tasks:
-- [ ] Create main entry point
-- [ ] Wire up config to create `ManagedRigAdapter` or `RigctldAdapter` based on config
-- [ ] Connect frontend
-- [ ] Verify band limit safety
+- [x] Create main entry point (`__main__.py`)
+- [x] Create application manager to orchestrate all components
+- [x] Wire up config to create `ManagedRigAdapter` or `RigctldAdapter` based on config
+- [x] Integrate with FastAPI lifespan
+- [x] Verify band limit safety (band presets enforced in adapters)
+- [x] Full integration testing
 
 ---
 
