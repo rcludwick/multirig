@@ -786,9 +786,9 @@ Create `multirig/rigctl_server/server.py` that imports `RigctlServer` logic but 
 When receiving a `set_freq` command via TCP, the server should publish the command to Zenoh AND immediately update its local cached state for that rig. This ensures that a subsequent `get_freq` from WSJT-X returns the new value immediately, preventing "jumping" in the UI.
 
 ### Checklist for Phase 5:
-- [ ] `multirig/rigctl_server/server.py` created with FULL command map
-- [ ] Server responds to WSJT-X initialization commands without error
-- [ ] WSJT-X can control frequency
+- [x] `multirig/rigctl_server/server.py` created with FULL command map
+- [x] Server responds to WSJT-X initialization commands without error
+- [x] WSJT-X can control frequency (tested with rigctl protocol)
 
 ---
 
