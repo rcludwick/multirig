@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MultiRig Settings</title>
+  <link rel="stylesheet" href="/static/style.css?ts={{ assets_ts }}">
+  <link rel="icon" href="data:,">
+  <style>
+    .settings-page dialog {
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05));
+      box-shadow: var(--shadow);
+      padding: 0;
+      max-width: min(560px, calc(100vw - 32px));
+    }
+
+    .settings-page dialog form {
+      padding: 14px;
+    }
+
+    .settings-page dialog::backdrop {
+      background: rgba(0,0,0,0.40);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .settings-page .band-add-btn,
+    .settings-page .band-reset-btn,
+    .settings-page .band-remove {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .settings-page .band-add-btn:hover,
+    .settings-page .band-reset-btn:hover,
+    .settings-page .band-remove:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+  </style>
+  <script defer src="/static/settings.js?ts={{ assets_ts }}"></script>
+</head>
+<body class="settings-page">
+  <header class="topbar">
+    <div class="brand brand-lcd">
+      <div class="brand-lcd-title">Multirig</div>
+      <div class="brand-lcd-meta">
+        <span class="brand-lcd-version">v{{ app_version }}</span>
+        <span class="brand-lcd-sep">•</span>
+        <span class="brand-lcd-author">AJ7HR</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="page-nav">
+      <a class="page-nav-btn" href="/">Rigs</a>
+      <a class="page-nav-btn active" href="/settings">Config</a>
+    </div>
+    <h2>Configuration</h2>
+    <form id="cfgForm" class="form-grid">
+      <fieldset>
+        <legend>Config Profiles</legend>
+        <div class="actions">
+          <div>Active profile: <strong><span id="activeProfileName">(none)</span></strong></div>
+        </div>
+        <div class="actions">
+          <button type="button" id="profileSelectBtn">Select Profile</button>
+          <button type="button" id="profileAddBtn">Add New Profile</button>
+          <button type="button" id="profileRenameBtn">Change Profile Name</button>
+          <button type="button" id="profileDuplicateBtn">Duplicate Profile</button>
+          <button type="button" id="profileDeleteBtn">Delete Profile</button>
+        </div>
+        <div class="actions">
+          <button type="button" id="configExport">Export Current (YAML)</button>
+          <label>
+            <input type="file" id="configImport" accept=".yaml,.yml,text/yaml" style="display:none;">
+            <button type="button" id="configImportBtn">Import YAML</button>
+          </label>
+          <span id="profileResult"></span>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Rigctl TCP Listener</legend>
+        <label>Bind host
+          <select name="rigctl_host" id="rigctlHost"></select>
+        </label>
+        <label>Port
+          <input type="number" min="1" max="65535" step="1" name="rigctl_port" id="rigctlPort" value="{{ config.rigctl_listen_port if config.rigctl_listen_port is not none else 4534 }}">
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>Rigs</legend>
+        <div id="rigList"></div>
+        <div class="actions">
+          <button type="button" id="addRig">Add Rig</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Sync</legend>
+        <label>Poll interval (ms) <input type="number" min="100" step="50" name="poll" value="{{ config.poll_interval_ms }}"></label>
+      </fieldset>
+      <div class="actions">
+        <button type="submit">Save</button>
+        <span id="saveResult"></span>
+      </div>
+    </form>
+
+    <dialog id="profileSelectDialog">
+      <form method="dialog" id="profileSelectForm" class="form-grid">
+        <h3>Select Profile</h3>
+        <label>Profile
+          <select id="profileSelectChoice"></select>
+        </label>
+        <div class="actions">
+          <button value="cancel">Cancel</button>
+          <button id="profileSelectConfirm" value="ok">Select</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="profileAddDialog">
+      <form method="dialog" id="profileAddForm" class="form-grid">
+        <h3>Add New Profile</h3>
+        <label>New profile name
+          <input type="text" id="profileAddName" placeholder="MyProfile">
+        </label>
+        <div class="actions">
+          <button value="cancel">Cancel</button>
+          <button id="profileAddConfirm" value="ok">Create</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="profileRenameDialog">
+      <form method="dialog" id="profileRenameForm" class="form-grid">
+        <h3>Change Profile Name</h3>
+        <label>Profile
+          <select id="profileRenameOld"></select>
+        </label>
+        <label>New name
+          <input type="text" id="profileRenameNew" placeholder="NewName">
+        </label>
+        <div class="actions">
+          <button value="cancel">Cancel</button>
+          <button id="profileRenameConfirm" value="ok">Rename</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="profileDuplicateDialog">
+      <form method="dialog" id="profileDuplicateForm" class="form-grid">
+        <h3>Duplicate Profile</h3>
+        <div id="profileDuplicateStep1">
+          <label>Profile to duplicate
+            <select id="profileDuplicateFrom"></select>
+          </label>
+        </div>
+        <div id="profileDuplicateStep2" style="display:none;">
+          <label>New profile name
+            <input type="text" id="profileDuplicateNew" placeholder="CopyOf...">
+          </label>
+        </div>
+        <div class="actions">
+          <button id="profileDuplicateBack" value="back" style="display:none;">Back</button>
+          <button value="cancel">Cancel</button>
+          <button id="profileDuplicateNext" value="next">Next</button>
+          <button id="profileDuplicateConfirm" value="ok" style="display:none;">Duplicate</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="profileDeleteDialog">
+      <form method="dialog" id="profileDeleteForm" class="form-grid">
+        <h3>Delete Profile</h3>
+        <label>Profile
+          <select id="profileDeleteChoice"></select>
+        </label>
+        <div class="actions">
+          <button value="cancel">Cancel</button>
+          <button id="profileDeleteConfirm" value="ok">Delete</button>
+        </div>
+      </form>
+    </dialog>
+
+    <section class="help">
+      <h3>Configuration Help</h3>
+      <ul>
+        <li><strong>Hamlib (Direct):</strong> MultiRig talks directly to your rig via serial/USB. Select your rig model from the dropdown, enter the device path, and set the baud rate.</li>
+        <li><strong>Finding your serial port:</strong> Click the "📋 Show Ports" button to see all available serial ports on your system. Click a port path to use it.</li>
+        <li><strong>Testing your connection:</strong> Click "Test Connection" to verify your rig settings work before saving. This helps identify the correct serial port and settings.</li>
+        <li><strong>rigctld (TCP):</strong> If you already have rigctld running, you can connect to it instead. Useful if another app needs exclusive access to the rig.</li>
+        <li><strong>Example rigctld command:</strong><br>
+          <code>rigctld -m 3073 -r /dev/ttyUSB0 -s 38400 -t 4532</code>
+        </li>
+        <li>Use <code>make generate-rig-list</code> to regenerate the rig models list if you update Hamlib.</li>
+        <li>WSJT-X can connect to one rig; this app mirrors frequency/mode to your other rig(s).</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

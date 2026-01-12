@@ -1,108 +1,102 @@
-from __future__ import annotations
+"""
+MultiRig FastAPI application.
 
-import asyncio
-import os
-from pathlib import Path
-from typing import Optional, List
+Main entry point for the web server. Sets up Zenoh session, routes,
+and WebSocket endpoints.
+"""
+import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-try:
-    import orjson
-    from fastapi.responses import ORJSONResponse
-except ImportError:
-    ORJSONResponse = JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import FileResponse
 
-from .config import AppConfig, load_config, save_config
-from .rig import RigClient
-from .service import SyncService
-from .debug_log import DebugStore
-from .profiles import ProfileManager
-from .routes import router
-from .core import bootstrap_active_profile, rebuild_rigs, _rigctl_bind_host, _rigctl_bind_port, AppRigctlServer
-from .rig import RigctlServerConfig
+from multirig.zenoh.session import session_lifespan
+from multirig.gateway.routes import router
+from multirig.gateway.websocket import websocket_endpoint, ws_manager
 
-BASE_DIR = Path(__file__).resolve().parent
-TEMPLATES_DIR = BASE_DIR / "templates"
-STATIC_DIR = BASE_DIR / "static"
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
-def create_app(config_path: Optional[Path] = None) -> FastAPI:
-    """Create and configure the MultiRig FastAPI application."""
-    @asynccontextmanager
-    async def lifespan(app: FastAPI):
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Lifespan context manager for the application.
+    
+    Manages startup and shutdown of Zenoh session and WebSocket manager.
+    """
+    logger.info("Starting MultiRig application")
+    
+    # Start Zenoh session
+    async with session_lifespan():
+        # Start WebSocket manager
+        await ws_manager.start()
+        
         try:
-            # Initial async build of rigs
-            await rebuild_rigs(app, app.state.config)
-            
-            # Now that rigs exist, bind them to sync service (it was init with empty list)
-            app.state.sync_service.rigs = app.state.rigs
+            yield
+        finally:
+            # Cleanup on shutdown
+            await ws_manager.stop()
+            logger.info("MultiRig application stopped")
 
-            await bootstrap_active_profile(app)
-        except Exception: pass
 
-        await app.state.sync_service.start()
-        try:
-            await app.state.rigctl_server.start()
-        except Exception: pass
-        yield
-        await app.state.sync_service.stop()
-        try:
-            await app.state.rigctl_server.stop()
-        except Exception: pass
-        for rig in getattr(app.state, "rigs", []):
-            try:
-                await rig.close()
-            except Exception: pass
+# Create FastAPI application
+app = FastAPI(
+    title="MultiRig",
+    description="Control and sync multiple ham radio rigs",
+    version="0.2.0",
+    lifespan=lifespan
+)
 
-    app = FastAPI(title="MultiRig", version="0.1.0", default_response_class=ORJSONResponse, lifespan=lifespan)
-    app.add_middleware(GZipMiddleware, minimum_size=1000)
+# Include REST API routes
+app.include_router(router)
 
-    STATIC_DIR.mkdir(parents=True, exist_ok=True)
-    TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
+# WebSocket endpoint
+app.add_websocket_route("/ws", websocket_endpoint)
 
+# Static files and frontend
+STATIC_DIR = Path(__file__).parent / "static"
+
+if STATIC_DIR.exists():
+    # Serve static files
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
-
-    if config_path is None:
-        env_path = os.getenv("MULTIRIG_CONFIG")
-        config_path = Path(env_path) if env_path else Path.cwd() / "multirig.config.yaml"
-
-    app.state.config_path = config_path
-    app.state.config = load_config(app.state.config_path)
-    app.state.profiles = ProfileManager(config_path, test_mode=app.state.config.test_mode)
-    app.state.active_profile_name = app.state.profiles.get_active_name()
     
-    
-    app.state.rigs: List[RigClient] = []
-    app.state.debug = DebugStore(0)
-    
-    app.state.sync_service = SyncService(
-        app.state.rigs,
-        interval_ms=app.state.config.poll_interval_ms,
-        enabled=app.state.config.sync_enabled,
-        source_index=app.state.config.sync_source_index,
-    )
-
-    app.state.rigctl_server = AppRigctlServer(
-        fastapi_app=app,
-        config=RigctlServerConfig(host=_rigctl_bind_host(app), port=_rigctl_bind_port(app)),
-        debug=app.state.debug.server,
-    )
-
-    app.include_router(router)
-
-    return app
+    # Serve index.html at root
+    @app.get("/")
+    async def serve_frontend():
+        """Serve the frontend application."""
+        index_path = STATIC_DIR / "index.html"
+        if index_path.exists():
+            return FileResponse(index_path)
+        return {"message": "MultiRig API - Frontend not built yet"}
+else:
+    @app.get("/")
+    async def root():
+        """Root endpoint when static files not available."""
+        return {
+            "message": "MultiRig API",
+            "version": "0.2.0",
+            "docs": "/docs"
+        }
 
 
 def run():
+    """Run the application using uvicorn."""
     import uvicorn
-    try:
-        import uvloop
-        uvloop.install()
-    except ImportError:
-        pass
+    uvicorn.run(
+        "multirig.app:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=False,
+        log_level="info"
+    )
 
-    port = int(os.getenv("MULTIRIG_HTTP_PORT", os.getenv("PORT", 8000)))
-    uvicorn.run(create_app(), host="0.0.0.0", port=port)
+
+if __name__ == "__main__":
+    run()

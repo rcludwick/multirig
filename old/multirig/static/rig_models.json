@@ -1,0 +1,7546 @@
+[
+  {
+    "id": 29001,
+    "manufacturer": "ADAT www.adat.ch",
+    "model": "ADT-200A",
+    "label": "ADAT www.adat.ch ADT-200A (29001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR",
+      "SAL",
+      "SAH"
+    ]
+  },
+  {
+    "id": 25016,
+    "manufacturer": "AE9RB",
+    "model": "Si570 Peaberry V1",
+    "label": "AE9RB Si570 Peaberry V1 (25016)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 25017,
+    "manufacturer": "AE9RB",
+    "model": "Si570 Peaberry V2",
+    "label": "AE9RB Si570 Peaberry V2 (25017)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 9,
+    "manufacturer": "Airspy",
+    "model": "SDR#/gpredict",
+    "label": "Airspy SDR#/gpredict (9)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    }
+  },
+  {
+    "id": 17001,
+    "manufacturer": "Alinco",
+    "model": "DX-77",
+    "label": "Alinco DX-77 (17001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 17002,
+    "manufacturer": "Alinco",
+    "model": "DX-SR8",
+    "label": "Alinco DX-SR8 (17002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 25006,
+    "manufacturer": "AmQRP",
+    "model": "DDS-60",
+    "label": "AmQRP DDS-60 (25006)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM"
+    ]
+  },
+  {
+    "id": 25013,
+    "manufacturer": "AMSAT-UK",
+    "model": "FUNcube Dongle",
+    "label": "AMSAT-UK FUNcube Dongle (25013)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 25018,
+    "manufacturer": "AMSAT-UK",
+    "model": "FUNcube Dongle Pro+",
+    "label": "AMSAT-UK FUNcube Dongle Pro+ (25018)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "IQ"
+    ]
+  },
+  {
+    "id": 37001,
+    "manufacturer": "AnyTone",
+    "model": "D578A",
+    "label": "AnyTone D578A (37001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "USB"
+    ]
+  },
+  {
+    "id": 5008,
+    "manufacturer": "AOR",
+    "model": "AR2700",
+    "label": "AOR AR2700 (5008)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 5006,
+    "manufacturer": "AOR",
+    "model": "AR3000A",
+    "label": "AOR AR3000A (5006)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 5005,
+    "manufacturer": "AOR",
+    "model": "AR3030",
+    "label": "AOR AR3030 (5005)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "AMS",
+      "FAX"
+    ]
+  },
+  {
+    "id": 5004,
+    "manufacturer": "AOR",
+    "model": "AR5000",
+    "label": "AOR AR5000 (5004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM",
+      "SAM",
+      "SAL",
+      "SAH"
+    ]
+  },
+  {
+    "id": 5014,
+    "manufacturer": "AOR",
+    "model": "AR5000A",
+    "label": "AOR AR5000A (5014)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM",
+      "SAM",
+      "SAL",
+      "SAH"
+    ]
+  },
+  {
+    "id": 5003,
+    "manufacturer": "AOR",
+    "model": "AR7030",
+    "label": "AOR AR7030 (5003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "AMS"
+    ]
+  },
+  {
+    "id": 5015,
+    "manufacturer": "AOR",
+    "model": "AR7030 Plus",
+    "label": "AOR AR7030 Plus (5015)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "AMS"
+    ]
+  },
+  {
+    "id": 5002,
+    "manufacturer": "AOR",
+    "model": "AR8000",
+    "label": "AOR AR8000 (5002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 5001,
+    "manufacturer": "AOR",
+    "model": "AR8200",
+    "label": "AOR AR8200 (5001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 5013,
+    "manufacturer": "AOR",
+    "model": "AR8600",
+    "label": "AOR AR8600 (5013)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 5016,
+    "manufacturer": "AOR",
+    "model": "SR2200",
+    "label": "AOR SR2200 (5016)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 32001,
+    "manufacturer": "Barrett",
+    "model": "2050",
+    "label": "Barrett 2050 (32001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 32003,
+    "manufacturer": "Barrett",
+    "model": "4050",
+    "label": "Barrett 4050 (32003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 32002,
+    "manufacturer": "Barrett",
+    "model": "950",
+    "label": "Barrett 950 (32002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 2053,
+    "manufacturer": "BG2FX",
+    "model": "FX4/C/CR/L",
+    "label": "BG2FX FX4/C/CR/L (2053)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 34003,
+    "manufacturer": "CODAN",
+    "model": "2110",
+    "label": "CODAN 2110 (34003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 34001,
+    "manufacturer": "CODAN",
+    "model": "Envoy",
+    "label": "CODAN Envoy (34001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 34002,
+    "manufacturer": "CODAN",
+    "model": "NGT",
+    "label": "CODAN NGT (34002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 25003,
+    "manufacturer": "Coding Technologies",
+    "model": "Digital World Traveller 20200112.0",
+    "label": "Coding Technologies Digital World Traveller 20200112.0 (25003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "WFM"
+    ]
+  },
+  {
+    "id": 39001,
+    "manufacturer": "Commradio",
+    "model": "CTX-10",
+    "label": "Commradio CTX-10 (39001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB"
+    ]
+  },
+  {
+    "id": 2055,
+    "manufacturer": "DL2MAN",
+    "model": "(tr)uSDX",
+    "label": "DL2MAN (tr)uSDX (2055)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 31002,
+    "manufacturer": "Dorji",
+    "model": "DRA818U",
+    "label": "Dorji DRA818U (31002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "FM"
+    ]
+  },
+  {
+    "id": 31001,
+    "manufacturer": "Dorji",
+    "model": "DRA818V",
+    "label": "Dorji DRA818V (31001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "FM"
+    ]
+  },
+  {
+    "id": 9001,
+    "manufacturer": "Drake",
+    "model": "R-8",
+    "label": "Drake R-8 (9001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "AMS"
+    ]
+  },
+  {
+    "id": 9002,
+    "manufacturer": "Drake",
+    "model": "R-8A",
+    "label": "Drake R-8A (9002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "AMS"
+    ]
+  },
+  {
+    "id": 9003,
+    "manufacturer": "Drake",
+    "model": "R-8B",
+    "label": "Drake R-8B (9003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "ECSSUSB",
+      "ECSSLSB"
+    ]
+  },
+  {
+    "id": 23003,
+    "manufacturer": "DTTS Microwave Society DttSP IPC",
+    "model": "20200319.0",
+    "label": "DTTS Microwave Society DttSP IPC 20200319.0 (23003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR",
+      "SAM",
+      "DSB"
+    ]
+  },
+  {
+    "id": 23004,
+    "manufacturer": "DTTS Microwave Society DttSP UDP",
+    "model": "20200319.0",
+    "label": "DTTS Microwave Society DttSP UDP 20200319.0 (23004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR",
+      "SAM",
+      "DSB"
+    ]
+  },
+  {
+    "id": 33001,
+    "manufacturer": "ELAD",
+    "model": "FDM-DUO",
+    "label": "ELAD FDM-DUO (33001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 2021,
+    "manufacturer": "Elecraft",
+    "model": "K2",
+    "label": "Elecraft K2 (2021)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "CWR",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 2029,
+    "manufacturer": "Elecraft",
+    "model": "K3",
+    "label": "Elecraft K3 (2029)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 2043,
+    "manufacturer": "Elecraft",
+    "model": "K3S",
+    "label": "Elecraft K3S (2043)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 2047,
+    "manufacturer": "Elecraft",
+    "model": "K4",
+    "label": "Elecraft K4 (2047)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 2044,
+    "manufacturer": "Elecraft",
+    "model": "KX2",
+    "label": "Elecraft KX2 (2044)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 2045,
+    "manufacturer": "Elecraft",
+    "model": "KX3",
+    "label": "Elecraft KX3 (2045)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 2038,
+    "manufacturer": "Elecraft",
+    "model": "XG3",
+    "label": "Elecraft XG3 (2038)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "CW"
+    ]
+  },
+  {
+    "id": 25001,
+    "manufacturer": "Elektor",
+    "model": "Elektor 3/04",
+    "label": "Elektor Elektor 3/04 (25001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM"
+    ]
+  },
+  {
+    "id": 25007,
+    "manufacturer": "Elektor",
+    "model": "Elektor SDR-USB",
+    "label": "Elektor Elektor SDR-USB (25007)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 25012,
+    "manufacturer": "FiFi",
+    "model": "FiFi-SDR",
+    "label": "FiFi FiFi-SDR (25012)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 2036,
+    "manufacturer": "FlexRadio",
+    "model": "6xxx",
+    "label": "FlexRadio 6xxx (2036)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 23001,
+    "manufacturer": "FlexRadio",
+    "model": "SDR-1000",
+    "label": "FlexRadio SDR-1000 (23001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB"
+    ]
+  },
+  {
+    "id": 23005,
+    "manufacturer": "FlexRadio",
+    "model": "SmartSDR Slice A",
+    "label": "FlexRadio SmartSDR Slice A (23005)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB",
+      "SAM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 23006,
+    "manufacturer": "FlexRadio",
+    "model": "SmartSDR Slice B",
+    "label": "FlexRadio SmartSDR Slice B (23006)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB",
+      "SAM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 23007,
+    "manufacturer": "FlexRadio",
+    "model": "SmartSDR Slice C",
+    "label": "FlexRadio SmartSDR Slice C (23007)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB",
+      "SAM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 23008,
+    "manufacturer": "FlexRadio",
+    "model": "SmartSDR Slice D",
+    "label": "FlexRadio SmartSDR Slice D (23008)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB",
+      "SAM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 23009,
+    "manufacturer": "FlexRadio",
+    "model": "SmartSDR Slice E",
+    "label": "FlexRadio SmartSDR Slice E (23009)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB",
+      "SAM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 23010,
+    "manufacturer": "FlexRadio",
+    "model": "SmartSDR Slice F",
+    "label": "FlexRadio SmartSDR Slice F (23010)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB",
+      "SAM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 23011,
+    "manufacturer": "FlexRadio",
+    "model": "SmartSDR Slice G",
+    "label": "FlexRadio SmartSDR Slice G (23011)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB",
+      "SAM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 23012,
+    "manufacturer": "FlexRadio",
+    "model": "SmartSDR Slice H",
+    "label": "FlexRadio SmartSDR Slice H (23012)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB",
+      "SAM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 2048,
+    "manufacturer": "FlexRadio/Apache",
+    "model": "PowerSDR",
+    "label": "FlexRadio/Apache PowerSDR (2048)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB",
+      "SPEC"
+    ]
+  },
+  {
+    "id": 4,
+    "manufacturer": "FLRig",
+    "model": "FLRig",
+    "label": "FLRig FLRig (4)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AM-D",
+      "D-STAR",
+      "C4FM"
+    ]
+  },
+  {
+    "id": 25015,
+    "manufacturer": "Funkamateur",
+    "model": "FA-SDR",
+    "label": "Funkamateur FA-SDR (25015)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 35001,
+    "manufacturer": "GOMSPACE",
+    "model": "GS100",
+    "label": "GOMSPACE GS100 (35001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "FM-D"
+    ]
+  },
+  {
+    "id": 11,
+    "manufacturer": "GQRX",
+    "model": "GQRX",
+    "label": "GQRX GQRX (11)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM",
+      "CWR",
+      "AMS"
+    ]
+  },
+  {
+    "id": 40001,
+    "manufacturer": "GUOHETEC",
+    "model": "PMR-171",
+    "label": "GUOHETEC PMR-171 (40001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 40002,
+    "manufacturer": "GUOHETEC",
+    "model": "Q900",
+    "label": "GUOHETEC Q900 (40002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 1,
+    "manufacturer": "Hamlib",
+    "model": "Dummy",
+    "label": "Hamlib Dummy (1)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 6,
+    "manufacturer": "Hamlib",
+    "model": "Dummy No VFO",
+    "label": "Hamlib Dummy No VFO (6)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 2,
+    "manufacturer": "Hamlib",
+    "model": "NET rigctl",
+    "label": "Hamlib NET rigctl (2)"
+  },
+  {
+    "id": 2046,
+    "manufacturer": "Hilberling",
+    "model": "PT-8000A",
+    "label": "Hilberling PT-8000A (2046)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "AMS"
+    ]
+  },
+  {
+    "id": 25019,
+    "manufacturer": "HobbyPCB",
+    "model": "RS-HFIQ",
+    "label": "HobbyPCB RS-HFIQ (25019)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "IQ"
+    ]
+  },
+  {
+    "id": 3054,
+    "manufacturer": "Icom",
+    "model": "IC ID-1",
+    "label": "Icom IC ID-1 (3054)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "FM"
+    ]
+  },
+  {
+    "id": 3002,
+    "manufacturer": "Icom",
+    "model": "IC-1275",
+    "label": "Icom IC-1275 (3002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3003,
+    "manufacturer": "Icom",
+    "model": "IC-271",
+    "label": "Icom IC-271 (3003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3072,
+    "manufacturer": "Icom",
+    "model": "IC-2730",
+    "label": "Icom IC-2730 (3072)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "FM"
+    ]
+  },
+  {
+    "id": 3004,
+    "manufacturer": "Icom",
+    "model": "IC-275",
+    "label": "Icom IC-275 (3004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3005,
+    "manufacturer": "Icom",
+    "model": "IC-375",
+    "label": "Icom IC-375 (3005)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3006,
+    "manufacturer": "Icom",
+    "model": "IC-471",
+    "label": "Icom IC-471 (3006)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3007,
+    "manufacturer": "Icom",
+    "model": "IC-475",
+    "label": "Icom IC-475 (3007)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3008,
+    "manufacturer": "Icom",
+    "model": "IC-575",
+    "label": "Icom IC-575 (3008)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3060,
+    "manufacturer": "Icom",
+    "model": "IC-7000",
+    "label": "Icom IC-7000 (3060)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 3055,
+    "manufacturer": "Icom",
+    "model": "IC-703",
+    "label": "Icom IC-703 (3055)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 3085,
+    "manufacturer": "Icom",
+    "model": "IC-705",
+    "label": "Icom IC-705 (3085)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D",
+      "D-STAR"
+    ]
+  },
+  {
+    "id": 3009,
+    "manufacturer": "Icom",
+    "model": "IC-706",
+    "label": "Icom IC-706 (3009)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3010,
+    "manufacturer": "Icom",
+    "model": "IC-706MkII",
+    "label": "Icom IC-706MkII (3010)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3011,
+    "manufacturer": "Icom",
+    "model": "IC-706MkIIG",
+    "label": "Icom IC-706MkIIG (3011)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3012,
+    "manufacturer": "Icom",
+    "model": "IC-707",
+    "label": "Icom IC-707 (3012)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3070,
+    "manufacturer": "Icom",
+    "model": "IC-7100",
+    "label": "Icom IC-7100 (3070)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D",
+      "D-STAR"
+    ]
+  },
+  {
+    "id": 3013,
+    "manufacturer": "Icom",
+    "model": "IC-718",
+    "label": "Icom IC-718 (3013)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 3061,
+    "manufacturer": "Icom",
+    "model": "IC-7200",
+    "label": "Icom IC-7200 (3061)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 3014,
+    "manufacturer": "Icom",
+    "model": "IC-725",
+    "label": "Icom IC-725 (3014)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3015,
+    "manufacturer": "Icom",
+    "model": "IC-726",
+    "label": "Icom IC-726 (3015)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3016,
+    "manufacturer": "Icom",
+    "model": "IC-728",
+    "label": "Icom IC-728 (3016)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3017,
+    "manufacturer": "Icom",
+    "model": "IC-729",
+    "label": "Icom IC-729 (3017)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3073,
+    "manufacturer": "Icom",
+    "model": "IC-7300",
+    "label": "Icom IC-7300 (3073)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D"
+    ]
+  },
+  {
+    "id": 3019,
+    "manufacturer": "Icom",
+    "model": "IC-735",
+    "label": "Icom IC-735 (3019)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3020,
+    "manufacturer": "Icom",
+    "model": "IC-736",
+    "label": "Icom IC-736 (3020)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3021,
+    "manufacturer": "Icom",
+    "model": "IC-737",
+    "label": "Icom IC-737 (3021)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3022,
+    "manufacturer": "Icom",
+    "model": "IC-738",
+    "label": "Icom IC-738 (3022)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3067,
+    "manufacturer": "Icom",
+    "model": "IC-7410",
+    "label": "Icom IC-7410 (3067)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 3023,
+    "manufacturer": "Icom",
+    "model": "IC-746",
+    "label": "Icom IC-746 (3023)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 3046,
+    "manufacturer": "Icom",
+    "model": "IC-746PRO",
+    "label": "Icom IC-746PRO (3046)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 3024,
+    "manufacturer": "Icom",
+    "model": "IC-751",
+    "label": "Icom IC-751 (3024)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 3026,
+    "manufacturer": "Icom",
+    "model": "IC-756",
+    "label": "Icom IC-756 (3026)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 3027,
+    "manufacturer": "Icom",
+    "model": "IC-756PRO",
+    "label": "Icom IC-756PRO (3027)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 3047,
+    "manufacturer": "Icom",
+    "model": "IC-756PROII",
+    "label": "Icom IC-756PROII (3047)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 3057,
+    "manufacturer": "Icom",
+    "model": "IC-756PROIII",
+    "label": "Icom IC-756PROIII (3057)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 3063,
+    "manufacturer": "Icom",
+    "model": "IC-7600",
+    "label": "Icom IC-7600 (3063)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 3028,
+    "manufacturer": "Icom",
+    "model": "IC-761",
+    "label": "Icom IC-761 (3028)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 3078,
+    "manufacturer": "Icom",
+    "model": "IC-7610",
+    "label": "Icom IC-7610 (3078)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 3029,
+    "manufacturer": "Icom",
+    "model": "IC-765",
+    "label": "Icom IC-765 (3029)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 3062,
+    "manufacturer": "Icom",
+    "model": "IC-7700",
+    "label": "Icom IC-7700 (3062)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 3030,
+    "manufacturer": "Icom",
+    "model": "IC-775",
+    "label": "Icom IC-775 (3030)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 3092,
+    "manufacturer": "Icom",
+    "model": "IC-7760",
+    "label": "Icom IC-7760 (3092)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 3045,
+    "manufacturer": "Icom",
+    "model": "IC-78",
+    "label": "Icom IC-78 (3045)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 3056,
+    "manufacturer": "Icom",
+    "model": "IC-7800",
+    "label": "Icom IC-7800 (3056)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 3031,
+    "manufacturer": "Icom",
+    "model": "IC-781",
+    "label": "Icom IC-781 (3031)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 3075,
+    "manufacturer": "Icom",
+    "model": "IC-7850/7851",
+    "label": "Icom IC-7850/7851 (3075)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 3032,
+    "manufacturer": "Icom",
+    "model": "IC-820H",
+    "label": "Icom IC-820H (3032)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3034,
+    "manufacturer": "Icom",
+    "model": "IC-821H",
+    "label": "Icom IC-821H (3034)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3090,
+    "manufacturer": "Icom",
+    "model": "IC-905",
+    "label": "Icom IC-905 (3090)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D",
+      "D-STAR"
+    ]
+  },
+  {
+    "id": 3044,
+    "manufacturer": "Icom",
+    "model": "IC-910",
+    "label": "Icom IC-910 (3044)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3068,
+    "manufacturer": "Icom",
+    "model": "IC-9100",
+    "label": "Icom IC-9100 (3068)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 3065,
+    "manufacturer": "Icom",
+    "model": "IC-92D",
+    "label": "Icom IC-92D (3065)",
+    "caps": {
+      "freq_set": false,
+      "freq_get": false,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3035,
+    "manufacturer": "Icom",
+    "model": "IC-970",
+    "label": "Icom IC-970 (3035)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3081,
+    "manufacturer": "Icom",
+    "model": "IC-9700",
+    "label": "Icom IC-9700 (3081)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "D-STAR"
+    ]
+  },
+  {
+    "id": 3086,
+    "manufacturer": "Icom",
+    "model": "IC-F8101",
+    "label": "Icom IC-F8101 (3086)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "USBD1",
+      "USBD2",
+      "USBD3",
+      "LSBD1",
+      "LSBD2",
+      "LSBD3"
+    ]
+  },
+  {
+    "id": 30001,
+    "manufacturer": "Icom",
+    "model": "IC-M700PRO",
+    "label": "Icom IC-M700PRO (30001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 30003,
+    "manufacturer": "Icom",
+    "model": "IC-M710",
+    "label": "Icom IC-M710 (30003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 30002,
+    "manufacturer": "Icom",
+    "model": "IC-M802",
+    "label": "Icom IC-M802 (30002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 30004,
+    "manufacturer": "Icom",
+    "model": "IC-M803",
+    "label": "Icom IC-M803 (30004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 4002,
+    "manufacturer": "Icom",
+    "model": "IC-PCR100",
+    "label": "Icom IC-PCR100 (4002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 4001,
+    "manufacturer": "Icom",
+    "model": "IC-PCR1000",
+    "label": "Icom IC-PCR1000 (4001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 4003,
+    "manufacturer": "Icom",
+    "model": "IC-PCR1500",
+    "label": "Icom IC-PCR1500 (4003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 4004,
+    "manufacturer": "Icom",
+    "model": "IC-PCR2500",
+    "label": "Icom IC-PCR2500 (4004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3036,
+    "manufacturer": "Icom",
+    "model": "IC-R10",
+    "label": "Icom IC-R10 (3036)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3058,
+    "manufacturer": "Icom",
+    "model": "IC-R20",
+    "label": "Icom IC-R20 (3058)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3080,
+    "manufacturer": "Icom",
+    "model": "IC-R30",
+    "label": "Icom IC-R30 (3080)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "SAM",
+      "SAL",
+      "SAH",
+      "FMN",
+      "P25",
+      "D-STAR",
+      "DPMR",
+      "NXDN-VN",
+      "NXDN-N",
+      "DCR",
+      "AMN"
+    ]
+  },
+  {
+    "id": 3077,
+    "manufacturer": "Icom",
+    "model": "IC-R6",
+    "label": "Icom IC-R6 (3077)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3040,
+    "manufacturer": "Icom",
+    "model": "IC-R7000",
+    "label": "Icom IC-R7000 (3040)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3037,
+    "manufacturer": "Icom",
+    "model": "IC-R71",
+    "label": "Icom IC-R71 (3037)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 3041,
+    "manufacturer": "Icom",
+    "model": "IC-R7100",
+    "label": "Icom IC-R7100 (3041)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3038,
+    "manufacturer": "Icom",
+    "model": "IC-R72",
+    "label": "Icom IC-R72 (3038)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 3039,
+    "manufacturer": "Icom",
+    "model": "IC-R75",
+    "label": "Icom IC-R75 (3039)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "AMS"
+    ]
+  },
+  {
+    "id": 3042,
+    "manufacturer": "Icom",
+    "model": "IC-R8500",
+    "label": "Icom IC-R8500 (3042)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3079,
+    "manufacturer": "Icom",
+    "model": "IC-R8600",
+    "label": "Icom IC-R8600 (3079)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "SAM",
+      "SAL",
+      "SAH",
+      "P25",
+      "D-STAR",
+      "DPMR",
+      "NXDN-VN",
+      "NXDN-N",
+      "DCR"
+    ]
+  },
+  {
+    "id": 3043,
+    "manufacturer": "Icom",
+    "model": "IC-R9000",
+    "label": "Icom IC-R9000 (3043)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3066,
+    "manufacturer": "Icom",
+    "model": "IC-R9500",
+    "label": "Icom IC-R9500 (3066)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "AMS"
+    ]
+  },
+  {
+    "id": 3069,
+    "manufacturer": "Icom",
+    "model": "IC-RX7",
+    "label": "Icom IC-RX7 (3069)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3083,
+    "manufacturer": "Icom",
+    "model": "ID-31",
+    "label": "Icom ID-31 (3083)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "D-STAR"
+    ]
+  },
+  {
+    "id": 3082,
+    "manufacturer": "Icom",
+    "model": "ID-4100",
+    "label": "Icom ID-4100 (3082)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "D-STAR"
+    ]
+  },
+  {
+    "id": 3084,
+    "manufacturer": "Icom",
+    "model": "ID-51",
+    "label": "Icom ID-51 (3084)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "D-STAR"
+    ]
+  },
+  {
+    "id": 3071,
+    "manufacturer": "Icom",
+    "model": "ID-5100",
+    "label": "Icom ID-5100 (3071)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "FMN",
+      "D-STAR",
+      "AMN"
+    ]
+  },
+  {
+    "id": 3093,
+    "manufacturer": "Icom",
+    "model": "ID-52A/E PLUS",
+    "label": "Icom ID-52A/E PLUS (3093)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "D-STAR",
+      "AMN"
+    ]
+  },
+  {
+    "id": 6001,
+    "manufacturer": "JRC",
+    "model": "JST-145",
+    "label": "JRC JST-145 (6001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "FAX"
+    ]
+  },
+  {
+    "id": 6002,
+    "manufacturer": "JRC",
+    "model": "JST-245",
+    "label": "JRC JST-245 (6002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "FAX"
+    ]
+  },
+  {
+    "id": 6005,
+    "manufacturer": "JRC",
+    "model": "NRD-525",
+    "label": "JRC NRD-525 (6005)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "FAX"
+    ]
+  },
+  {
+    "id": 6006,
+    "manufacturer": "JRC",
+    "model": "NRD-535D",
+    "label": "JRC NRD-535D (6006)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "ECSSUSB",
+      "ECSSLSB",
+      "FAX"
+    ]
+  },
+  {
+    "id": 6007,
+    "manufacturer": "JRC",
+    "model": "NRD-545 DSP",
+    "label": "JRC NRD-545 DSP (6007)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "AMS",
+      "ECSSUSB",
+      "ECSSLSB"
+    ]
+  },
+  {
+    "id": 18001,
+    "manufacturer": "Kachina",
+    "model": "505DSP",
+    "label": "Kachina 505DSP (18001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 2015,
+    "manufacturer": "Kenwood",
+    "model": "R-5000",
+    "label": "Kenwood R-5000 (2015)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 2033,
+    "manufacturer": "Kenwood",
+    "model": "TH-D72A",
+    "label": "Kenwood TH-D72A (2033)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 2042,
+    "manufacturer": "Kenwood",
+    "model": "TH-D74",
+    "label": "Kenwood TH-D74 (2042)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM",
+      "CWR",
+      "FMN"
+    ]
+  },
+  {
+    "id": 2017,
+    "manufacturer": "Kenwood",
+    "model": "TH-D7A",
+    "label": "Kenwood TH-D7A (2017)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM"
+    ]
+  },
+  {
+    "id": 2019,
+    "manufacturer": "Kenwood",
+    "model": "TH-F6A",
+    "label": "Kenwood TH-F6A (2019)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 2020,
+    "manufacturer": "Kenwood",
+    "model": "TH-F7E",
+    "label": "Kenwood TH-F7E (2020)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 2023,
+    "manufacturer": "Kenwood",
+    "model": "TH-G71",
+    "label": "Kenwood TH-G71 (2023)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "FM"
+    ]
+  },
+  {
+    "id": 2026,
+    "manufacturer": "Kenwood",
+    "model": "TM-D700",
+    "label": "Kenwood TM-D700 (2026)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM"
+    ]
+  },
+  {
+    "id": 2034,
+    "manufacturer": "Kenwood",
+    "model": "TM-D710(G)",
+    "label": "Kenwood TM-D710(G) (2034)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 2027,
+    "manufacturer": "Kenwood",
+    "model": "TM-V7",
+    "label": "Kenwood TM-V7 (2027)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM"
+    ]
+  },
+  {
+    "id": 2035,
+    "manufacturer": "Kenwood",
+    "model": "TM-V71(A)",
+    "label": "Kenwood TM-V71(A) (2035)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "FMN"
+    ]
+  },
+  {
+    "id": 2030,
+    "manufacturer": "Kenwood",
+    "model": "TRC-80",
+    "label": "Kenwood TRC-80 (2030)",
+    "caps": {
+      "freq_set": false,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 2025,
+    "manufacturer": "Kenwood",
+    "model": "TS-140S",
+    "label": "Kenwood TS-140S (2025)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 2014,
+    "manufacturer": "Kenwood",
+    "model": "TS-2000",
+    "label": "Kenwood TS-2000 (2014)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 2002,
+    "manufacturer": "Kenwood",
+    "model": "TS-440S",
+    "label": "Kenwood TS-440S (2002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 2003,
+    "manufacturer": "Kenwood",
+    "model": "TS-450S",
+    "label": "Kenwood TS-450S (2003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 2028,
+    "manufacturer": "Kenwood",
+    "model": "TS-480",
+    "label": "Kenwood TS-480 (2028)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 2001,
+    "manufacturer": "Kenwood",
+    "model": "TS-50S",
+    "label": "Kenwood TS-50S (2001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 2004,
+    "manufacturer": "Kenwood",
+    "model": "TS-570D",
+    "label": "Kenwood TS-570D (2004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 2016,
+    "manufacturer": "Kenwood",
+    "model": "TS-570S",
+    "label": "Kenwood TS-570S (2016)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 2031,
+    "manufacturer": "Kenwood",
+    "model": "TS-590S",
+    "label": "Kenwood TS-590S (2031)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D"
+    ]
+  },
+  {
+    "id": 2037,
+    "manufacturer": "Kenwood",
+    "model": "TS-590SG",
+    "label": "Kenwood TS-590SG (2037)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D"
+    ]
+  },
+  {
+    "id": 2024,
+    "manufacturer": "Kenwood",
+    "model": "TS-680S",
+    "label": "Kenwood TS-680S (2024)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 2005,
+    "manufacturer": "Kenwood",
+    "model": "TS-690S",
+    "label": "Kenwood TS-690S (2005)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 2006,
+    "manufacturer": "Kenwood",
+    "model": "TS-711",
+    "label": "Kenwood TS-711 (2006)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 2007,
+    "manufacturer": "Kenwood",
+    "model": "TS-790",
+    "label": "Kenwood TS-790 (2007)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 2008,
+    "manufacturer": "Kenwood",
+    "model": "TS-811",
+    "label": "Kenwood TS-811 (2008)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 2009,
+    "manufacturer": "Kenwood",
+    "model": "TS-850",
+    "label": "Kenwood TS-850 (2009)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 2010,
+    "manufacturer": "Kenwood",
+    "model": "TS-870S",
+    "label": "Kenwood TS-870S (2010)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 2041,
+    "manufacturer": "Kenwood",
+    "model": "TS-890S",
+    "label": "Kenwood TS-890S (2041)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "AM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 2022,
+    "manufacturer": "Kenwood",
+    "model": "TS-930",
+    "label": "Kenwood TS-930 (2022)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 2011,
+    "manufacturer": "Kenwood",
+    "model": "TS-940S",
+    "label": "Kenwood TS-940S (2011)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 2012,
+    "manufacturer": "Kenwood",
+    "model": "TS-950S",
+    "label": "Kenwood TS-950S (2012)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 2013,
+    "manufacturer": "Kenwood",
+    "model": "TS-950SDX",
+    "label": "Kenwood TS-950SDX (2013)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 2039,
+    "manufacturer": "Kenwood",
+    "model": "TS-990S",
+    "label": "Kenwood TS-990S (2039)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FMN",
+      "USBD1",
+      "USBD2",
+      "USBD3",
+      "LSBD1",
+      "LSBD2",
+      "LSBD3"
+    ]
+  },
+  {
+    "id": 25011,
+    "manufacturer": "KTH-SDR kit",
+    "model": "Si570 PIC-USB",
+    "label": "KTH-SDR kit Si570 PIC-USB (25011)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 2050,
+    "manufacturer": "Lab599",
+    "model": "TX-500",
+    "label": "Lab599 TX-500 (2050)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 10004,
+    "manufacturer": "Lowe",
+    "model": "HF-235",
+    "label": "Lowe HF-235 (10004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 1045,
+    "manufacturer": "M0NKA",
+    "model": "mcHF QRP",
+    "label": "M0NKA mcHF QRP (1045)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 2049,
+    "manufacturer": "Malachite",
+    "model": "DSP",
+    "label": "Malachite DSP (2049)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 36001,
+    "manufacturer": "MDS",
+    "model": "4710",
+    "label": "MDS 4710 (36001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 36002,
+    "manufacturer": "MDS",
+    "model": "9710",
+    "label": "MDS 9710 (36002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 38001,
+    "manufacturer": "Micom",
+    "model": "Micom 2/3",
+    "label": "Micom Micom 2/3 (38001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    }
+  },
+  {
+    "id": 3074,
+    "manufacturer": "Microtelecom",
+    "model": "Perseus",
+    "label": "Microtelecom Perseus (3074)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "SAM"
+    ]
+  },
+  {
+    "id": 25008,
+    "manufacturer": "mRS",
+    "model": "miniVNA",
+    "label": "mRS miniVNA (25008)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW"
+    ]
+  },
+  {
+    "id": 25014,
+    "manufacturer": "N2ADR",
+    "model": "HiQSDR",
+    "label": "N2ADR HiQSDR (25014)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "DSB"
+    ]
+  },
+  {
+    "id": 10,
+    "manufacturer": "N2ADR James Ahlstrom",
+    "model": "Quisk",
+    "label": "N2ADR James Ahlstrom Quisk (10)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    }
+  },
+  {
+    "id": 8,
+    "manufacturer": "N3FJP",
+    "model": "ACLog",
+    "label": "N3FJP ACLog (8)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AM-D",
+      "C4FM"
+    ]
+  },
+  {
+    "id": 2040,
+    "manufacturer": "OpenHPSDR",
+    "model": "PiHPSDR",
+    "label": "OpenHPSDR PiHPSDR (2040)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 3053,
+    "manufacturer": "Optoelectronics",
+    "model": "OptoScan456",
+    "label": "Optoelectronics OptoScan456 (3053)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 3052,
+    "manufacturer": "Optoelectronics",
+    "model": "OptoScan535",
+    "label": "Optoelectronics OptoScan535 (3052)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 28001,
+    "manufacturer": "Philips/Simoco",
+    "model": "PRM8060",
+    "label": "Philips/Simoco PRM8060 (28001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": true
+    },
+    "modes": [
+      "FM"
+    ]
+  },
+  {
+    "id": 2052,
+    "manufacturer": "QRPLabs",
+    "model": "QCX/QDX",
+    "label": "QRPLabs QCX/QDX (2052)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 2057,
+    "manufacturer": "QRPLabs",
+    "model": "QMX",
+    "label": "QRPLabs QMX (2057)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "CW",
+      "CWR",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 11005,
+    "manufacturer": "Racal",
+    "model": "RA3702",
+    "label": "Racal RA3702 (11005)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 11003,
+    "manufacturer": "Racal",
+    "model": "RA6790/GM",
+    "label": "Racal RA6790/GM (11003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "AMS"
+    ]
+  },
+  {
+    "id": 8004,
+    "manufacturer": "Radio Shack",
+    "model": "PRO-2052",
+    "label": "Radio Shack PRO-2052 (8004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 24001,
+    "manufacturer": "RFT",
+    "model": "EKD-500",
+    "label": "RFT EKD-500 (24001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 32004,
+    "manufacturer": "Rhode&Schwarz",
+    "model": "4100",
+    "label": "Rhode&Schwarz 4100 (32004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB"
+    ]
+  },
+  {
+    "id": 27002,
+    "manufacturer": "Rohde&Schwarz",
+    "model": "EB200",
+    "label": "Rohde&Schwarz EB200 (27002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 27004,
+    "manufacturer": "Rohde&Schwarz",
+    "model": "EK895/6",
+    "label": "Rohde&Schwarz EK895/6 (27004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "USB",
+      "LSB"
+    ]
+  },
+  {
+    "id": 27001,
+    "manufacturer": "Rohde&Schwarz",
+    "model": "ESMC",
+    "label": "Rohde&Schwarz ESMC (27001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 27003,
+    "manufacturer": "Rohde&Schwarz",
+    "model": "XK2100",
+    "label": "Rohde&Schwarz XK2100 (27003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 27005,
+    "manufacturer": "Rohde&Schwarz",
+    "model": "XK852",
+    "label": "Rohde&Schwarz XK852 (27005)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB"
+    ]
+  },
+  {
+    "id": 25002,
+    "manufacturer": "SAT-Schneider",
+    "model": "DRT1",
+    "label": "SAT-Schneider DRT1 (25002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM"
+    ]
+  },
+  {
+    "id": 2056,
+    "manufacturer": "SDR Radio",
+    "model": "SDRConsole",
+    "label": "SDR Radio SDRConsole (2056)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR"
+    ]
+  },
+  {
+    "id": 2051,
+    "manufacturer": "SDRPlay",
+    "model": "SDRUno",
+    "label": "SDRPlay SDRUno (2051)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 2032,
+    "manufacturer": "SigFox",
+    "model": "Transfox",
+    "label": "SigFox Transfox (2032)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 14004,
+    "manufacturer": "Skanti",
+    "model": "TRP 8255 S R",
+    "label": "Skanti TRP 8255 S R (14004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 14002,
+    "manufacturer": "Skanti",
+    "model": "TRP8000",
+    "label": "Skanti TRP8000 (14002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY"
+    ]
+  },
+  {
+    "id": 25009,
+    "manufacturer": "SoftRock",
+    "model": "Si570 AVR-USB",
+    "label": "SoftRock Si570 AVR-USB (25009)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "USB"
+    ]
+  },
+  {
+    "id": 22001,
+    "manufacturer": "TAPR",
+    "model": "DSP-10",
+    "label": "TAPR DSP-10 (22001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 2054,
+    "manufacturer": "TAPR",
+    "model": "Thetis",
+    "label": "TAPR Thetis (2054)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "PKTLSB",
+      "PKTUSB",
+      "SPEC"
+    ]
+  },
+  {
+    "id": 3064,
+    "manufacturer": "Ten-Tec",
+    "model": "Delta II",
+    "label": "Ten-Tec Delta II (3064)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 3051,
+    "manufacturer": "Ten-Tec",
+    "model": "Omni VI Plus",
+    "label": "Ten-Tec Omni VI Plus (3051)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 16003,
+    "manufacturer": "Ten-Tec",
+    "model": "RX-320",
+    "label": "Ten-Tec RX-320 (16003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB"
+    ]
+  },
+  {
+    "id": 16012,
+    "manufacturer": "Ten-Tec",
+    "model": "RX-331",
+    "label": "Ten-Tec RX-331 (16012)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "AMS",
+      "DSB"
+    ]
+  },
+  {
+    "id": 16004,
+    "manufacturer": "Ten-Tec",
+    "model": "RX-340",
+    "label": "Ten-Tec RX-340 (16004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "AMS",
+      "DSB"
+    ]
+  },
+  {
+    "id": 16005,
+    "manufacturer": "Ten-Tec",
+    "model": "RX-350",
+    "label": "Ten-Tec RX-350 (16005)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "AMS"
+    ]
+  },
+  {
+    "id": 16007,
+    "manufacturer": "Ten-Tec",
+    "model": "TT-516 Argonaut V",
+    "label": "Ten-Tec TT-516 Argonaut V (16007)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 16002,
+    "manufacturer": "Ten-Tec",
+    "model": "TT-538 Jupiter",
+    "label": "Ten-Tec TT-538 Jupiter (16002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 16001,
+    "manufacturer": "Ten-Tec",
+    "model": "TT-550",
+    "label": "Ten-Tec TT-550 (16001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 16008,
+    "manufacturer": "Ten-Tec",
+    "model": "TT-565/566 Orion I/II",
+    "label": "Ten-Tec TT-565/566 Orion I/II (16008)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 16009,
+    "manufacturer": "Ten-Tec",
+    "model": "TT-585 Paragon",
+    "label": "Ten-Tec TT-585 Paragon (16009)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 16011,
+    "manufacturer": "Ten-Tec",
+    "model": "TT-588 Omni VII",
+    "label": "Ten-Tec TT-588 Omni VII (16011)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 16013,
+    "manufacturer": "Ten-Tec",
+    "model": "TT-599 Eagle",
+    "label": "Ten-Tec TT-599 Eagle (16013)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 5,
+    "manufacturer": "TRXManager",
+    "model": "TRXManager 5.7.630+",
+    "label": "TRXManager TRXManager 5.7.630+ (5)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 8002,
+    "manufacturer": "Uniden",
+    "model": "BC245xlt",
+    "label": "Uniden BC245xlt (8002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 8006,
+    "manufacturer": "Uniden",
+    "model": "BC250D",
+    "label": "Uniden BC250D (8006)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 8001,
+    "manufacturer": "Uniden",
+    "model": "BC780xlt",
+    "label": "Uniden BC780xlt (8001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 8003,
+    "manufacturer": "Uniden",
+    "model": "BC895xlt",
+    "label": "Uniden BC895xlt (8003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 8012,
+    "manufacturer": "Uniden",
+    "model": "BC898T",
+    "label": "Uniden BC898T (8012)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 8010,
+    "manufacturer": "Uniden",
+    "model": "BCD-396T",
+    "label": "Uniden BCD-396T (8010)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 8011,
+    "manufacturer": "Uniden",
+    "model": "BCD-996T",
+    "label": "Uniden BCD-996T (8011)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 1033,
+    "manufacturer": "Vertex Standard",
+    "model": "VX-1700",
+    "label": "Vertex Standard VX-1700 (1033)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "SAL",
+      "SAH"
+    ]
+  },
+  {
+    "id": 12004,
+    "manufacturer": "Watkins-Johnson",
+    "model": "WJ-8888",
+    "label": "Watkins-Johnson WJ-8888 (12004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "AMS"
+    ]
+  },
+  {
+    "id": 3088,
+    "manufacturer": "Xiegu",
+    "model": "G90",
+    "label": "Xiegu G90 (3088)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FMN"
+    ]
+  },
+  {
+    "id": 3076,
+    "manufacturer": "Xiegu",
+    "model": "X108G",
+    "label": "Xiegu X108G (3076)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FMN"
+    ]
+  },
+  {
+    "id": 3089,
+    "manufacturer": "Xiegu",
+    "model": "X5105",
+    "label": "Xiegu X5105 (3089)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FMN"
+    ]
+  },
+  {
+    "id": 3087,
+    "manufacturer": "Xiegu",
+    "model": "X6100",
+    "label": "Xiegu X6100 (3087)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FMN"
+    ]
+  },
+  {
+    "id": 3091,
+    "manufacturer": "Xiegu",
+    "model": "X6200",
+    "label": "Xiegu X6200 (3091)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FMN"
+    ]
+  },
+  {
+    "id": 1017,
+    "manufacturer": "Yaesu",
+    "model": "FRG-100",
+    "label": "Yaesu FRG-100 (1017)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": true,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 1019,
+    "manufacturer": "Yaesu",
+    "model": "FRG-8800",
+    "label": "Yaesu FRG-8800 (1019)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 1018,
+    "manufacturer": "Yaesu",
+    "model": "FRG-9600",
+    "label": "Yaesu FRG-9600 (1018)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": false,
+      "mode_set": true,
+      "mode_get": false,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  },
+  {
+    "id": 1021,
+    "manufacturer": "Yaesu",
+    "model": "FT-100",
+    "label": "Yaesu FT-100 (1021)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM",
+      "CWR",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 1002,
+    "manufacturer": "Yaesu",
+    "model": "FT-1000",
+    "label": "Yaesu FT-1000 (1002)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "RTTYR",
+      "PKTLSB",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 1003,
+    "manufacturer": "Yaesu",
+    "model": "FT-1000D",
+    "label": "Yaesu FT-1000D (1003)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "RTTYR",
+      "PKTLSB",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 1024,
+    "manufacturer": "Yaesu",
+    "model": "FT-1000MP",
+    "label": "Yaesu FT-1000MP (1024)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 1004,
+    "manufacturer": "Yaesu",
+    "model": "FT-1000MP MARK-V",
+    "label": "Yaesu FT-1000MP MARK-V (1004)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 1025,
+    "manufacturer": "Yaesu",
+    "model": "FT-1000MP MARK-V Field",
+    "label": "Yaesu FT-1000MP MARK-V Field (1025)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 1029,
+    "manufacturer": "Yaesu",
+    "model": "FT-2000",
+    "label": "Yaesu FT-2000 (1029)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AMN"
+    ]
+  },
+  {
+    "id": 1027,
+    "manufacturer": "Yaesu",
+    "model": "FT-450",
+    "label": "Yaesu FT-450 (1027)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 1046,
+    "manufacturer": "Yaesu",
+    "model": "FT-450D",
+    "label": "Yaesu FT-450D (1046)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 1039,
+    "manufacturer": "Yaesu",
+    "model": "FT-600",
+    "label": "Yaesu FT-600 (1039)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 1047,
+    "manufacturer": "Yaesu",
+    "model": "FT-650",
+    "label": "Yaesu FT-650 (1047)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 1049,
+    "manufacturer": "Yaesu",
+    "model": "FT-710",
+    "label": "Yaesu FT-710 (1049)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AMN",
+      "PKTFMN"
+    ]
+  },
+  {
+    "id": 1010,
+    "manufacturer": "Yaesu",
+    "model": "FT-736R",
+    "label": "Yaesu FT-736R (1010)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "FMN",
+      "CWN"
+    ]
+  },
+  {
+    "id": 1005,
+    "manufacturer": "Yaesu",
+    "model": "FT-747GX",
+    "label": "Yaesu FT-747GX (1005)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB"
+    ]
+  },
+  {
+    "id": 1006,
+    "manufacturer": "Yaesu",
+    "model": "FT-757GX",
+    "label": "Yaesu FT-757GX (1006)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": false,
+      "mode_get": false,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 1007,
+    "manufacturer": "Yaesu",
+    "model": "FT-757GXII",
+    "label": "Yaesu FT-757GXII (1007)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM"
+    ]
+  },
+  {
+    "id": 1009,
+    "manufacturer": "Yaesu",
+    "model": "FT-767GX",
+    "label": "Yaesu FT-767GX (1009)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 1020,
+    "manufacturer": "Yaesu",
+    "model": "FT-817",
+    "label": "Yaesu FT-817 (1020)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 1041,
+    "manufacturer": "Yaesu",
+    "model": "FT-818",
+    "label": "Yaesu FT-818 (1041)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "PSK",
+      "PSKR"
+    ]
+  },
+  {
+    "id": 1011,
+    "manufacturer": "Yaesu",
+    "model": "FT-840",
+    "label": "Yaesu FT-840 (1011)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB"
+    ]
+  },
+  {
+    "id": 1001,
+    "manufacturer": "Yaesu",
+    "model": "FT-847",
+    "label": "Yaesu FT-847 (1001)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 1038,
+    "manufacturer": "Yaesu",
+    "model": "FT-847UNI",
+    "label": "Yaesu FT-847UNI (1038)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "CWR"
+    ]
+  },
+  {
+    "id": 1022,
+    "manufacturer": "Yaesu",
+    "model": "FT-857",
+    "label": "Yaesu FT-857 (1022)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 1015,
+    "manufacturer": "Yaesu",
+    "model": "FT-890",
+    "label": "Yaesu FT-890 (1015)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB"
+    ]
+  },
+  {
+    "id": 1036,
+    "manufacturer": "Yaesu",
+    "model": "FT-891",
+    "label": "Yaesu FT-891 (1036)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FMN"
+    ]
+  },
+  {
+    "id": 1023,
+    "manufacturer": "Yaesu",
+    "model": "FT-897",
+    "label": "Yaesu FT-897 (1023)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 1043,
+    "manufacturer": "Yaesu",
+    "model": "FT-897D",
+    "label": "Yaesu FT-897D (1043)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "WFM",
+      "CWR",
+      "PKTUSB"
+    ]
+  },
+  {
+    "id": 1013,
+    "manufacturer": "Yaesu",
+    "model": "FT-900",
+    "label": "Yaesu FT-900 (1013)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB"
+    ]
+  },
+  {
+    "id": 1014,
+    "manufacturer": "Yaesu",
+    "model": "FT-920",
+    "label": "Yaesu FT-920 (1014)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 1028,
+    "manufacturer": "Yaesu",
+    "model": "FT-950",
+    "label": "Yaesu FT-950 (1028)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN"
+    ]
+  },
+  {
+    "id": 1031,
+    "manufacturer": "Yaesu",
+    "model": "FT-980",
+    "label": "Yaesu FT-980 (1031)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM"
+    ]
+  },
+  {
+    "id": 1016,
+    "manufacturer": "Yaesu",
+    "model": "FT-990",
+    "label": "Yaesu FT-990 (1016)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "RTTYR",
+      "PKTLSB",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 1048,
+    "manufacturer": "Yaesu",
+    "model": "FT-990 Old Rom",
+    "label": "Yaesu FT-990 Old Rom (1048)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "RTTYR",
+      "PKTLSB",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 1035,
+    "manufacturer": "Yaesu",
+    "model": "FT-991",
+    "label": "Yaesu FT-991 (1035)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AMN",
+      "C4FM"
+    ]
+  },
+  {
+    "id": 1042,
+    "manufacturer": "Yaesu",
+    "model": "FTDX-10",
+    "label": "Yaesu FTDX-10 (1042)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AMN",
+      "PKTFMN"
+    ]
+  },
+  {
+    "id": 1040,
+    "manufacturer": "Yaesu",
+    "model": "FTDX-101D",
+    "label": "Yaesu FTDX-101D (1040)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AMN",
+      "PKTFMN"
+    ]
+  },
+  {
+    "id": 1044,
+    "manufacturer": "Yaesu",
+    "model": "FTDX-101MP",
+    "label": "Yaesu FTDX-101MP (1044)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AMN",
+      "PKTFMN"
+    ]
+  },
+  {
+    "id": 1034,
+    "manufacturer": "Yaesu",
+    "model": "FTDX-1200",
+    "label": "Yaesu FTDX-1200 (1034)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN"
+    ]
+  },
+  {
+    "id": 1037,
+    "manufacturer": "Yaesu",
+    "model": "FTDX-3000",
+    "label": "Yaesu FTDX-3000 (1037)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AMN"
+    ]
+  },
+  {
+    "id": 1032,
+    "manufacturer": "Yaesu",
+    "model": "FTDX-5000",
+    "label": "Yaesu FTDX-5000 (1032)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AMN"
+    ]
+  },
+  {
+    "id": 1030,
+    "manufacturer": "Yaesu",
+    "model": "FTDX-9000",
+    "label": "Yaesu FTDX-9000 (1030)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 1050,
+    "manufacturer": "Yaesu",
+    "model": "FTDX-9000 Old",
+    "label": "Yaesu FTDX-9000 Old (1050)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D"
+    ]
+  },
+  {
+    "id": 1051,
+    "manufacturer": "Yaesu",
+    "model": "FTX-1",
+    "label": "Yaesu FTX-1 (1051)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": true,
+      "vfo_get": true,
+      "ptt_set": true,
+      "ptt_get": true
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "RTTY",
+      "FM",
+      "CWR",
+      "RTTYR",
+      "PKTLSB",
+      "PKTUSB",
+      "FM-D",
+      "FMN",
+      "AMN",
+      "C4FM"
+    ]
+  },
+  {
+    "id": 1026,
+    "manufacturer": "Yaesu",
+    "model": "VR-5000",
+    "label": "Yaesu VR-5000 (1026)",
+    "caps": {
+      "freq_set": true,
+      "freq_get": true,
+      "mode_set": true,
+      "mode_get": true,
+      "vfo_set": false,
+      "vfo_get": false,
+      "ptt_set": false,
+      "ptt_get": false
+    },
+    "modes": [
+      "AM",
+      "CW",
+      "USB",
+      "LSB",
+      "FM",
+      "WFM"
+    ]
+  }
+]

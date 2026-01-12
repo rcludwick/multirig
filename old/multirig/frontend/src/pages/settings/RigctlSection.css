@@ -1,0 +1,29 @@
+/* Rigctl section */
+
+.rigctl-section {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.rigctl-section h2 {
+  margin-bottom: var(--spacing-xs);
+}
+
+.section-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.rigctl-fields {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 480px) {
+  .rigctl-fields {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,67 @@
+.page-nav {
+  position: fixed;
+  top: var(--topbar-height);
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-xl);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-separator);
+}
+
+.page-nav-links {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.nav-link {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+  color: var(--color-text-primary);
+  background: var(--color-fill-quaternary);
+}
+
+.nav-link.active {
+  color: var(--color-text-primary);
+  background: var(--color-fill-tertiary);
+}
+
+.page-nav-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.save-indicator {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.save-indicator.saving {
+  color: var(--color-accent);
+  background: rgba(10, 132, 255, 0.15);
+}
+
+.save-indicator.dirty {
+  color: var(--color-accent-orange);
+  background: rgba(255, 159, 10, 0.15);
+}
+
+@media (max-width: 768px) {
+  .page-nav {
+    padding: 0 var(--spacing-md);
+  }
+}

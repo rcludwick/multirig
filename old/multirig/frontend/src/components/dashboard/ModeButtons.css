@@ -1,0 +1,38 @@
+/* Mode selection buttons */
+
+.mode-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.mode-btn {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-fill-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 48px;
+  text-align: center;
+}
+
+.mode-btn:hover:not(:disabled) {
+  background: var(--color-fill-tertiary);
+  color: var(--color-text-primary);
+  border-color: var(--color-separator);
+}
+
+.mode-btn.active {
+  background: var(--color-accent-green);
+  border-color: var(--color-accent-green);
+  color: var(--color-text-primary);
+}
+
+.mode-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

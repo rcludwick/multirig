@@ -1,0 +1,32 @@
+/* Dashboard page */
+
+.dashboard {
+  padding: var(--spacing-lg);
+}
+
+.rig-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+@media (max-width: 480px) {
+  .rig-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard-empty {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-secondary);
+}
+
+.dashboard-empty p {
+  margin: var(--spacing-sm) 0;
+}
+
+.dashboard-empty-hint {
+  font-size: var(--font-size-sm);
+  opacity: 0.7;
+}

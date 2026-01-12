@@ -1,0 +1,44 @@
+/* Collapsible rig section */
+
+.rig-section {
+  margin-top: var(--spacing-md);
+  border-top: 1px solid var(--color-separator);
+  padding-top: var(--spacing-sm);
+}
+
+.rig-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-sm) 0;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.rig-section-header:hover {
+  color: var(--color-text-primary);
+}
+
+.rig-section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rig-section-chevron {
+  font-size: var(--font-size-xs);
+  opacity: 0.6;
+}
+
+.rig-section-body {
+  padding: var(--spacing-sm) 0;
+}
+
+.rig-section.collapsed .rig-section-body {
+  display: none;
+}

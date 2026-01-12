@@ -1,0 +1,123 @@
+/**
+ * Apple-style Dark Mode Design System
+ * Inspired by macOS/iOS dark mode aesthetics
+ */
+
+:root {
+  /* ===== Background Colors ===== */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #1C1C1E;
+  --color-bg-tertiary: #2C2C2E;
+  --color-bg-elevated: #3A3A3C;
+
+  /* Surface colors with transparency (for blur effects) */
+  --color-surface: rgba(44, 44, 46, 0.8);
+  --color-surface-hover: rgba(58, 58, 60, 0.9);
+  --color-surface-active: rgba(72, 72, 74, 0.95);
+
+  /* ===== Text Hierarchy ===== */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: rgba(235, 235, 245, 0.6);
+  --color-text-tertiary: rgba(235, 235, 245, 0.3);
+  --color-text-quaternary: rgba(235, 235, 245, 0.18);
+
+  /* ===== Accent Colors (iOS System Colors) ===== */
+  --color-accent: #0A84FF;           /* Blue - primary actions */
+  --color-accent-hover: #409CFF;
+  --color-accent-green: #30D158;     /* Green - success/enabled */
+  --color-accent-red: #FF453A;       /* Red - error/danger/PTT */
+  --color-accent-orange: #FF9F0A;    /* Orange - warning */
+  --color-accent-yellow: #FFD60A;    /* Yellow - caution */
+  --color-accent-teal: #30E3B3;      /* Teal - info/connected */
+  --color-accent-purple: #BF5AF2;    /* Purple - special */
+  --color-accent-pink: #FF375F;      /* Pink - accent alt */
+
+  /* ===== Separator & Border ===== */
+  --color-separator: rgba(84, 84, 88, 0.65);
+  --color-separator-opaque: #38383A;
+  --color-border: rgba(84, 84, 88, 0.4);
+  --color-border-focus: var(--color-accent);
+
+  /* ===== System Fills ===== */
+  --color-fill-primary: rgba(120, 120, 128, 0.36);
+  --color-fill-secondary: rgba(120, 120, 128, 0.32);
+  --color-fill-tertiary: rgba(118, 118, 128, 0.24);
+  --color-fill-quaternary: rgba(116, 118, 120, 0.18);
+
+  /* ===== Blur Effects ===== */
+  --blur-subtle: blur(10px);
+  --blur-chrome: blur(20px) saturate(180%);
+  --blur-material: blur(30px) saturate(180%);
+  --blur-heavy: blur(50px) saturate(200%);
+
+  /* ===== Border Radius ===== */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* ===== Shadows (subtle in dark mode) ===== */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.6);
+  --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+
+  /* ===== Typography ===== */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+               'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco,
+               Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-segment: 'Segment7', 'Digital-7', var(--font-mono);
+
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-base: 15px;
+  --font-size-lg: 17px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 28px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* ===== Spacing ===== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 48px;
+
+  /* ===== Transitions ===== */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+  --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ===== Z-Index Scale ===== */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal-backdrop: 300;
+  --z-modal: 400;
+  --z-popover: 500;
+  --z-tooltip: 600;
+  --z-toast: 700;
+
+  /* ===== Component-specific ===== */
+  --topbar-height: 52px;
+  --nav-height: 44px;
+  --footer-height: 36px;
+  --card-padding: var(--spacing-lg);
+  --section-gap: var(--spacing-xl);
+}

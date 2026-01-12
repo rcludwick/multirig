@@ -1,0 +1,102 @@
+import pytest
+from unittest.mock import MagicMock, patch, AsyncMock
+from fastapi.testclient import TestClient
+from multirig.app import create_app
+from multirig.config import AppConfig
+
+@pytest.fixture
+def mock_cfg():
+    cfg = MagicMock() # removed spec=AppConfig to avoid pydantic attrib issues
+    cfg.rigs = []
+    cfg.band_presets = []
+    cfg.http_port = 8000
+    cfg.rigctl_listen_host = "127.0.0.1"
+    cfg.rigctl_listen_port = 4534
+    cfg.test_mode = False
+    cfg.poll_interval_ms = 1000
+    cfg.sync_enabled = True
+    cfg.sync_source_index = 0
+    cfg.rigctl_to_main_enabled = True
+    # AppConfig has no rigctl_server field
+    return cfg
+
+def test_create_app_with_config(mock_cfg):
+    # Test create_app with explicit config
+    # Test create_app with explicit config.
+    # Note: create_app arguments might change, but this tests logic flow.
+    # Then load_config(app.state.config_path).
+    
+    # We can mock load_config
+    with patch("multirig.app.load_config", return_value=mock_cfg):
+        app = create_app()
+        assert app.state.config is mock_cfg
+
+def test_create_app_load_config_failure():
+    # Test create_app when config load fails
+    with patch("multirig.app.load_config", side_effect=Exception("Load fail")):
+        with pytest.raises(Exception, match="Load fail"):
+             create_app()
+
+@pytest.mark.asyncio
+async def test_lifespan_startup_shutdown(mock_cfg):
+    with patch("multirig.app.load_config", return_value=mock_cfg):
+        app = create_app()
+
+    app.state.rigs = []
+    # Use MagicMock with async methods for start/stop only
+    app.state.router = MagicMock()
+    app.state.router.start = AsyncMock()
+    app.state.router.stop = AsyncMock()
+    app.state.rigctl_server = AsyncMock()
+
+    # Mock profiles
+    app.state.profiles = MagicMock()
+    app.state.profiles.get_active_name.return_value = "default"
+
+    async with app.router.lifespan_context(app):
+        # Startup checks - router handles sync now
+        app.state.router.start.assert_called()
+        app.state.rigctl_server.start.assert_called()
+
+    # Shutdown checks
+    app.state.router.stop.assert_called()
+    app.state.rigctl_server.stop.assert_called()
+
+@pytest.mark.asyncio
+async def test_lifespan_startup_error(mock_cfg):
+    with patch("multirig.app.load_config", return_value=mock_cfg):
+        app = create_app()
+
+    # Router handles sync now, not sync_service
+    app.state.router = MagicMock()
+    app.state.router.start = AsyncMock(side_effect=Exception("Start fail"))
+    app.state.router.stop = AsyncMock()
+
+    # No need to patch _bootstrap_active_profile if we don't assert on it and it doesn't fail
+    app.state.profiles = MagicMock()
+
+    with pytest.raises(Exception, match="Start fail"):
+         async with app.router.lifespan_context(app):
+             pass
+
+def test_config_endpoint_update_error(mock_cfg):
+    # Test /api/config POST error handling
+    with patch("multirig.app.load_config", return_value=mock_cfg):
+        app = create_app()
+    
+    # TestClient raises server exceptions by default. Disable it to get 500 response.
+    client = TestClient(app, raise_server_exceptions=False)
+    
+    # The endpoint calls apply_config in routes.py
+    # We need to patch where it is verified/imported.
+    # It's imported in multirig.routes from .core -> .config
+    # So patching multirig.config.save_config should catch it globally if not imported as 'from ... import save_config'
+    # Actually routes.py does `from .config import ... save_config`
+    # So we must patch `multirig.routes.save_config` or `multirig.core.save_config` depending on usage.
+    # Update config endpoint uses apply_config from core. core uses save_config from config.
+    # core.py: `from .config import AppConfig, save_config`
+    # So patch multirig.core.save_config
+    with patch("multirig.core.save_config", side_effect=Exception("Save fail")):
+        # The endpoint calls _apply_config which calls save_config
+        resp = client.post("/api/config", json={"rigs": []})
+        assert resp.status_code == 500

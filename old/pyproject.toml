@@ -1,17 +1,19 @@
 [project]
 name = "multirig"
 version = "0.1.0"
-description = "Control and sync multiple ham radio rigs via hamlib with Zenoh pub/sub backend"
-requires-python = ">=3.10"
+description = "Control and sync two ham radio rigs via hamlib with a modern web UI"
+requires-python = ">=3.9"
 dependencies = [
-    "fastapi>=0.100.0",
-    "uvicorn[standard]>=0.20.0",
-    "eclipse-zenoh>=1.0.0",
-    "pydantic>=2.0.0",
-    "pyyaml>=6.0",
-    "pyserial>=3.5",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.7.0",
+    "pyyaml>=6.0.1",
     "jinja2>=3.1.2",
+    "pyserial>=3.5",
     "orjson>=3.9.0",
+    "uvloop>=0.19.0; sys_platform != 'win32'",
+    "rjsmin>=1.2.0",
+    "rcssmin>=1.1.0",
 ]
 
 [build-system]
@@ -21,12 +23,12 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["multirig*"]
-exclude = ["old*", "ext*"]
+exclude = ["ext*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-norecursedirs = ["old", "ext", ".venv", "build", "dist"]
-addopts = ["--ignore=old", "--ignore=ext"]
+norecursedirs = ["ext", ".venv", "build", "dist"]
+addopts = ["--ignore=ext"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 
@@ -41,7 +43,7 @@ dev = [
 ]
 
 [project.scripts]
-multirig = "multirig.__main__:main"
+multirig = "multirig.app:run"
 
 [tool.uvicorn]
 host = "0.0.0.0"
