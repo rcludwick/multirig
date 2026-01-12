@@ -797,10 +797,12 @@ When receiving a `set_freq` command via TCP, the server should publish the comma
 **Goal:** Add configuration persistence and profile management.
 
 ### Key Tasks:
-- [ ] Copy config models from old code (`old/multirig/config.py`)
-- [ ] Ensure `RigConfig` includes band limits (`allow_out_of_band`, `band_presets`)
-- [ ] Add config queryable to Zenoh
-- [ ] Implement profile switching
+- [x] Copy config models from old code (`old/multirig/config.py`)
+- [x] Ensure `RigConfig` includes band limits (`allow_out_of_band`, `band_presets`)
+- [x] Add config queryable to Zenoh
+- [x] Implement profile switching
+- [x] Add rig discovery tracking
+- [x] Config change notifications
 
 ---
 
